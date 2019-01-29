@@ -32,6 +32,14 @@ namespace GeoClient.Views
             {
                 // Possible that device doesn't support secure storage on device.
             }
+            try
+            {
+                getLocation();
+            } catch(Exception ex)
+            {
+                await DisplayAlert("Faild to get current Location", ex.Message, "OK");
+
+            }
         }
         async void registerDevice_Clicked(object sender, EventArgs e)
         {
@@ -68,6 +76,36 @@ namespace GeoClient.Views
             await SecureStorage.SetAsync("token", token);
             registrationinfo.Text = "Dieses Gerät hat die ID " + id + " mit dem Token " + token;
             registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
+        }
+
+        async void getLocation()
+        {
+            try
+            {
+                var locationService = new Services.LocationService();
+
+                Location location = await locationService.getLocationAsync();
+                if (location != null)
+                {
+                    lblLatitude.Text = "Latitude: " + location.Latitude.ToString();
+                    lblLongitude.Text = "Longitude:" + location.Longitude.ToString();
+                    lblSpeed.Text = "Speed: " + location.Speed.ToString();
+                    lblAltitude.Text = "Altitude: " + location.Altitude.ToString();
+                    lblAccuracy.Text = "Accuracy: " + location.Accuracy.ToString();
+                }
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                await DisplayAlert("Faild", fnsEx.Message, "OK");
+            }
+            catch (PermissionException pEx)
+            {
+                await DisplayAlert("Faild", pEx.Message, "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Faild", ex.Message, "OK");
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ using Xamarin.Forms.Xaml;
 using GeoClient.Models;
 using GeoClient.Views;
 using GeoClient.ViewModels;
+using Xamarin.Essentials;
 
 namespace GeoClient.Views
 {
@@ -42,7 +43,7 @@ namespace GeoClient.Views
             await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
 
