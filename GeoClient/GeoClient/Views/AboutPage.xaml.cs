@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeoClient.Services;
+using System;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -13,33 +14,20 @@ namespace GeoClient.Views
         private string _url;
         private string _id;
         private string _token;
+        private RegistrationService registrationService;
 
         public AboutPage()
         {
             InitializeComponent();
+            registrationService = new RegistrationService();
         }
         protected override async void OnAppearing()
         {
-            try
+            if (registrationService.isRegistered())
             {
-                var _url = await SecureStorage.GetAsync("url");
-                if (_url != null)
-                {
-                    getRegistrationInfo(_url);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Possible that device doesn't support secure storage on device.
-            }
-            try
-            {
+                displayRegistrationInfo();
                 getLocation();
-            } catch(Exception ex)
-            {
-                await DisplayAlert("Faild to get current Location", ex.Message, "OK");
-
-            }
+            } 
         }
         async void registerDevice_Clicked(object sender, EventArgs e)
         {
@@ -60,37 +48,31 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                    await SecureStorage.SetAsync("url", result.Text);                    
-                    getRegistrationInfo(result.Text);
+                    registrationService.setRegistrationInfo(result.Text);
+                    if (registrationService.isRegistered())
+                    {
+                        displayRegistrationInfo();
+                    }
                 });
             };
         }
-        async void getRegistrationInfo(string url)
+        async void displayRegistrationInfo()
         {
-            //hacky way to get ID & Token
-            var idpos = url.IndexOf("id=");
-            var tokenpos = url.IndexOf("&token=");
-            var id = url.Substring(idpos + 3, tokenpos - idpos -3);
-            var token = url.Substring(tokenpos + 4);
-            await SecureStorage.SetAsync("id", id);
-            await SecureStorage.SetAsync("token", token);
-            registrationinfo.Text = "Dieses Gerät hat die ID " + id + " mit dem Token " + token;
-            registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
+            
+            /*registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.id + " mit dem Token " + token;
+            registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";*/
         }
-
         async void getLocation()
         {
-            try
+            /*try
             {
-                var locationService = new Services.LocationService();
+                var locationService = new LocationService();
 
                 Location location = await locationService.getLocationAsync();
                 if (location != null)
                 {
                     lblLatitude.Text = "Latitude: " + location.Latitude.ToString();
                     lblLongitude.Text = "Longitude:" + location.Longitude.ToString();
-                    lblSpeed.Text = "Speed: " + location.Speed.ToString();
-                    lblAltitude.Text = "Altitude: " + location.Altitude.ToString();
                     lblAccuracy.Text = "Accuracy: " + location.Accuracy.ToString();
                 }
             }
@@ -105,7 +87,7 @@ namespace GeoClient.Views
             catch (Exception ex)
             {
                 await DisplayAlert("Faild", ex.Message, "OK");
-            }
+            }*/
         }
     }
 }

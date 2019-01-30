@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Plugin.CurrentActivity;
+using Android.Content;
 
 namespace GeoClient.Droid
 {
@@ -20,9 +21,8 @@ namespace GeoClient.Droid
 
             base.OnCreate(savedInstanceState);
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
-            LoadApplication(new App());
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-
+            LoadApplication(new App());
 
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
