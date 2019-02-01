@@ -11,16 +11,21 @@ namespace GeoClient.Services
     {
         string sbaseUrl = "https://geo.fmd.wrk.at/endpoint/";
         string sContentType = "application/json";
-        object oRegistrationInformation;
-        public RestService(object registrationInformation)
+        string _id;
+        string _url;
+        string _token;
+
+        public RestService()
         {
-            oRegistrationInformation = registrationInformation;
         }
         public void sendPosition(Location location)
         {
+            _id = RegistrationService.Instance.getId();
+            _token = RegistrationService.Instance.getToken();
+            _url = RegistrationService.Instance.getUrl();
 
-            /*string positionsUrl = sbaseUrl + "positions/" + oRegistrationInformation.id + "?token=" + oRegistrationInformation.token;
-
+            string positionsUrl = sbaseUrl + "positions/" + _id + "?token=" + _token;
+            //Console.WriteLine(positionsUrl);
             JObject positionObject = new JObject();
 
             positionObject.Add("latitude", location.Latitude);
@@ -30,14 +35,13 @@ namespace GeoClient.Services
 
             HttpClient positionHttpClient = new HttpClient();
             var postPositionAsyncTask = positionHttpClient.PostAsync(positionsUrl, new StringContent(positionObject.ToString(), Encoding.UTF8, sContentType));
-            Console.WriteLine( positionObject.ToString());
-            Console.WriteLine($"Sending Data to Server: {positionObject.ToString()}");
+            //Console.WriteLine($"Sending Data to Server: {positionObject.ToString()}");
             postPositionAsyncTask.ContinueWith((postPositionResponse) =>
             {
-                Console.WriteLine($"Sending Data to Server: {postPositionResponse.Result.Content.ReadAsStringAsync().Result}");
+                Console.WriteLine($"Response from Server: {postPositionResponse.Result.Content.ReadAsStringAsync().Result}");
             });
             //getScope();
-            */
+            
         }
         public void getScope()
         {

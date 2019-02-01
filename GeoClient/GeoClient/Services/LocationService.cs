@@ -9,17 +9,15 @@ namespace GeoClient.Services
     class LocationService
     {
         public Location _location;
-        private object _registrationInformation; 
-        RegistrationService registrationService;
+        private RestService _restService;
         public LocationService()
         {
-            registrationService = new RegistrationService();
-            _registrationInformation = registrationService.getRegistrationInfo();
+            _restService = new RestService();
         }
 
         public async Task<Location> getLocationAsync()
         {
-            if(registrationService.isRegistered())
+            if (RegistrationService.Instance.isRegistered())
             {
                 try
                 {
@@ -27,8 +25,7 @@ namespace GeoClient.Services
                     _location = await Geolocation.GetLocationAsync(request);
                     if (_location != null)
                     {
-                        Console.WriteLine($"Timestamp: {_location.Timestamp}, Latitude: {_location.Latitude}, Longitude: {_location.Longitude}, Altitude: {_location.Altitude}");
-                        RestService restService = new RestService(_registrationInformation);
+                        _restService.sendPosition(_location);
                     }
                     return _location;
                 }

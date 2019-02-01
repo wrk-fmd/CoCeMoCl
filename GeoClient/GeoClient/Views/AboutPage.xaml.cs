@@ -11,24 +11,20 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AboutPage : ContentPage
     {
-        private string _url;
-        private string _id;
-        private string _token;
-        private RegistrationService registrationService;
-
         public AboutPage()
         {
             InitializeComponent();
-            registrationService = new RegistrationService();
         }
+
         protected override async void OnAppearing()
         {
-            if (registrationService.isRegistered())
+            if (RegistrationService.Instance.isRegistered())
             {
                 displayRegistrationInfo();
                 getLocation();
             } 
         }
+
         async void registerDevice_Clicked(object sender, EventArgs e)
         {
             #if __ANDROID__
@@ -48,8 +44,8 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                    registrationService.setRegistrationInfo(result.Text);
-                    if (registrationService.isRegistered())
+                    RegistrationService.Instance.setRegistrationInfo(result.Text);
+                    if (RegistrationService.Instance.isRegistered())
                     {
                         displayRegistrationInfo();
                     }
@@ -58,13 +54,12 @@ namespace GeoClient.Views
         }
         async void displayRegistrationInfo()
         {
-            
-            /*registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.id + " mit dem Token " + token;
-            registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";*/
+            registrationinfo.Text = "Dieses Gerät hat die ID " + RegistrationService.Instance.getId() + " mit dem Token " + RegistrationService.Instance.getToken();
+            registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
         }
         async void getLocation()
         {
-            /*try
+            try
             {
                 var locationService = new LocationService();
 
@@ -87,7 +82,7 @@ namespace GeoClient.Views
             catch (Exception ex)
             {
                 await DisplayAlert("Faild", ex.Message, "OK");
-            }*/
+            }
         }
     }
 }
