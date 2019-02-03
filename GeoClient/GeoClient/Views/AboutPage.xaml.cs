@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeoClient.Services;
+using System;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
@@ -8,31 +9,25 @@ using ZXing.Net.Mobile.Forms;
 namespace GeoClient.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AboutPage : ContentPage
+    public partial class AboutPage : ContentPage, ILocationListener
     {
-        private string _url;
-        private string _id;
-        private string _token;
+        private readonly RegistrationService _registrationService;
 
         public AboutPage()
         {
+            _registrationService = RegistrationService.Instance;
             InitializeComponent();
+            LocationService.Instance.RegisterListener(this);
         }
-        protected override async void OnAppearing()
+
+        protected override void OnAppearing()
         {
-            try
+            if (_registrationService.IsRegistered())
             {
-                var _url = await SecureStorage.GetAsync("url");
-                if (_url != null)
-                {
-                    getRegistrationInfo(_url);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Possible that device doesn't support secure storage on device.
-            }
+                DisplayRegistrationInfo();
+            } 
         }
+
         async void registerDevice_Clicked(object sender, EventArgs e)
         {
             #if __ANDROID__
@@ -52,22 +47,33 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                    await SecureStorage.SetAsync("url", result.Text);                    
-                    getRegistrationInfo(result.Text);
+                    _registrationService.SetRegistrationInfo(result.Text);
+                    if (_registrationService.IsRegistered())
+                    {
+                        DisplayRegistrationInfo();
+                    }
                 });
             };
         }
-        async void getRegistrationInfo(string url)
+
+        void DisplayRegistrationInfo()
         {
-            //hacky way to get ID & Token
-            var idpos = url.IndexOf("id=");
-            var tokenpos = url.IndexOf("&token=");
-            var id = url.Substring(idpos + 3, tokenpos - idpos -3);
-            var token = url.Substring(tokenpos + 4);
-            await SecureStorage.SetAsync("id", id);
-            await SecureStorage.SetAsync("token", token);
-            registrationinfo.Text = "Dieses Gerät hat die ID " + id + " mit dem Token " + token;
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.Id + " mit dem Token " + registrationInfo.Token;
             registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
+        }
+
+        public void LocationUpdated(Location updatedLocation)
+        {
+            if (updatedLocation != null)
+            {
+                lblLatitude.Text = "Latitude: " + updatedLocation.Latitude;
+                lblLongitude.Text = "Longitude: " + updatedLocation.Longitude;
+                lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy;
+            } else
+            {
+                Console.WriteLine("Updated location is null.");
+            }
         }
     }
 }

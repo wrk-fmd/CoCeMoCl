@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">GeoClient</string>
+  <string name="ok">OK</string>
+  <string name="notification_text">Diese App läuft im Hintergrund</string>
+  <string name="permission_location_rationale">Diese App muss im Hintergrund laufen um die aktuelle Position dieser Einheit an das Leitstellensystem zu übertragen.</string>
+</resources>
