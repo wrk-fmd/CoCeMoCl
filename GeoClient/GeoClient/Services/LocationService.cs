@@ -2,32 +2,57 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using GeoClient.Views;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace GeoClient.Services
 {
     class LocationService
     {
-        public Location _location;
-        private RestService _restService;
-        public LocationService()
+        private List<ILocationListener> _locationListeners;
+
+
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit
+        static LocationService()
         {
-            _restService = new RestService();
         }
 
-        public async Task<Location> getLocationAsync()
+        private LocationService()
         {
-            if (RegistrationService.Instance.isRegistered())
+            _locationListeners = new List<ILocationListener>();
+        }
+
+        public static LocationService Instance { get; } = new LocationService();
+
+        public void RegisterListener(ILocationListener listener)
+        {
+            Console.WriteLine("Register a new location listener.");
+            _locationListeners.Add(listener);
+        }
+
+        public void GetLocationAsync()
+        {
+
+            if (RegistrationService.Instance.IsRegistered())
             {
                 try
                 {
                     var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(1));
-                    _location = await Geolocation.GetLocationAsync(request);
-                    if (_location != null)
+                    Device.BeginInvokeOnMainThread(async () =>
                     {
-                        _restService.sendPosition(_location);
-                    }
-                    return _location;
+                        Console.WriteLine("Request location from device.");
+
+                        Location location = await Geolocation.GetLocationAsync(request);
+
+                        if (location != null)
+                        {
+                            Console.WriteLine("Inform all listeners about updated location.");
+                            _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
+                        }
+                    });
+                
                 }
                 catch (FeatureNotSupportedException fnsEx)
                 {
@@ -42,7 +67,6 @@ namespace GeoClient.Services
                     Console.WriteLine(ex.Message);
                 }
             }
-            return null;
         }
     }
 }

@@ -9,19 +9,20 @@ using ZXing.Net.Mobile.Forms;
 namespace GeoClient.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AboutPage : ContentPage
+    public partial class AboutPage : ContentPage, ILocationListener
     {
+
         public AboutPage()
         {
             InitializeComponent();
+            LocationService.Instance.RegisterListener(this);
         }
 
-        protected override async void OnAppearing()
+        protected override void OnAppearing()
         {
-            if (RegistrationService.Instance.isRegistered())
+            if (RegistrationService.Instance.IsRegistered())
             {
                 displayRegistrationInfo();
-                getLocation();
             } 
         }
 
@@ -44,44 +45,31 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                    RegistrationService.Instance.setRegistrationInfo(result.Text);
-                    if (RegistrationService.Instance.isRegistered())
+                    RegistrationService.Instance.SetRegistrationInfo(result.Text);
+                    if (RegistrationService.Instance.IsRegistered())
                     {
                         displayRegistrationInfo();
                     }
                 });
             };
         }
-        async void displayRegistrationInfo()
+
+        void displayRegistrationInfo()
         {
-            registrationinfo.Text = "Dieses Gerät hat die ID " + RegistrationService.Instance.getId() + " mit dem Token " + RegistrationService.Instance.getToken();
+            registrationinfo.Text = "Dieses Gerät hat die ID " + RegistrationService.Instance.GetId() + " mit dem Token " + RegistrationService.Instance.GetToken();
             registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
         }
-        async void getLocation()
-        {
-            try
-            {
-                var locationService = new LocationService();
 
-                Location location = await locationService.getLocationAsync();
-                if (location != null)
-                {
-                    lblLatitude.Text = "Latitude: " + location.Latitude.ToString();
-                    lblLongitude.Text = "Longitude:" + location.Longitude.ToString();
-                    lblAccuracy.Text = "Accuracy: " + location.Accuracy.ToString();
-                }
-            }
-            catch (FeatureNotSupportedException fnsEx)
+        public void LocationUpdated(Location updatedLocation)
+        {
+            if (updatedLocation != null)
             {
-                await DisplayAlert("Faild", fnsEx.Message, "OK");
-            }
-            catch (PermissionException pEx)
+                lblLatitude.Text = "Latitude: " + updatedLocation.Latitude.ToString();
+                lblLongitude.Text = "Longitude:" + updatedLocation.Longitude.ToString();
+                lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy.ToString();
+            } else
             {
-                await DisplayAlert("Faild", pEx.Message, "OK");
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Faild", ex.Message, "OK");
+                Console.WriteLine("Updated location is null.");
             }
         }
     }

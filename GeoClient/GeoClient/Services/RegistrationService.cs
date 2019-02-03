@@ -8,12 +8,9 @@ namespace GeoClient.Services
 {
     public sealed class RegistrationService
     {
-        private static readonly RegistrationService instance = new RegistrationService();
-
         public string _url;
         public string _id;
         public string _token;
-        private string _isRegistered;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -25,27 +22,22 @@ namespace GeoClient.Services
         {
         }
 
-        public static RegistrationService Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
-        public string getUrl()
+        public static RegistrationService Instance { get; } = new RegistrationService();
+
+        public string GetUrl()
         {
             return _url;
         }
-        public string getId()
+        public string GetId()
         {
             return _id;
         }  
-        public string getToken()
+        public string GetToken()
         {
             return _token; 
         }
         
-        public bool isRegistered()
+        public bool IsRegistered()
         {
             if (_url != null)
             {
@@ -54,7 +46,7 @@ namespace GeoClient.Services
             return false;
         }
 
-        public async void setRegistrationInfo(string url)
+        public async void SetRegistrationInfo(string url)
         {
             await SecureStorage.SetAsync("url", url);
             
@@ -71,7 +63,7 @@ namespace GeoClient.Services
                 _token = token;
             }
         }
-        public async Task<object> getRegistrationInfo()
+        public async Task<object> GetRegistrationInfo()
         {
             var _url = await SecureStorage.GetAsync("url");
             var _id = await SecureStorage.GetAsync("id");

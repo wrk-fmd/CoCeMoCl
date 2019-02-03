@@ -12,18 +12,20 @@ namespace GeoClient
 
     public partial class App : Application
     {
-        private LocationService locationService;
-        private Location _location; 
         public App()
         {
             InitializeComponent();
             MainPage = new MainPage();
-            locationService = new LocationService();
-            Device.StartTimer(TimeSpan.FromSeconds(1), () => {
-                Task.Factory.StartNew(async () =>
+
+            RestService restService = new RestService();
+            LocationService.Instance.RegisterListener(restService);
+
+            Device.StartTimer(TimeSpan.FromSeconds(10), () => {
+                Task.Factory.StartNew(() =>
                 {
-                    var location = await locationService.getLocationAsync();
+                    LocationService.Instance.GetLocationAsync();
                 });
+
                 return shallPollLocation();
             });
         }

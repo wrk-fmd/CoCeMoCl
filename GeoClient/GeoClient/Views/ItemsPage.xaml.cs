@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using GeoClient.Models;
+using GeoClient.ViewModels;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using GeoClient.Models;
-using GeoClient.Views;
-using GeoClient.ViewModels;
-using Xamarin.Essentials;
 
 namespace GeoClient.Views
 {

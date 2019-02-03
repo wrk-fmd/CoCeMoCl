@@ -1,49 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Net.Http;
 using System.Text;
-using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 
 namespace GeoClient.Services
 {
-    public class RestService
+    public class RestService : ILocationListener
     {
-        string sbaseUrl = "https://geo.fmd.wrk.at/endpoint/";
-        string sContentType = "application/json";
-        string _id;
-        string _url;
-        string _token;
+        private readonly string sbaseUrl = "https://geo.fmd.wrk.at/endpoint/";
+        private readonly string sContentType = "application/json";
+
+        private readonly RegistrationService _registrationService;
+        private readonly HttpClient _positionHttpClient;
 
         public RestService()
         {
+            _registrationService = RegistrationService.Instance;
+            _positionHttpClient = new HttpClient();
         }
-        public void sendPosition(Location location)
+
+        public void LocationUpdated(Location updatedLocation)
         {
-            _id = RegistrationService.Instance.getId();
-            _token = RegistrationService.Instance.getToken();
-            _url = RegistrationService.Instance.getUrl();
+            SendPosition(updatedLocation);
+        }
 
-            string positionsUrl = sbaseUrl + "positions/" + _id + "?token=" + _token;
+        private void SendPosition(Location location)
+        {
+            string id = RegistrationService.Instance.GetId();
+            string token = RegistrationService.Instance.GetToken();
+            string url = RegistrationService.Instance.GetUrl();
+
+            string positionsUrl = sbaseUrl + "positions/" + id + "?token=" + token;
             //Console.WriteLine(positionsUrl);
-            JObject positionObject = new JObject();
+            JObject positionObject = new JObject
+            {
+                { "latitude", location.Latitude },
+                { "longitude", location.Longitude },
+                { "timestamp", DateTime.UtcNow.ToString("s") + "Z" },
+                { "accuracy", location.Accuracy }
+            };
 
-            positionObject.Add("latitude", location.Latitude);
-            positionObject.Add("longitude", location.Longitude);
-            positionObject.Add("timestamp", DateTime.UtcNow.ToString("s") + "Z");
-            positionObject.Add("accuracy", location.Accuracy);
-
-            HttpClient positionHttpClient = new HttpClient();
-            var postPositionAsyncTask = positionHttpClient.PostAsync(positionsUrl, new StringContent(positionObject.ToString(), Encoding.UTF8, sContentType));
-            //Console.WriteLine($"Sending Data to Server: {positionObject.ToString()}");
+            Console.WriteLine("Sending Data to Server: " + positionObject.ToString());
+            Task<HttpResponseMessage> postPositionAsyncTask = _positionHttpClient.PostAsync(positionsUrl, new StringContent(positionObject.ToString(), Encoding.UTF8, sContentType));
             postPositionAsyncTask.ContinueWith((postPositionResponse) =>
             {
-                Console.WriteLine($"Response from Server: {postPositionResponse.Result.Content.ReadAsStringAsync().Result}");
+                String responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;
+                String statusString = postPositionResponse.Status.ToString();
+                Console.WriteLine("Response from Server: Staus: " + statusString + ", response: " + responseString);
             });
-            //getScope();
-            
         }
-        public void getScope()
+
+        public void GetScope()
         {
             /*string scopeUrl = sbaseUrl + "scope/" + id + "?token=" + token;
             HttpClient scopeHttpClient = new HttpClient();
