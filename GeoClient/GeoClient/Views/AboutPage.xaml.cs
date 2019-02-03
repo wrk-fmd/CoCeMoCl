@@ -11,18 +11,20 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class AboutPage : ContentPage, ILocationListener
     {
+        private readonly RegistrationService _registrationService;
 
         public AboutPage()
         {
+            _registrationService = RegistrationService.Instance;
             InitializeComponent();
             LocationService.Instance.RegisterListener(this);
         }
 
         protected override void OnAppearing()
         {
-            if (RegistrationService.Instance.IsRegistered())
+            if (_registrationService.IsRegistered())
             {
-                displayRegistrationInfo();
+                DisplayRegistrationInfo();
             } 
         }
 
@@ -45,18 +47,19 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                    RegistrationService.Instance.SetRegistrationInfo(result.Text);
-                    if (RegistrationService.Instance.IsRegistered())
+                    _registrationService.SetRegistrationInfo(result.Text);
+                    if (_registrationService.IsRegistered())
                     {
-                        displayRegistrationInfo();
+                        DisplayRegistrationInfo();
                     }
                 });
             };
         }
 
-        void displayRegistrationInfo()
+        void DisplayRegistrationInfo()
         {
-            registrationinfo.Text = "Dieses Gerät hat die ID " + RegistrationService.Instance.GetId() + " mit dem Token " + RegistrationService.Instance.GetToken();
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.Id + " mit dem Token " + registrationInfo.Token;
             registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
         }
 
@@ -64,9 +67,9 @@ namespace GeoClient.Views
         {
             if (updatedLocation != null)
             {
-                lblLatitude.Text = "Latitude: " + updatedLocation.Latitude.ToString();
-                lblLongitude.Text = "Longitude:" + updatedLocation.Longitude.ToString();
-                lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy.ToString();
+                lblLatitude.Text = "Latitude: " + updatedLocation.Latitude;
+                lblLongitude.Text = "Longitude: " + updatedLocation.Longitude;
+                lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy;
             } else
             {
                 Console.WriteLine("Updated location is null.");

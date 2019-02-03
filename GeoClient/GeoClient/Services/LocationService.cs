@@ -10,8 +10,8 @@ namespace GeoClient.Services
 {
     class LocationService
     {
-        private List<ILocationListener> _locationListeners;
-
+        private readonly List<ILocationListener> _locationListeners;
+        private readonly RegistrationService _registrationService;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -21,6 +21,7 @@ namespace GeoClient.Services
 
         private LocationService()
         {
+            _registrationService = RegistrationService.Instance;
             _locationListeners = new List<ILocationListener>();
         }
 
@@ -34,38 +35,40 @@ namespace GeoClient.Services
 
         public void GetLocationAsync()
         {
-
-            if (RegistrationService.Instance.IsRegistered())
+            if (!_registrationService.IsRegistered())
             {
-                try
+                Console.WriteLine("There is no unit registered. Reading location data is skipped.");
+                return;
+            }
+
+            try
+            {
+                var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(1));
+                Device.BeginInvokeOnMainThread(async () =>
                 {
-                    var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(1));
-                    Device.BeginInvokeOnMainThread(async () =>
+                    Console.WriteLine("Request location from device.");
+
+                    Location location = await Geolocation.GetLocationAsync(request);
+
+                    if (location != null)
                     {
-                        Console.WriteLine("Request location from device.");
-
-                        Location location = await Geolocation.GetLocationAsync(request);
-
-                        if (location != null)
-                        {
-                            Console.WriteLine("Inform all listeners about updated location.");
-                            _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
-                        }
-                    });
+                        Console.WriteLine("Inform all listeners about updated location.");
+                        _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
+                    }
+                });
                 
-                }
-                catch (FeatureNotSupportedException fnsEx)
-                {
-                    Console.WriteLine(fnsEx.Message);
-                }
-                catch (PermissionException pEx)
-                {
-                    Console.WriteLine(pEx.Message);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
+            }
+            catch (FeatureNotSupportedException fnsEx)
+            {
+                Console.WriteLine(fnsEx.Message);
+            }
+            catch (PermissionException pEx)
+            {
+                Console.WriteLine(pEx.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
     }

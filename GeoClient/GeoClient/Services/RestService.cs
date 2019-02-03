@@ -9,8 +9,8 @@ namespace GeoClient.Services
 {
     public class RestService : ILocationListener
     {
-        private readonly string sbaseUrl = "https://geo.fmd.wrk.at/endpoint/";
-        private readonly string sContentType = "application/json";
+        private readonly string _sBaseUrl = "https://geo.fmd.wrk.at/endpoint/";
+        private const string JsonContentType = "application/json";
 
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
@@ -28,11 +28,9 @@ namespace GeoClient.Services
 
         private void SendPosition(Location location)
         {
-            string id = RegistrationService.Instance.GetId();
-            string token = RegistrationService.Instance.GetToken();
-            string url = RegistrationService.Instance.GetUrl();
+            var registrationInfo = _registrationService.GetRegistrationInfo();
 
-            string positionsUrl = sbaseUrl + "positions/" + id + "?token=" + token;
+            string positionsUrl = _sBaseUrl + "positions/" + registrationInfo.Id + "?token=" + registrationInfo.Token;
             //Console.WriteLine(positionsUrl);
             JObject positionObject = new JObject
             {
@@ -43,7 +41,7 @@ namespace GeoClient.Services
             };
 
             Console.WriteLine("Sending Data to Server: " + positionObject.ToString());
-            Task<HttpResponseMessage> postPositionAsyncTask = _positionHttpClient.PostAsync(positionsUrl, new StringContent(positionObject.ToString(), Encoding.UTF8, sContentType));
+            Task<HttpResponseMessage> postPositionAsyncTask = _positionHttpClient.PostAsync(positionsUrl, new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
             postPositionAsyncTask.ContinueWith((postPositionResponse) =>
             {
                 String responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;

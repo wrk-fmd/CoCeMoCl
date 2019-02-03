@@ -1,15 +1,14 @@
-﻿using System;
+﻿using GeoClient.Services;
+using GeoClient.Views;
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using GeoClient.Views;
-using Xamarin.Essentials;
-using GeoClient.Services;
-using System.Threading.Tasks;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
+
 namespace GeoClient
 {
-
     public partial class App : Application
     {
         public App()
@@ -20,19 +19,17 @@ namespace GeoClient
             RestService restService = new RestService();
             LocationService.Instance.RegisterListener(restService);
 
-            Device.StartTimer(TimeSpan.FromSeconds(10), () => {
-                Task.Factory.StartNew(() =>
-                {
-                    LocationService.Instance.GetLocationAsync();
-                });
+            Device.StartTimer(TimeSpan.FromSeconds(10), () =>
+            {
+                Task.Factory.StartNew(() => { LocationService.Instance.GetLocationAsync(); });
 
-                return shallPollLocation();
+                return ShallPollLocation();
             });
         }
 
         protected override async void OnStart()
         {
-            // Handle when your app starts
+            RegistrationService.Instance.LoadRegistrationInfo();
         }
 
         protected override async void OnSleep()
@@ -44,8 +41,9 @@ namespace GeoClient
         {
             // Handle when your app resumes
         }
-        protected bool shallPollLocation()
-        {  
+
+        protected bool ShallPollLocation()
+        {
             return true;
         }
     }
