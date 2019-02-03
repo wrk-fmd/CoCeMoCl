@@ -1,13 +1,7 @@
-﻿using System;
-
+﻿
 using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
-using Plugin.CurrentActivity;
-using Android.Content;
 
 namespace GeoClient.Droid
 {
@@ -25,6 +19,7 @@ namespace GeoClient.Droid
             LoadApplication(new App());
 
         }
+
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Android.Content.PM.Permission[] grantResults)
         {
             Plugin.Permissions.PermissionsImplementation.Current.OnRequestPermissionsResult(requestCode, permissions, grantResults);

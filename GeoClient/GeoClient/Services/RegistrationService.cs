@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
-using GeoClient.Models;
+﻿using GeoClient.Models;
 using Xamarin.Essentials;
 
 namespace GeoClient.Services
@@ -23,7 +18,7 @@ namespace GeoClient.Services
         }
 
         public static RegistrationService Instance { get; } = new RegistrationService();
-        
+
         public bool IsRegistered()
         {
             return _cachedRegistrationInfo != null;

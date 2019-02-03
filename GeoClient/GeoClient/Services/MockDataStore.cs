@@ -8,59 +8,55 @@ namespace GeoClient.Services
 {
     public class MockDataStore : IDataStore<Item>
     {
-        List<Item> items;
+        readonly List<Item> _items;
 
         public MockDataStore()
         {
-            items = new List<Item>();
+            _items = new List<Item>();
             var mockItems = new List<Item>
             {
-                new Item { Id = Guid.NewGuid().ToString(), Text = "First item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Second item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Third item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fourth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Fifth item", Description="This is an item description." },
-                new Item { Id = Guid.NewGuid().ToString(), Text = "Sixth item", Description="This is an item description." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Demo incident", Description="This is a placeholder for an incident." },
+                new Item { Id = Guid.NewGuid().ToString(), Text = "Another active incident", Description="Another incident would be shown here." }
             };
 
             foreach (var item in mockItems)
             {
-                items.Add(item);
+                _items.Add(item);
             }
         }
 
         public async Task<bool> AddItemAsync(Item item)
         {
-            items.Add(item);
+            _items.Add(item);
 
             return await Task.FromResult(true);
         }
 
         public async Task<bool> UpdateItemAsync(Item item)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
-            items.Remove(oldItem);
-            items.Add(item);
+            var oldItem = _items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
+            _items.Remove(oldItem);
+            _items.Add(item);
 
             return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteItemAsync(string id)
         {
-            var oldItem = items.Where((Item arg) => arg.Id == id).FirstOrDefault();
-            items.Remove(oldItem);
+            var oldItem = _items.Where((Item arg) => arg.Id == id).FirstOrDefault();
+            _items.Remove(oldItem);
 
             return await Task.FromResult(true);
         }
 
         public async Task<Item> GetItemAsync(string id)
         {
-            return await Task.FromResult(items.FirstOrDefault(s => s.Id == id));
+            return await Task.FromResult(_items.FirstOrDefault(s => s.Id == id));
         }
 
         public async Task<IEnumerable<Item>> GetItemsAsync(bool forceRefresh = false)
         {
-            return await Task.FromResult(items);
+            return await Task.FromResult(_items);
         }
     }
 }

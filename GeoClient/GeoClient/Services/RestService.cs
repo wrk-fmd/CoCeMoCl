@@ -9,7 +9,8 @@ namespace GeoClient.Services
 {
     public class RestService : ILocationListener
     {
-        private readonly string _sBaseUrl = "https://geo.fmd.wrk.at/endpoint/";
+        public const string ServerBaseUrl = "https://geo.fmd.wrk.at/";
+        private const string EndpointUri = "endpoint/positions/";
         private const string JsonContentType = "application/json";
 
         private readonly RegistrationService _registrationService;
@@ -30,7 +31,7 @@ namespace GeoClient.Services
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
 
-            string positionsUrl = _sBaseUrl + "positions/" + registrationInfo.Id + "?token=" + registrationInfo.Token;
+            string positionsUrl = ServerBaseUrl + EndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
             //Console.WriteLine(positionsUrl);
             JObject positionObject = new JObject
             {

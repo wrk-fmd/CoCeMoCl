@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using GeoClient.Views;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -56,7 +53,7 @@ namespace GeoClient.Services
                         _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
                     }
                 });
-                
+
             }
             catch (FeatureNotSupportedException fnsEx)
             {

@@ -8,7 +8,7 @@ namespace GeoClient.Services
         public static RegistrationInfo ParseRegistrationInfo(string url)
         {
             RegistrationInfo info = null;
-            if (url != null)
+            if (url != null && url.StartsWith(RestService.ServerBaseUrl))
             {
                 var startIndexOfId = url.IndexOf("id=", StringComparison.Ordinal) + 3;
                 var indexOfToken = url.IndexOf("&token=", StringComparison.Ordinal);
@@ -20,7 +20,7 @@ namespace GeoClient.Services
             }
             else
             {
-                Console.WriteLine("Cannot parse registration info from null-URL.");
+                Console.WriteLine("Cannot parse registration info from invalid URL. URL: " + url);
             }
 
             return info;

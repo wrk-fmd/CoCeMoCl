@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using GeoClient.Models;
 
 namespace GeoClient.ViewModels

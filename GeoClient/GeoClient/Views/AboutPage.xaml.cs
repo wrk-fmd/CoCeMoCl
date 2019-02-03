@@ -2,7 +2,6 @@
 using System;
 using Xamarin.Essentials;
 using Xamarin.Forms;
-using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
 
@@ -25,15 +24,15 @@ namespace GeoClient.Views
             if (_registrationService.IsRegistered())
             {
                 DisplayRegistrationInfo();
-            } 
+            }
         }
 
         async void registerDevice_Clicked(object sender, EventArgs e)
         {
-            #if __ANDROID__
+#if __ANDROID__
 	            // Initialize the scanner first so it can track the current context
 	            MobileBarcodeScanner.Initialize (Application);
-            #endif
+#endif
             var scanPage = new ZXingScannerPage();
             // Navigate to our scanner page
             await Navigation.PushAsync(scanPage);
@@ -69,8 +68,11 @@ namespace GeoClient.Views
             {
                 lblLatitude.Text = "Latitude: " + updatedLocation.Latitude;
                 lblLongitude.Text = "Longitude: " + updatedLocation.Longitude;
+                lblSpeed.Text = "Speed: " + updatedLocation.Speed;
                 lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy;
-            } else
+                lblAltitude.Text = "Altitude: " + updatedLocation.Altitude;
+            }
+            else
             {
                 Console.WriteLine("Updated location is null.");
             }
