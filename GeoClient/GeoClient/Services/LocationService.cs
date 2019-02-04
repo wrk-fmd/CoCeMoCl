@@ -30,7 +30,7 @@ namespace GeoClient.Services
             _locationListeners.Add(listener);
         }
 
-        public void GetLocationAsync()
+        public void TriggerLocationUpdateAsync()
         {
             if (!_registrationService.IsRegistered())
             {

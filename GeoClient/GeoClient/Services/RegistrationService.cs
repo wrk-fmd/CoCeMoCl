@@ -1,4 +1,5 @@
-﻿using GeoClient.Models;
+﻿using System;
+using GeoClient.Models;
 using Xamarin.Essentials;
 
 namespace GeoClient.Services
@@ -35,11 +36,6 @@ namespace GeoClient.Services
             return _cachedRegistrationInfo;
         }
 
-        private void ParseRegistrationInfoFromUrl(string url)
-        {
-            _cachedRegistrationInfo = RegistrationInfoParser.ParseRegistrationInfo(url);
-        }
-
         public async void LoadRegistrationInfo()
         {
             var loadedUrl = await SecureStorage.GetAsync("url");
@@ -47,6 +43,38 @@ namespace GeoClient.Services
             {
                 ParseRegistrationInfoFromUrl(loadedUrl);
             }
+        }
+
+        private void ParseRegistrationInfoFromUrl(string url)
+        {
+            var wasRegisteredBefore = IsRegistered();
+            _cachedRegistrationInfo = RegistrationInfoParser.ParseRegistrationInfo(url);
+            var isRegisteredAfterUpdate = IsRegistered();
+
+            HandleRegistrationStatusChange(wasRegisteredBefore, isRegisteredAfterUpdate);
+        }
+
+        private static void HandleRegistrationStatusChange(bool wasRegisteredBefore, bool isRegisteredAfterUpdate)
+        {
+            if (!wasRegisteredBefore && isRegisteredAfterUpdate)
+            {
+                ServerRegistered();
+            }
+            else if (wasRegisteredBefore && !isRegisteredAfterUpdate)
+            {
+                ServerUnregistered();
+            }
+        }
+
+        private static void ServerRegistered()
+        {
+            Console.WriteLine("URL for geo server is now registered.");
+            LocationSender.Instance.StartTimer();
+        }
+
+        private static void ServerUnregistered()
+        {
+            Console.WriteLine("URL for geo server is no longer registered.");
         }
     }
 }
