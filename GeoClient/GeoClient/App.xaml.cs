@@ -16,15 +16,8 @@ namespace GeoClient
             InitializeComponent();
             MainPage = new MainPage();
 
-            RestService restService = new RestService();
+            var restService = new RestService();
             LocationService.Instance.RegisterListener(restService);
-
-            Device.StartTimer(TimeSpan.FromSeconds(10), () =>
-            {
-                Task.Factory.StartNew(() => { LocationService.Instance.GetLocationAsync(); });
-
-                return ShallPollLocation();
-            });
         }
 
         protected override async void OnStart()
@@ -40,11 +33,6 @@ namespace GeoClient
         protected override async void OnResume()
         {
             // Handle when your app resumes
-        }
-
-        protected bool ShallPollLocation()
-        {
-            return true;
         }
     }
 }

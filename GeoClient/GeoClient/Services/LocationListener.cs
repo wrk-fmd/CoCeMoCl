@@ -2,7 +2,7 @@
 
 namespace GeoClient.Services
 {
-    interface ILocationListener
+    public interface ILocationListener
     {
         void LocationUpdated(Location updatedLocation);
     }

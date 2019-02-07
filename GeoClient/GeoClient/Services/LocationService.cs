@@ -5,8 +5,10 @@ using Xamarin.Forms;
 
 namespace GeoClient.Services
 {
-    class LocationService
+    public class LocationService
     {
+        private readonly TimeSpan _timeoutToWaitForLocation = TimeSpan.FromSeconds(30);
+
         private readonly List<ILocationListener> _locationListeners;
         private readonly RegistrationService _registrationService;
 
@@ -30,7 +32,7 @@ namespace GeoClient.Services
             _locationListeners.Add(listener);
         }
 
-        public void GetLocationAsync()
+        public void GetLocationSync()
         {
             if (!_registrationService.IsRegistered())
             {
@@ -40,33 +42,30 @@ namespace GeoClient.Services
 
             try
             {
-                var request = new GeolocationRequest(GeolocationAccuracy.High, TimeSpan.FromSeconds(1));
+                var request = new GeolocationRequest(GeolocationAccuracy.High, _timeoutToWaitForLocation);
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     Console.WriteLine("Request location from device.");
 
-                    Location location = await Geolocation.GetLocationAsync(request);
+                    var location = await Geolocation.GetLocationAsync(request);
 
                     if (location != null)
-                    {
-                        Console.WriteLine("Inform all listeners about updated location.");
-                        _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
-                    }
+                        InformListeners(location);
+                    else
+                        Console.WriteLine("GeoLocation did not return a location.");
                 });
 
-            }
-            catch (FeatureNotSupportedException fnsEx)
-            {
-                Console.WriteLine(fnsEx.Message);
-            }
-            catch (PermissionException pEx)
-            {
-                Console.WriteLine(pEx.Message);
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private void InformListeners(Location location)
+        {
+            Console.WriteLine("Inform all listeners about updated location.");
+            _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
         }
     }
 }
