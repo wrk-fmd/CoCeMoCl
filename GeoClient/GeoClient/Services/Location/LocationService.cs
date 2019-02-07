@@ -1,6 +1,5 @@
 ﻿using GeoClient.Services.Registration;
 using System;
-using System.Collections.Generic;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -10,8 +9,8 @@ namespace GeoClient.Services.Location
     {
         private readonly TimeSpan _timeoutToWaitForLocation = TimeSpan.FromSeconds(30);
 
-        private readonly List<ILocationListener> _locationListeners;
         private readonly RegistrationService _registrationService;
+        private readonly LocationChangeRegistry _locationChangeRegistry;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -22,16 +21,10 @@ namespace GeoClient.Services.Location
         private LocationService()
         {
             _registrationService = RegistrationService.Instance;
-            _locationListeners = new List<ILocationListener>();
+            _locationChangeRegistry = LocationChangeRegistry.Instance;
         }
 
         public static LocationService Instance { get; } = new LocationService();
-
-        public void RegisterListener(ILocationListener listener)
-        {
-            Console.WriteLine("Register a new location listener.");
-            _locationListeners.Add(listener);
-        }
 
         public void TriggerLocationAsync()
         {
@@ -65,8 +58,7 @@ namespace GeoClient.Services.Location
 
         private void InformListeners(Xamarin.Essentials.Location location)
         {
-            Console.WriteLine("Inform all listeners about updated location.");
-            _locationListeners.ForEach((listener) => listener.LocationUpdated(location));
+            _locationChangeRegistry.LocationUpdated(location);
         }
     }
 }

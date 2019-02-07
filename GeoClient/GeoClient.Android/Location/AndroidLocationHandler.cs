@@ -20,7 +20,7 @@ namespace GeoClient.Droid.Location
         public AndroidLocationHandler(Context context)
         {
             _context = context;
-            RegistrationService.Instance.registerListener(this);
+            RegistrationService.Instance.RegisterListener(this);
         }
 
         public void GeoServerRegistered()

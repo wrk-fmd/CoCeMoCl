@@ -18,7 +18,7 @@ namespace GeoClient.Views
         {
             _registrationService = RegistrationService.Instance;
             InitializeComponent();
-            LocationService.Instance.RegisterListener(this);
+            LocationChangeRegistry.Instance.RegisterListener(this);
         }
 
         protected override void OnAppearing()

@@ -24,7 +24,7 @@ namespace GeoClient.Services.Registration
 
         public static RegistrationService Instance { get; } = new RegistrationService();
 
-        public void registerListener(IGeoRegistrationListener listener)
+        public void RegisterListener(IGeoRegistrationListener listener)
         {
             _registrationListeners.Add(listener);
         }

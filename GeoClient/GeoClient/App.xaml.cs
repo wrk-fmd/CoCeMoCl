@@ -20,7 +20,7 @@ namespace GeoClient
             MainPage = new MainPage();
 
             var restService = new RestService();
-            LocationService.Instance.RegisterListener(restService);
+            LocationChangeRegistry.Instance.RegisterListener(restService);
         }
 
         protected override void OnStart()
