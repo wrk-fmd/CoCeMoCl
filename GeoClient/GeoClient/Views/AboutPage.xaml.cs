@@ -1,5 +1,7 @@
 ﻿using GeoClient.Services;
 using System;
+using GeoClient.Services.Location;
+using GeoClient.Services.Registration;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;

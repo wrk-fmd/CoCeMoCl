@@ -4,6 +4,7 @@ using Android.OS;
 using Android.Runtime;
 using Android.Util;
 using GeoClient.Services;
+using GeoClient.Services.Registration;
 using static Android.Content.Context;
 
 namespace GeoClient.Droid.Location

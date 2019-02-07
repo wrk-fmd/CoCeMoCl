@@ -1,7 +1,8 @@
-﻿using System;
-using GeoClient.Models;
+﻿using GeoClient.Models;
+using System;
+using GeoClient.Services.Boundary;
 
-namespace GeoClient.Services
+namespace GeoClient.Services.Registration
 {
     public class RegistrationInfoParser
     {

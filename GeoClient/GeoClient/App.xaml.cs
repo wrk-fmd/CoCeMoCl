@@ -2,6 +2,9 @@
 using GeoClient.Views;
 using System;
 using System.Threading.Tasks;
+using GeoClient.Services.Boundary;
+using GeoClient.Services.Location;
+using GeoClient.Services.Registration;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -20,18 +23,21 @@ namespace GeoClient
             LocationService.Instance.RegisterListener(restService);
         }
 
-        protected override async void OnStart()
+        protected override void OnStart()
         {
+            Console.WriteLine("Starting GeoClient application.");
             RegistrationService.Instance.LoadRegistrationInfo();
         }
 
-        protected override async void OnSleep()
+        protected override void OnSleep()
         {
+            Console.WriteLine("GeoClient is going to sleep...");
             // Handle when your app sleeps
         }
 
-        protected override async void OnResume()
+        protected override void OnResume()
         {
+            Console.WriteLine("Resuming GeoClient.");
             // Handle when your app resumes
         }
     }

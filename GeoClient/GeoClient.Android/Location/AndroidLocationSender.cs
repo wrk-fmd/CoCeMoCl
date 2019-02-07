@@ -2,6 +2,7 @@
 using Android.OS;
 using Android.Util;
 using GeoClient.Services;
+using GeoClient.Services.Location;
 
 namespace GeoClient.Droid.Location
 {
@@ -19,7 +20,7 @@ namespace GeoClient.Droid.Location
             wakeLock.Acquire();
 
             Log.Debug(LoggerTag, "Running code with wake lock.");
-            LocationService.Instance.GetLocationSync();
+            LocationService.Instance.TriggerLocationAsync();
 
             Log.Debug(LoggerTag, "Releasing wake lock.");
             wakeLock.Release();

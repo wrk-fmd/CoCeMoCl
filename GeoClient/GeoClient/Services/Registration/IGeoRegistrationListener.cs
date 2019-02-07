@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoClient.Services
+﻿namespace GeoClient.Services.Registration
 {
     public interface IGeoRegistrationListener
     {

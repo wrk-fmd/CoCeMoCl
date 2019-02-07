@@ -1,7 +1,6 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using Android.App;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using Android.App;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -9,9 +8,9 @@ using Android.App;
 [assembly: AssemblyTitle("GeoClient.Android")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("WRK BT FMD")]
 [assembly: AssemblyProduct("GeoClient.Android")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCopyright("Copyright © WRK BT FMD 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
