@@ -69,8 +69,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Location\AndroidLocationHandler.cs" />
-    <Compile Include="Location\AndroidLocationSender.cs" />
+    <Compile Include="Location\AndroidLocationService.cs" />
+    <Compile Include="Location\RestServiceWakeLock.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

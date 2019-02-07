@@ -10,7 +10,7 @@ using ZXing.Net.Mobile.Forms;
 namespace GeoClient.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AboutPage : ContentPage, ILocationListener
+    public partial class AboutPage : ContentPage, ILocationUpdateListener
     {
         private readonly RegistrationService _registrationService;
 

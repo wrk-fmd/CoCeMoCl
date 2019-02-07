@@ -4,9 +4,9 @@ using System.Text;
 
 namespace GeoClient.Services.Location
 {
-    public class LocationChangeRegistry : ILocationListener
+    public class LocationChangeRegistry : ILocationUpdateListener
     {
-        private readonly List<ILocationListener> _locationListeners;
+        private readonly List<ILocationUpdateListener> _locationListeners;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -16,12 +16,12 @@ namespace GeoClient.Services.Location
 
         private LocationChangeRegistry()
         {
-            _locationListeners = new List<ILocationListener>();
+            _locationListeners = new List<ILocationUpdateListener>();
         }
 
         public static LocationChangeRegistry Instance { get; } = new LocationChangeRegistry();
 
-        public void RegisterListener(ILocationListener listener)
+        public void RegisterListener(ILocationUpdateListener listener)
         {
             Console.WriteLine("Registering a new location listener.");
             _locationListeners.Add(listener);

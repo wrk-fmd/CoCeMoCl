@@ -19,8 +19,7 @@ namespace GeoClient
             InitializeComponent();
             MainPage = new MainPage();
 
-            var restService = new RestService();
-            LocationChangeRegistry.Instance.RegisterListener(restService);
+            LocationChangeRegistry.Instance.RegisterListener(RestService.Instance);
         }
 
         protected override void OnStart()
