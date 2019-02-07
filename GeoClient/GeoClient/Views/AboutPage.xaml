@@ -45,7 +45,7 @@
                     <Label.FormattedText>
                         <FormattedString>
                             <FormattedString.Spans>
-                                <Span x:Name="registrationinfo" Text="Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt" />
+                                <Span x:Name="registrationinfo" Text="Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt." />
                             </FormattedString.Spans>
                         </FormattedString>
                     </Label.FormattedText>

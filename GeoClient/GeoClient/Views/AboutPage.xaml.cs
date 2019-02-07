@@ -47,17 +47,28 @@ namespace GeoClient.Views
                 Device.BeginInvokeOnMainThread(async () =>
                 {
                     await Navigation.PopAsync();
-                    await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
                     _registrationService.SetRegistrationInfo(result.Text);
                     if (_registrationService.IsRegistered())
                     {
+                        await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
                         DisplayRegistrationInfo();
+                    }
+                    else
+                    {
+                        await DisplayAlert("Registrierung fehlgeschlagen", "Es wurde keine gültige Registrierungs URL gefunden.", "OK");
+                        ResetRegistrationInfo();
                     }
                 });
             };
         }
 
-        void DisplayRegistrationInfo()
+        private void ResetRegistrationInfo()
+        {
+            registrationinfo.Text = "Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt.";
+            registrationButton.Text = "Jetzt registrieren";
+        }
+
+        private void DisplayRegistrationInfo()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
             registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.Id + " mit dem Token " + registrationInfo.Token;
@@ -77,6 +88,11 @@ namespace GeoClient.Views
             else
             {
                 Console.WriteLine("Updated location is null.");
+                lblLatitude.Text = "Latitude: N/A";
+                lblLongitude.Text = "Longitude: N/A";
+                lblSpeed.Text = "Speed: N/A";
+                lblAccuracy.Text = "Accuracy: N/A";
+                lblAltitude.Text = "Altitude: N/A";
             }
         }
     }
