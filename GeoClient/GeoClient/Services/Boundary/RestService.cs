@@ -4,8 +4,9 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
+using GeoClient.Services.Utils;
 
 namespace GeoClient.Services.Boundary
 {
@@ -21,6 +22,7 @@ namespace GeoClient.Services.Boundary
 
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
+        private readonly TaskScheduler _taskScheduler;
 
         public RestSendingHook BeforeLocationSending = delegate { return () => { }; };
 
@@ -34,6 +36,7 @@ namespace GeoClient.Services.Boundary
         {
             _registrationService = RegistrationService.Instance;
             _positionHttpClient = new HttpClient();
+            _taskScheduler = new InterceptedSingleThreadTaskScheduler();
         }
 
         public void LocationUpdated(Xamarin.Essentials.Location updatedLocation)
@@ -59,19 +62,22 @@ namespace GeoClient.Services.Boundary
                 {"accuracy", location.Accuracy}
             };
 
-            var locationSendingFinalizer = BeforeLocationSending();
-            Console.WriteLine("Sending Data to Server: " + positionObject);
-
-            var postPositionAsyncTask = _positionHttpClient.PostAsync(
-                positionsUrl,
-                new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
-            postPositionAsyncTask.ContinueWith(postPositionResponse =>
+            new Task(async () =>
             {
-                var responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;
-                var statusString = postPositionResponse.Result.StatusCode.ToString();
-                Console.WriteLine("Response from Server: Status: " + statusString + ", response: " + responseString);
-                locationSendingFinalizer();
-            });
+                var locationSendingFinalizer = BeforeLocationSending();
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Sending Data to Server: " + positionObject);
+
+                var postPositionAsyncTask = _positionHttpClient.PostAsync(
+                    positionsUrl,
+                    new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
+                await postPositionAsyncTask.ContinueWith(postPositionResponse =>
+                {
+                    var responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;
+                    var statusString = postPositionResponse.Result.StatusCode.ToString();
+                    Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Response from Server: Status: " + statusString + ", response: " + responseString);
+                    locationSendingFinalizer();
+                });
+            }).RunSynchronously(_taskScheduler);
         }
 
         private string CreateGeoServerUrl()

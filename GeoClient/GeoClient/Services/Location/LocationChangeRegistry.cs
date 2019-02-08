@@ -29,7 +29,12 @@ namespace GeoClient.Services.Location
 
         public void LocationUpdated(Xamarin.Essentials.Location updatedLocation)
         {
-            _locationListeners.ForEach(listener => listener.LocationUpdated(updatedLocation));
+            Console.WriteLine("Got " + _locationListeners.Count + " to inform about update.");
+            _locationListeners.ForEach(listener =>
+            {
+                Console.WriteLine("Informing " + listener.GetType().Name + " about changed location.");
+                listener.LocationUpdated(updatedLocation);
+            });
         }
     }
 }

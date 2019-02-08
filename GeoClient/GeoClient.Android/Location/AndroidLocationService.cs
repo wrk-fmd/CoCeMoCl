@@ -13,6 +13,7 @@ namespace GeoClient.Droid.Location
     public class AndroidLocationService : Service, ILocationListener
     {
         private const string LoggerTag = "AndroidLocationService";
+        private const string WakeLockTag = "cocemocl:locationServiceWakeLock";
 
         private const int RunningServiceNotificationId = 144;
         private const string NotificationChannelId = "at.wrk.fmd.geo.location.channel";
@@ -82,9 +83,9 @@ namespace GeoClient.Droid.Location
         public void OnLocationChanged(Android.Locations.Location location)
         {
             Log.Debug(LoggerTag, "Got a location update from android location manager. location: " + location);
-            var wakeLock = _powerManager.NewWakeLock(WakeLockFlags.Partial, LoggerTag);
+            var wakeLock = _powerManager.NewWakeLock(WakeLockFlags.Partial, WakeLockTag);
             wakeLock.Acquire();
-            Log.Debug(LoggerTag, "Acquired wake lock for location service.");
+            Log.Debug(LoggerTag, "Acquired wake lock.");
 
             if (location != null)
             {
@@ -107,7 +108,7 @@ namespace GeoClient.Droid.Location
             }
 
             wakeLock.Release();
-            Log.Debug(LoggerTag, "Released wake lock of location service.");
+            Log.Debug(LoggerTag, "Released wake lock.");
         }
 
         public void OnProviderDisabled(string provider)

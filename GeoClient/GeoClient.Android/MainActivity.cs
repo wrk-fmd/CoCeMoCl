@@ -34,7 +34,7 @@ namespace GeoClient.Droid
 
             InitializeLocationChangeHandling();
 
-            RestServiceWakeLock.BindWakeLocksToRestService();
+            InterceptedTaskSchedulerWakeLock.BindWakeLocksToInterceptorTaskScheduler();
         }
 
         public override void OnRequestPermissionsResult(
