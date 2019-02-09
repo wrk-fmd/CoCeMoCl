@@ -123,7 +123,7 @@ namespace GeoClient.Droid.Location
 
         public void OnStatusChanged(string provider, Availability status, Bundle extras)
         {
-            Log.Info(LoggerTag, "Status of location provider changed. provider: " + provider);
+            Log.Info(LoggerTag, "Status of location provider changed. provider: " + provider + ", availability: " + status);
         }
 
         private void StartLocationUpdates()

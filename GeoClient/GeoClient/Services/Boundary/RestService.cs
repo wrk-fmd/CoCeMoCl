@@ -81,7 +81,8 @@ namespace GeoClient.Services.Boundary
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("Failed to get response from server! Message: " + e.Message);
+                        Console.WriteLine("Failed to get response from server!");
+                        Console.WriteLine(e.ToString());
                     }
 
                     locationSendingFinalizer();
