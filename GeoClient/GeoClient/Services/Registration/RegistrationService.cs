@@ -10,6 +10,7 @@ namespace GeoClient.Services.Registration
         private readonly List<IGeoRegistrationListener> _registrationListeners;
 
         private RegistrationInfo _cachedRegistrationInfo;
+        private bool _wasConfigurationReadFromDisk;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -42,7 +43,28 @@ namespace GeoClient.Services.Registration
 
         public RegistrationInfo GetRegistrationInfo()
         {
+            TryToLoadRegistrationInfo();
             return _cachedRegistrationInfo;
+        }
+
+        private void TryToLoadRegistrationInfo()
+        {
+            if (_wasConfigurationReadFromDisk)
+                return;
+
+            bool needToLoadConfiguration;
+            lock (this)
+            {
+                needToLoadConfiguration = !_wasConfigurationReadFromDisk;
+                if (needToLoadConfiguration)
+                    _wasConfigurationReadFromDisk = true;
+            }
+
+            if (needToLoadConfiguration)
+            {
+                Console.WriteLine("Registration info was not loaded yet. Try to read from disk.");
+                LoadRegistrationInfo();
+            }
         }
 
         public async void LoadRegistrationInfo()

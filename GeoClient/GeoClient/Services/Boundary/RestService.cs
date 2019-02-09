@@ -72,9 +72,18 @@ namespace GeoClient.Services.Boundary
                     new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
                 await postPositionAsyncTask.ContinueWith(postPositionResponse =>
                 {
-                    var responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;
-                    var statusString = postPositionResponse.Result.StatusCode.ToString();
-                    Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Response from Server: Status: " + statusString + ", response: " + responseString);
+                    try
+                    {
+                        var responseString = postPositionResponse.Result.Content.ReadAsStringAsync().Result;
+                        var statusString = postPositionResponse.Result.StatusCode.ToString();
+                        Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Response from Server: Status: " +
+                                          statusString + ", response: " + responseString);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Failed to get response from server! Message: " + e.Message);
+                    }
+
                     locationSendingFinalizer();
                 });
             }).RunSynchronously(_taskScheduler);
