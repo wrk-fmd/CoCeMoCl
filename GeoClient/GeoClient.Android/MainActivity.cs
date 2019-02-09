@@ -1,17 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
-using Android;
+﻿using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Net;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using Android.Util;
-using Android.Views;
 using GeoClient.Droid.Location;
+using GeoClient.Services.Utils;
+using System.Threading.Tasks;
 
 namespace GeoClient.Droid
 {
@@ -22,7 +21,7 @@ namespace GeoClient.Droid
         private const string LoggerTag = "MainActivity";
 
         private static readonly int RequestLocationPermissionCode = 1000;
-        private static readonly string[] RequiredLocationPermissions = { Manifest.Permission.AccessFineLocation };
+        private static readonly string[] RequiredLocationPermissions = {Manifest.Permission.AccessFineLocation};
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -35,6 +34,7 @@ namespace GeoClient.Droid
             InitializeLocationChangeHandling();
 
             InterceptedTaskSchedulerWakeLock.BindWakeLocksToInterceptorTaskScheduler();
+            PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
         }
 
         public override void OnRequestPermissionsResult(
@@ -58,6 +58,29 @@ namespace GeoClient.Droid
                 {
                     Log.Warn(LoggerTag, "User did not grant permission for the location.");
                 }
+        }
+
+        private bool IsDataSaverEnabled()
+        {
+            var connectivityManager = (ConnectivityManager) GetSystemService(Context.ConnectivityService);
+            bool dataSaverEnabled;
+
+            switch (connectivityManager.RestrictBackgroundStatus)
+            {
+                case RestrictBackgroundStatus.Enabled:
+                    // Background data usage and push notifications are blocked for this app
+                    dataSaverEnabled = true;
+                    break;
+
+                case RestrictBackgroundStatus.Whitelisted:
+                case RestrictBackgroundStatus.Disabled:
+                default:
+                    // Data Saver is disabled or the app is whitelisted  
+                    dataSaverEnabled = false;
+                    break;
+            }
+
+            return dataSaverEnabled;
         }
 
         private void PerformXamarinStartup(Bundle savedInstanceState)
@@ -94,7 +117,8 @@ namespace GeoClient.Droid
                     .SetAction(Resource.String.ok,
                         delegate
                         {
-                            ActivityCompat.RequestPermissions(this, RequiredLocationPermissions, RequestLocationPermissionCode);
+                            ActivityCompat.RequestPermissions(this, RequiredLocationPermissions,
+                                RequestLocationPermissionCode);
                         }
                     ).Show();
             }
@@ -113,7 +137,8 @@ namespace GeoClient.Droid
                 // Check if device is running Android 8.0 or higher and if so, use the newer StartForegroundService() method
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
                 {
-                    Application.Context.StartForegroundService(new Intent(Application.Context, typeof(AndroidLocationService)));
+                    Application.Context.StartForegroundService(new Intent(Application.Context,
+                        typeof(AndroidLocationService)));
                 }
                 else // For older versions, use the traditional StartService() method
                 {
