@@ -11,6 +11,7 @@ namespace GeoClient.Services.Registration
 
         private RegistrationInfo _cachedRegistrationInfo;
         private bool _wasConfigurationReadFromDisk;
+        private const string UrlStorageKey = "url";
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -38,7 +39,15 @@ namespace GeoClient.Services.Registration
         public async void SetRegistrationInfo(string url)
         {
             ParseRegistrationInfoFromUrl(url);
-            await SecureStorage.SetAsync("url", url);
+            if (url != null)
+            {
+                await SecureStorage.SetAsync(UrlStorageKey, url);
+            }
+            else
+            {
+                Console.WriteLine("Removing URL from secure storage.");
+                SecureStorage.Remove(UrlStorageKey);
+            }
         }
 
         public RegistrationInfo GetRegistrationInfo()
@@ -69,7 +78,7 @@ namespace GeoClient.Services.Registration
 
         public async void LoadRegistrationInfo()
         {
-            var loadedUrl = await SecureStorage.GetAsync("url");
+            var loadedUrl = await SecureStorage.GetAsync(UrlStorageKey);
             if (loadedUrl != null)
             {
                 ParseRegistrationInfoFromUrl(loadedUrl);

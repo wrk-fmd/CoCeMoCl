@@ -1,5 +1,6 @@
 ﻿using GeoClient.Services;
 using System;
+using System.Threading.Tasks;
 using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
 using Xamarin.Essentials;
@@ -29,7 +30,7 @@ namespace GeoClient.Views
             }
         }
 
-        async void registerDevice_Clicked(object sender, EventArgs e)
+        private async void registerDevice_Clicked(object sender, EventArgs e)
         {
 #if __ANDROID__
 	            // Initialize the scanner first so it can track the current context
@@ -48,18 +49,36 @@ namespace GeoClient.Views
                 {
                     await Navigation.PopAsync();
                     _registrationService.SetRegistrationInfo(result.Text);
-                    if (_registrationService.IsRegistered())
-                    {
-                        await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
-                        DisplayRegistrationInfo();
-                    }
-                    else
-                    {
-                        await DisplayAlert("Registrierung fehlgeschlagen", "Es wurde keine gültige Registrierungs URL gefunden.", "OK");
-                        ResetRegistrationInfo();
-                    }
+                    await UpdateRegistrationInformation(false);
                 });
             };
+        }
+
+        void unregisterDevice_Clicked(object sender, EventArgs e)
+        {
+            Device.BeginInvokeOnMainThread(async () =>
+            {
+                _registrationService.SetRegistrationInfo(null);
+                await UpdateRegistrationInformation(true);
+            });
+        }
+
+        private async Task UpdateRegistrationInformation(bool unregisteredOnPurpose)
+        {
+            if (_registrationService.IsRegistered())
+            {
+                await DisplayAlert("Registrierung erfolgreich", "Dieses Gerät ist nun erfolgreich registriert.", "OK");
+                DisplayRegistrationInfo();
+            }
+            else if (unregisteredOnPurpose)
+            {
+                await DisplayAlert("Registrierung gelöscht", "Registrierung entfernt.", "OK");
+                ResetRegistrationInfo();
+            } else
+            {
+                await DisplayAlert("Registrierung fehlgeschlagen", "Es wurde keine gültige Registrierungs URL gefunden.", "OK");
+                ResetRegistrationInfo();
+            }
         }
 
         private void ResetRegistrationInfo()

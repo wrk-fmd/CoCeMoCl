@@ -11,12 +11,13 @@ using Android.Util;
 using GeoClient.Droid.Location;
 using GeoClient.Services.Utils;
 using System.Threading.Tasks;
+using GeoClient.Services.Registration;
 
 namespace GeoClient.Droid
 {
     [Activity(Label = "GeoClient", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+    public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGeoRegistrationListener
     {
         private const string LoggerTag = "MainActivity";
 
@@ -31,10 +32,9 @@ namespace GeoClient.Droid
             base.OnCreate(savedInstanceState);
             PerformXamarinStartup(savedInstanceState);
 
-            InitializeLocationChangeHandling();
-
             InterceptedTaskSchedulerWakeLock.BindWakeLocksToInterceptorTaskScheduler();
             PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
+            RegistrationService.Instance.RegisterListener(this);
         }
 
         public override void OnRequestPermissionsResult(
@@ -130,21 +130,43 @@ namespace GeoClient.Droid
 
         private void StartLocationService()
         {
+            var startServiceIntent = new Intent(Application.Context, typeof(AndroidLocationService));
+
             new Task(() =>
             {
-                Log.Debug("App", "Calling android specific location service.");
+                Log.Debug("App", "Starting android specific location service.");
 
                 // Check if device is running Android 8.0 or higher and if so, use the newer StartForegroundService() method
                 if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
                 {
-                    Application.Context.StartForegroundService(new Intent(Application.Context,
-                        typeof(AndroidLocationService)));
+                    Application.Context.StartForegroundService(startServiceIntent);
                 }
                 else // For older versions, use the traditional StartService() method
                 {
-                    Application.Context.StartService(new Intent(Application.Context, typeof(AndroidLocationService)));
+                    Application.Context.StartService(startServiceIntent);
                 }
             }).Start();
+        }
+
+        private void StopLocationService()
+        {
+            var stopServiceIntent = new Intent(Application.Context, typeof(AndroidLocationService));
+
+            new Task(() =>
+            {
+                Log.Debug("App", "Stopping android specific location service.");
+                Application.Context.StopService(stopServiceIntent);
+            }).Start();
+        }
+
+        public void GeoServerRegistered()
+        {
+            InitializeLocationChangeHandling();
+        }
+
+        public void GeoServerUnregistered()
+        {
+            StopLocationService();
         }
     }
 }
