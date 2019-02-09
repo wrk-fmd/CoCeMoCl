@@ -35,6 +35,8 @@ namespace GeoClient.Droid
             InterceptedTaskSchedulerWakeLock.BindWakeLocksToInterceptorTaskScheduler();
             PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
             RegistrationService.Instance.RegisterListener(this);
+
+            RequestBatteryOptimizationWhitelisting();
         }
 
         public override void OnRequestPermissionsResult(
@@ -125,6 +127,24 @@ namespace GeoClient.Droid
             else
             {
                 ActivityCompat.RequestPermissions(this, RequiredLocationPermissions, RequestLocationPermissionCode);
+            }
+        }
+
+        private void RequestBatteryOptimizationWhitelisting()
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.M)
+            {
+                var packageName = "at.wrk.fmd.cocemocl";
+
+                PowerManager powerManager = Application.Context.GetSystemService(PowerService) as PowerManager;
+                if (!powerManager.IsIgnoringBatteryOptimizations(packageName))
+                {
+                    Log.Debug(LoggerTag, "Request to disable the battery optimizations.");
+                    var intent = new Intent();
+                    intent.SetAction(Android.Provider.Settings.ActionRequestIgnoreBatteryOptimizations);
+                    intent.SetData(Uri.Parse("package:" + packageName));
+                    StartActivity(intent);
+                }
             }
         }
 
