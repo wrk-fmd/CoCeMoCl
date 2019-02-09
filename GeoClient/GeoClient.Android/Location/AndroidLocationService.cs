@@ -7,6 +7,7 @@ using Android.Util;
 using GeoClient.Services.Location;
 using System;
 using Android.Graphics;
+using Android.Media;
 
 namespace GeoClient.Droid.Location
 {

@@ -9,9 +9,9 @@ using Android.Support.V4.App;
 using Android.Support.V4.Content;
 using Android.Util;
 using GeoClient.Droid.Location;
+using GeoClient.Services.Registration;
 using GeoClient.Services.Utils;
 using System.Threading.Tasks;
-using GeoClient.Services.Registration;
 
 namespace GeoClient.Droid
 {
@@ -22,7 +22,7 @@ namespace GeoClient.Droid
         private const string LoggerTag = "MainActivity";
 
         private static readonly int RequestLocationPermissionCode = 1000;
-        private static readonly string[] RequiredLocationPermissions = {Manifest.Permission.AccessFineLocation};
+        private static readonly string[] RequiredLocationPermissions = { Manifest.Permission.AccessFineLocation };
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -64,22 +64,16 @@ namespace GeoClient.Droid
 
         private bool IsDataSaverEnabled()
         {
-            var connectivityManager = (ConnectivityManager) GetSystemService(Context.ConnectivityService);
-            bool dataSaverEnabled;
+            bool dataSaverEnabled = false;
 
-            switch (connectivityManager.RestrictBackgroundStatus)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
             {
-                case RestrictBackgroundStatus.Enabled:
-                    // Background data usage and push notifications are blocked for this app
-                    dataSaverEnabled = true;
-                    break;
+                var connectivityManager = (ConnectivityManager) GetSystemService(Context.ConnectivityService);
 
-                case RestrictBackgroundStatus.Whitelisted:
-                case RestrictBackgroundStatus.Disabled:
-                default:
-                    // Data Saver is disabled or the app is whitelisted  
-                    dataSaverEnabled = false;
-                    break;
+                if (connectivityManager.RestrictBackgroundStatus == RestrictBackgroundStatus.Enabled)
+                {
+                        dataSaverEnabled = true;
+                }
             }
 
             return dataSaverEnabled;
@@ -88,7 +82,7 @@ namespace GeoClient.Droid
         private void PerformXamarinStartup(Bundle savedInstanceState)
         {
             Log.Debug(LoggerTag, "Starting main activity of android specific implementation.");
-            global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+            Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             LoadApplication(new App());
         }
@@ -96,7 +90,7 @@ namespace GeoClient.Droid
         private void InitializeLocationChangeHandling()
         {
             if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) ==
-                (int) Permission.Granted)
+                (int)Permission.Granted)
             {
                 Log.Debug(LoggerTag, "User already has granted permission.");
                 StartLocationService();
