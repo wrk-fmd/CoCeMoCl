@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Wiener Rotes Kreuz</Company>
+    <Authors>Daniel Steiner, Robert Wittek</Authors>
+    <Copyright>MIT License</Copyright>
+    <Description>App to share the position data</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
