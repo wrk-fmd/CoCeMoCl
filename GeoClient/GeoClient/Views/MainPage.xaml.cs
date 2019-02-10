@@ -1,5 +1,5 @@
 ﻿using System;
-
+using GeoClient.Services.Utils;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
@@ -13,6 +13,5 @@ namespace GeoClient.Views
         {
             InitializeComponent();
         }
-        
     }
 }

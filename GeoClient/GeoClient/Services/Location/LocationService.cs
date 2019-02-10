@@ -52,7 +52,7 @@ namespace GeoClient.Services.Location
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.ToString());
             }
         }
 

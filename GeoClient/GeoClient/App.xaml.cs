@@ -1,10 +1,8 @@
-﻿using GeoClient.Services;
-using GeoClient.Views;
-using System;
-using System.Threading.Tasks;
-using GeoClient.Services.Boundary;
+﻿using GeoClient.Services.Boundary;
 using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
+using GeoClient.Views;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -19,8 +17,7 @@ namespace GeoClient
             InitializeComponent();
             MainPage = new MainPage();
 
-            var restService = new RestService();
-            LocationChangeRegistry.Instance.RegisterListener(restService);
+            LocationChangeRegistry.Instance.RegisterListener(RestService.Instance);
         }
 
         protected override void OnStart()

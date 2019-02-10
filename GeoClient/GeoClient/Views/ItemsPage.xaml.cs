@@ -1,6 +1,7 @@
 ﻿using GeoClient.Models;
 using GeoClient.ViewModels;
 using System;
+using GeoClient.Services.Utils;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -41,6 +42,17 @@ namespace GeoClient.Views
 
             if (viewModel.Items.Count == 0)
                 viewModel.LoadItemsCommand.Execute(null);
+
+            CheckIfDataSaverIsActive();
+        }
+
+        private async void CheckIfDataSaverIsActive()
+        {
+            var isDataSaverBlockingBackgroundData = PrerequisitesChecking.IsDataSaverBlockingBackgroundData();
+            if (isDataSaverBlockingBackgroundData)
+            {
+                await DisplayAlert("Datensparmodus ist aktiv!", "Position kann nicht zuverlässig gesendet werden.", "OK");
+            }
         }
     }
 }

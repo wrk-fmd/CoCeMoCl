@@ -51,6 +51,7 @@
                     </Label.FormattedText>
                 </Label>
                 <Button Margin="0,10,0,0" x:Name="registrationButton" Text="Jetzt registrieren" Clicked="registerDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+                <Button Margin="0,10,0,0" x:Name="unregisterButton" Text="Registrierung löschen" Clicked="unregisterDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
                 <Button Margin="0,10,0,0" Text="Weitere Infos" Command="{Binding OpenWebCommand}" BackgroundColor="{StaticResource Accent}" TextColor="White" />
                 <StackLayout HorizontalOptions="Center" VerticalOptions="Start">
                     <Label FontSize="22">
