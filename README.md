@@ -1,3 +1,9 @@
+Android App
+[![Build status](https://build.appcenter.ms/v0.1/apps/5705041c-1596-4423-8d04-bad6ecb57a8f/branches/master/badge)](https://appcenter.ms)
+iOS App
+[![Build status](https://build.appcenter.ms/v0.1/apps/1b1402af-5e15-434e-90c2-13c888deb6db/branches/master/badge)](https://appcenter.ms)
+Windows 10 App
+[![Build status](https://build.appcenter.ms/v0.1/apps/71c954b2-95c0-460b-a16a-2608ef0a3144/branches/master/badge)](https://appcenter.ms)
 # CoCeMoCl / GeoClient
 
 This App is a Client for Android, iOS and UWP (Windows 10) to push the Geolocation of a Unit to GeoBroker. 
