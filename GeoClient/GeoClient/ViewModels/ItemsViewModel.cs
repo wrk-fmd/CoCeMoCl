@@ -12,18 +12,18 @@ namespace GeoClient.ViewModels
 {
     public class ItemsViewModel : BaseViewModel
     {
-        public ObservableCollection<Item> Items { get; set; }
+        public ObservableCollection<IncidentItem> Items { get; set; }
         public Command LoadItemsCommand { get; set; }
 
         public ItemsViewModel()
         {
             Title = "Aufträge / Einsätze";
-            Items = new ObservableCollection<Item>();
+            Items = new ObservableCollection<IncidentItem>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
-            MessagingCenter.Subscribe<NewItemPage, Item>(this, "AddItem", async (obj, item) =>
+            MessagingCenter.Subscribe<NewItemPage, IncidentItem>(this, "AddItem", async (obj, item) =>
             {
-                var newItem = item as Item;
+                var newItem = item as IncidentItem;
                 Items.Add(newItem);
                 await DataStore.AddItemAsync(newItem);
             });

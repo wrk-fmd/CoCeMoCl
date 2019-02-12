@@ -24,10 +24,10 @@ namespace GeoClient.Views
         {
             InitializeComponent();
 
-            var item = new Item
+            var item = new IncidentItem(Guid.NewGuid().ToString())
             {
-                Text = "Item 1",
-                Description = "This is an item description."
+                Type = GeoIncidentType.Task,
+                Info = "This is an test incident description."
             };
 
             viewModel = new ItemDetailViewModel(item);

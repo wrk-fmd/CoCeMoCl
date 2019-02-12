@@ -21,7 +21,7 @@ namespace GeoClient.Views
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as Item;
+            var item = args.SelectedItem as IncidentItem;
             if (item == null)
                 return;
 

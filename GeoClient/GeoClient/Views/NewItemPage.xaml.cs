@@ -11,16 +11,16 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class NewItemPage : ContentPage
     {
-        public Item Item { get; set; }
+        public IncidentItem IncidentItem { get; set; }
 
         public NewItemPage()
         {
             InitializeComponent();
 
-            Item = new Item
+            IncidentItem = new IncidentItem(Guid.NewGuid().ToString())
             {
-                Text = "Item name",
-                Description = "This is an item description."
+                Type = GeoIncidentType.Relocation,
+                Info = "This is an item description."
             };
 
             BindingContext = this;
@@ -28,7 +28,7 @@ namespace GeoClient.Views
 
         async void Save_Clicked(object sender, EventArgs e)
         {
-            MessagingCenter.Send(this, "AddItem", Item);
+            MessagingCenter.Send(this, "AddItem", IncidentItem);
             await Navigation.PopModalAsync();
         }
     }

@@ -12,7 +12,7 @@ namespace GeoClient.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>() ?? new MockDataStore();
+        public IDataStore<IncidentItem> DataStore => DependencyService.Get<IDataStore<IncidentItem>>() ?? new InMemoryDataStore();
 
         bool isBusy = false;
         public bool IsBusy

@@ -5,11 +5,12 @@ namespace GeoClient.ViewModels
 {
     public class ItemDetailViewModel : BaseViewModel
     {
-        public Item Item { get; set; }
-        public ItemDetailViewModel(Item item = null)
+        public IncidentItem IncidentItem { get; set; }
+        public ItemDetailViewModel(IncidentItem incidentItem = null)
         {
-            Title = item?.Text;
-            Item = item;
+            // TODO create a meaningful title
+            Title = incidentItem?.Type.ToString();
+            IncidentItem = incidentItem;
         }
     }
 }
