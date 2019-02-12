@@ -24,6 +24,9 @@ namespace GeoClient.Droid
         private static readonly int RequestLocationPermissionCode = 1000;
         private static readonly string[] RequiredLocationPermissions = { Manifest.Permission.AccessFineLocation };
 
+        private static readonly int RequestCameraPermissionCode = 0;
+        private static readonly string[] RequiredCameraPermissions = { Manifest.Permission.Camera };
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             TabLayoutResource = Resource.Layout.Tabbar;
@@ -36,6 +39,7 @@ namespace GeoClient.Droid
             PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
             RegistrationService.Instance.RegisterListener(this);
 
+            RequestCameraPermissionIfNecessary();
             RequestBatteryOptimizationWhitelisting();
         }
 
@@ -121,6 +125,39 @@ namespace GeoClient.Droid
             else
             {
                 ActivityCompat.RequestPermissions(this, RequiredLocationPermissions, RequestLocationPermissionCode);
+            }
+        }
+
+        /// <summary>
+        /// This is a workaround for the broken implementation of the QR code reader.
+        /// </summary>
+        private void RequestCameraPermissionIfNecessary()
+        {
+            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.Camera) == Permission.Granted)
+            {
+                Log.Debug(LoggerTag, "Camera permission is already granted for app.");
+                return;
+            }
+
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.Camera))
+            {
+                var layout = FindViewById(Android.Resource.Id.Content);
+                Snackbar.Make(layout,
+                        Resource.String.permission_camera_rationale,
+                        Snackbar.LengthIndefinite)
+                    .SetAction(Resource.String.ok,
+                        delegate
+                        {
+                            ActivityCompat.RequestPermissions(
+                                this, 
+                                RequiredCameraPermissions,
+                                RequestCameraPermissionCode);
+                        }
+                    ).Show();
+            }
+            else
+            {
+                ActivityCompat.RequestPermissions(this, RequiredCameraPermissions, RequestCameraPermissionCode);
             }
         }
 
