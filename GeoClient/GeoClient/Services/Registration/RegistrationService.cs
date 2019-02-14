@@ -1,13 +1,14 @@
 ﻿using GeoClient.Models;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using Xamarin.Essentials;
+using Xamarin.Forms.Internals;
 
 namespace GeoClient.Services.Registration
 {
     public sealed class RegistrationService
     {
-        private readonly List<IGeoRegistrationListener> _registrationListeners;
+        private readonly ConcurrentDictionary<IGeoRegistrationListener, byte> _registrationListeners;
 
         private RegistrationInfo _cachedRegistrationInfo;
         private bool _wasConfigurationReadFromDisk;
@@ -21,14 +22,33 @@ namespace GeoClient.Services.Registration
 
         private RegistrationService()
         {
-            _registrationListeners = new List<IGeoRegistrationListener>();
+            _registrationListeners = new ConcurrentDictionary<IGeoRegistrationListener, byte>();
         }
 
         public static RegistrationService Instance { get; } = new RegistrationService();
 
         public void RegisterListener(IGeoRegistrationListener listener)
         {
-            _registrationListeners.Add(listener);
+            if (listener != null)
+            {
+                _registrationListeners.TryAdd(listener, 1);
+            }
+            else
+            {
+                Console.WriteLine("Cannot add 'null' to registration listeners.");
+            }
+        }
+
+        public void UnregisterListener(IGeoRegistrationListener listener)
+        {
+            if (listener != null)
+            {
+                _registrationListeners.TryRemove(listener, out _);
+            }
+            else
+            {
+                Console.WriteLine("Cannot remove 'null' from registration listeners.");
+            }
         }
 
         public bool IsRegistered()
@@ -108,14 +128,15 @@ namespace GeoClient.Services.Registration
 
         private void ServerRegistered()
         {
-            Console.WriteLine("URL for geoserver is now registered.");
-            _registrationListeners.ForEach(listener => listener.GeoServerRegistered());
+            Console.WriteLine(
+                $"URL for geoserver is now registered. Got {_registrationListeners.Count} listeners to inform.");
+            _registrationListeners.ForEach(listener => listener.Key.GeoServerRegistered());
         }
 
         private void ServerUnregistered()
         {
             Console.WriteLine("URL for geoserver is no longer registered.");
-            _registrationListeners.ForEach(listener => listener.GeoServerUnregistered());
+            _registrationListeners.ForEach(listener => listener.Key.GeoServerUnregistered());
         }
     }
 }

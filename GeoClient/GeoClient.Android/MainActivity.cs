@@ -15,8 +15,13 @@ using System.Threading.Tasks;
 
 namespace GeoClient.Droid
 {
-    [Activity(Label = "GeoClient", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true,
-        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(
+        Label = "GeoClient", 
+        Icon = "@mipmap/icon", 
+        Theme = "@style/MainTheme", 
+        MainLauncher = true,
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
+        LaunchMode = LaunchMode.SingleTop)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity, IGeoRegistrationListener
     {
         private const string LoggerTag = "MainActivity";
@@ -41,6 +46,13 @@ namespace GeoClient.Droid
 
             RequestCameraPermissionIfNecessary();
             RequestBatteryOptimizationWhitelisting();
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Log.Debug(LoggerTag, "Main activity is being destroyed.");
+            RegistrationService.Instance.UnregisterListener(this);
         }
 
         public override void OnRequestPermissionsResult(
