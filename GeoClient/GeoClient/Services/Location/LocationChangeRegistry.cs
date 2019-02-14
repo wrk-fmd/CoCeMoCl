@@ -23,16 +23,36 @@ namespace GeoClient.Services.Location
 
         public void RegisterListener(ILocationUpdateListener listener)
         {
-            Console.WriteLine("Registering a new location listener.");
-            _locationListeners.TryAdd(listener, 1);
+            if (listener != null)
+            {
+                Console.WriteLine("Registering a new location listener.");
+                _locationListeners.TryAdd(listener, 1);
+            }
+            else
+            {
+                Console.WriteLine("Cannot register 'null' as location listener.");
+            }
+        }
+
+        public void UnregisterListener(ILocationUpdateListener listener)
+        {
+            if (listener != null)
+            {
+                Console.WriteLine("Unregistering a location listener.");
+                _locationListeners.TryRemove(listener, out _);
+            }
+            else
+            {
+                Console.WriteLine("Cannot unregister 'null' as location listener.");
+            }
         }
 
         public void LocationUpdated(Xamarin.Essentials.Location updatedLocation)
         {
-            Console.WriteLine("Got " + _locationListeners.Count + " to inform about update.");
+            Console.WriteLine("Got " + _locationListeners.Count + " location listener instances to inform about updated location.");
             _locationListeners.ForEach(listener =>
             {
-                Console.WriteLine("Informing " + listener.GetType().Name + " about changed location.");
+                Console.WriteLine("Informing " + listener.Key.GetType().Name + " about changed location.");
                 listener.Key.LocationUpdated(updatedLocation);
             });
         }

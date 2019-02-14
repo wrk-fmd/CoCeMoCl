@@ -29,7 +29,26 @@ namespace GeoClient.Services.Registration
 
         public void RegisterListener(IGeoRegistrationListener listener)
         {
-            _registrationListeners.TryAdd(listener, 1);
+            if (listener != null)
+            {
+                _registrationListeners.TryAdd(listener, 1);
+            }
+            else
+            {
+                Console.WriteLine("Cannot add 'null' to registration listeners.");
+            }
+        }
+
+        public void UnregisterListener(IGeoRegistrationListener listener)
+        {
+            if (listener != null)
+            {
+                _registrationListeners.TryRemove(listener, out _);
+            }
+            else
+            {
+                Console.WriteLine("Cannot remove 'null' from registration listeners.");
+            }
         }
 
         public bool IsRegistered()

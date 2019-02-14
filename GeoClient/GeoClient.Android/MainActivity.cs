@@ -48,6 +48,13 @@ namespace GeoClient.Droid
             RequestBatteryOptimizationWhitelisting();
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            Log.Debug(LoggerTag, "Main activity is being destroyed.");
+            RegistrationService.Instance.UnregisterListener(this);
+        }
+
         public override void OnRequestPermissionsResult(
             int requestCode,
             string[] permissions,

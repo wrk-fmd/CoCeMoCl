@@ -19,7 +19,6 @@ namespace GeoClient.Views
         {
             _registrationService = RegistrationService.Instance;
             InitializeComponent();
-            LocationChangeRegistry.Instance.RegisterListener(this);
         }
 
         protected override void OnAppearing()
@@ -28,6 +27,13 @@ namespace GeoClient.Views
             {
                 DisplayRegistrationInfo();
             }
+
+            LocationChangeRegistry.Instance.RegisterListener(this);
+        }
+
+        protected override void OnDisappearing()
+        {
+            LocationChangeRegistry.Instance.UnregisterListener(this);
         }
 
         private async void registerDevice_Clicked(object sender, EventArgs e)
