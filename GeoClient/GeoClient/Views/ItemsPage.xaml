@@ -22,8 +22,8 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Orientation="Horizontal" BackgroundColor="{Binding BackgroundColor}">
-                                <StackLayout Orientation="Vertical" Padding="20" HorizontalOptions="FillAndExpand">
+                            <StackLayout Spacing="20" Orientation="Horizontal" BackgroundColor="{Binding BackgroundColor}">
+                                <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                     <Label Text="{Binding DescriptiveType}"
                                            LineBreakMode="NoWrap"
                                            Style="{DynamicResource ListItemTextStyle}"

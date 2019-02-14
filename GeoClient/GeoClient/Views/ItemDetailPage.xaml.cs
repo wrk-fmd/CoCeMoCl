@@ -33,5 +33,11 @@ namespace GeoClient.Views
             viewModel = new ItemDetailViewModel(item);
             BindingContext = viewModel;
         }
+
+        private async void openLocation_Clicked(object sender, EventArgs e)
+        {
+            // TODO create link to open maps application.
+            await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+        }
     }
 }
