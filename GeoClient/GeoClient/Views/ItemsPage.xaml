@@ -27,12 +27,14 @@
                                     <Label Text="{Binding DescriptiveType}"
                                            LineBreakMode="NoWrap"
                                            Style="{DynamicResource ListItemTextStyle}"
-                                           FontSize="18" />
+                                           FontSize="18" 
+                                           TextColor="{Binding ForegroundColor} "/>
                                     <Label Text="{Binding Info}"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="3"
                                            Style="{DynamicResource ListItemDetailTextStyle}"
-                                           FontSize="14" />
+                                           FontSize="14" 
+                                           TextColor="{Binding ForegroundColor} "/>
                                 </StackLayout>
                                 <Image HorizontalOptions="End" Source="{Binding OwnTaskStateIcon}"></Image>
                             </StackLayout>

@@ -18,6 +18,7 @@ namespace GeoClient.Models
 
         public string DescriptiveType => GetDescriptiveType();
         public Color BackgroundColor => GetBackgroundColor();
+        public Color ForegroundColor => GetForegroundColor();
         public string OwnTaskStateIcon => GetOwnTaskStateIcon();
 
         public IncidentItem(string id)
@@ -43,7 +44,13 @@ namespace GeoClient.Models
 
         private Color GetBackgroundColor()
         {
-            return Blue ? Color.RoyalBlue : Color.Default;
+            Color _blue = System.Drawing.Color.FromArgb(72, 147, 216);
+            return Blue ? _blue : Color.Default;
+        }
+
+        private Color GetForegroundColor()
+        {
+            return Blue ? Color.White : Color.Black;
         }
 
         private string GetOwnTaskStateIcon()
