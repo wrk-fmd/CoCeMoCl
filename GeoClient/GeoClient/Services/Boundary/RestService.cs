@@ -17,7 +17,8 @@ namespace GeoClient.Services.Boundary
     public class RestService : ILocationUpdateListener
     {
         public const string ServerBaseUrl = "https://geo.fmd.wrk.at/";
-        private const string EndpointUri = "endpoint/positions/";
+        private const string LocationEndpointUri = "endpoint/positions/";
+        private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
 
         private readonly RegistrationService _registrationService;
@@ -25,6 +26,7 @@ namespace GeoClient.Services.Boundary
         private readonly TaskScheduler _taskScheduler;
 
         public RestSendingHook BeforeLocationSending = delegate { return () => { }; };
+        public RestSendingHook BeforeScopeGetting = delegate { return () => { }; };
 
         public static RestService Instance { get; } = new RestService();
 
@@ -53,7 +55,7 @@ namespace GeoClient.Services.Boundary
 
         private void SendPosition(Xamarin.Essentials.Location location)
         {
-            var positionsUrl = CreateGeoServerUrl();
+            var positionsUrl = CreateGeoServerLocationUrl();
             var positionObject = new JObject
             {
                 {"latitude", location.Latitude},
@@ -90,10 +92,46 @@ namespace GeoClient.Services.Boundary
             }).RunSynchronously(_taskScheduler);
         }
 
-        private string CreateGeoServerUrl()
+        private void GetScope()
+        {
+            var scopeUrl = CreateGeoServerScopeUrl();
+            new Task(async () =>
+            {
+                var scopeGettingFinalizer = BeforeScopeGetting();
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Getting Scope from Server");
+
+                var getScopeAsyncTask = _positionHttpClient.GetAsync(scopeUrl);
+                await getScopeAsyncTask.ContinueWith(getScopeResponse =>
+                {
+                    try
+                    {
+                        var responseString = getScopeResponse.Result.Content.ReadAsStringAsync().Result;
+                        var statusString = getScopeResponse.Result.StatusCode.ToString();
+                        Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Response from Server: Status: " +
+                                          statusString + ", response: " + responseString);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Failed to get response from server!");
+                        Console.WriteLine(e.ToString());
+                    }
+
+                    scopeGettingFinalizer();
+                });
+            }).RunSynchronously(_taskScheduler);
+
+        }
+
+        private string CreateGeoServerLocationUrl()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            return ServerBaseUrl + EndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+            return ServerBaseUrl + LocationEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+        }
+
+        private string CreateGeoServerScopeUrl()
+        {
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            return ServerBaseUrl + ScopeEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
         }
     }
 }
