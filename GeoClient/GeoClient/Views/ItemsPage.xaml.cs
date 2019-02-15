@@ -4,6 +4,8 @@ using System;
 using GeoClient.Services.Utils;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using GeoClient.Services.Boundary;
+using GeoClient.Services.Registration;
 
 namespace GeoClient.Views
 {
@@ -11,11 +13,16 @@ namespace GeoClient.Views
     public partial class ItemsPage : ContentPage
     {
         ItemsViewModel viewModel;
+        RestService restService;
+        private readonly RegistrationService _registrationService;
 
         public ItemsPage()
         {
             InitializeComponent();
-
+        
+            _registrationService = RegistrationService.Instance;
+            restService = RestService.Instance;
+            
             BindingContext = viewModel = new ItemsViewModel();
         }
 
@@ -34,12 +41,23 @@ namespace GeoClient.Views
         async void RefreshItems_Clicked(object sender, EventArgs e)
         {
             //await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
-            
+            if (_registrationService.IsRegistered())
+            {
+                restService.GetScope();
+            } else
+            {
+                await DisplayAlert("Nicht registriert", "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren", "OK");
+            }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
+
+            if (_registrationService.IsRegistered())
+            {
+                restService.GetScope();
+            }
 
             if (viewModel.Items.Count == 0)
                 viewModel.LoadItemsCommand.Execute(null);

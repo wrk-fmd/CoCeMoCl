@@ -7,6 +7,11 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using GeoClient.Services.Utils;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using GeoClient.Models;
+using GeoClient.ViewModels;
 
 namespace GeoClient.Services.Boundary
 {
@@ -20,7 +25,7 @@ namespace GeoClient.Services.Boundary
         private const string LocationEndpointUri = "endpoint/positions/";
         private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
-
+        ItemsViewModel viewModel;
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
         private readonly TaskScheduler _taskScheduler;
@@ -92,7 +97,7 @@ namespace GeoClient.Services.Boundary
             }).RunSynchronously(_taskScheduler);
         }
 
-        private void GetScope()
+        public void GetScope()
         {
             var scopeUrl = CreateGeoServerScopeUrl();
             new Task(async () =>
@@ -107,8 +112,20 @@ namespace GeoClient.Services.Boundary
                     {
                         var responseString = getScopeResponse.Result.Content.ReadAsStringAsync().Result;
                         var statusString = getScopeResponse.Result.StatusCode.ToString();
-                        Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Response from Server: Status: " +
-                                          statusString + ", response: " + responseString);
+                        JObject scopeArray = JObject.Parse(responseString);
+
+                        JArray incidentArray = (JArray)scopeArray["incidents"];
+                        IList<JObject> incidents = incidentArray.Select(c => (JObject)c).ToList();
+                        foreach (var _incident in incidents)
+                        {
+                            IncidentItem incident = new IncidentItem((string)_incident["id"]);
+                            incident.Info = (string)_incident["info"];
+                            incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
+                            incident.Priority = (bool)_incident["priority"];
+                            incident.Blue = (bool)_incident["Blue"];
+                            incident.Location = new GeoPoint((long)_incident["location"]["latitude"], (long)_incident["location"]["longitude"]);
+                            //incident.AssignedUnits = (string)_incident["assignedUnits"];
+                        }
                     }
                     catch (Exception e)
                     {
