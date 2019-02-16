@@ -1,4 +1,6 @@
 ﻿using GeoClient.Models;
+using GeoClient.Services.Boundary;
+using GeoClient.Services.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,12 +10,13 @@ namespace GeoClient.Services
 {
     public class InMemoryDataStore : IDataStore<IncidentItem>
     {
-        private readonly ConcurrentDictionary<string, IncidentItem> _items;
-
+        private ConcurrentDictionary<string, IncidentItem> _items;
+        RestService restService;
         public InMemoryDataStore()
         {
+            restService = RestService.Instance;
             _items = new ConcurrentDictionary<string, IncidentItem>();
-            AddMockedItemsForUiDesign();
+//            AddMockedItemsForUiDesign();
         }
 
         public async Task<bool> AddItemAsync(IncidentItem incidentItem)
@@ -39,39 +42,23 @@ namespace GeoClient.Services
 
         public async Task<IEnumerable<IncidentItem>> GetItemsAsync(bool forceRefresh = false)
         {
-            return await Task.FromResult(_items.Values);
-        }
-
-        private void AddMockedItemsForUiDesign()
-        {
-            var mockItems = new List<IncidentItem>
+            
+            if (restService.incidents != null)
             {
-                new IncidentItem(Guid.NewGuid().ToString())
+                foreach (var _incident in restService.incidents)
                 {
-                    Info = "Demo Incident at location XYZ\nSomething happened there!\n\nContact details can be asked at the control room.",
-                    Type = GeoIncidentType.Task,
-                    Blue = true,
-                    OwnTaskState = IncidentTaskState.Assigned
-                },
-                new IncidentItem(Guid.NewGuid().ToString())
-                {
-                    Info = "Another active incident",
-                    Type = GeoIncidentType.Relocation,
-                    OwnTaskState = IncidentTaskState.Zao
-                },
-                new IncidentItem(Guid.NewGuid().ToString())
-                {
-                    Type = GeoIncidentType.Relocation,
-                    Priority = true,
-                    Blue = true,
-                    Location = new GeoPoint(42, 13)
+                    IncidentItem incident = new IncidentItem((string)_incident["id"]);
+                    incident.Info = (string)_incident["info"];
+                    incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
+                    incident.Priority = (bool)_incident["priority"];
+                    incident.Blue = (bool)_incident["blue"];
+                    incident.Location = new GeoPoint(long.Parse((string)_incident["location"]["latitude"]), long.Parse((string)_incident["location"]["longitude"]));
+                    //incident.AssignedUnits = (string)_incident["assignedUnits"];
+                    Console.WriteLine(incident.ToString());
+                    await AddItemAsync(incident);
                 }
-            };
-
-            foreach (var item in mockItems)
-            {
-                _items.TryAdd(item.Id, item);
             }
+            return await Task.FromResult(_items.Values);
         }
     }
 }

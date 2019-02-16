@@ -26,13 +26,14 @@ namespace GeoClient.Services.Boundary
         private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
         ItemsViewModel viewModel;
+        public List<JObject> incidents; 
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
         private readonly TaskScheduler _taskScheduler;
 
         public RestSendingHook BeforeLocationSending = delegate { return () => { }; };
         public RestSendingHook BeforeScopeGetting = delegate { return () => { }; };
-
+        
         public static RestService Instance { get; } = new RestService();
 
         static RestService()
@@ -115,17 +116,7 @@ namespace GeoClient.Services.Boundary
                         JObject scopeArray = JObject.Parse(responseString);
 
                         JArray incidentArray = (JArray)scopeArray["incidents"];
-                        IList<JObject> incidents = incidentArray.Select(c => (JObject)c).ToList();
-                        foreach (var _incident in incidents)
-                        {
-                            IncidentItem incident = new IncidentItem((string)_incident["id"]);
-                            incident.Info = (string)_incident["info"];
-                            incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
-                            incident.Priority = (bool)_incident["priority"];
-                            incident.Blue = (bool)_incident["Blue"];
-                            incident.Location = new GeoPoint((long)_incident["location"]["latitude"], (long)_incident["location"]["longitude"]);
-                            //incident.AssignedUnits = (string)_incident["assignedUnits"];
-                        }
+                        incidents = incidentArray.Select(c => (JObject)c).ToList();
                     }
                     catch (Exception e)
                     {

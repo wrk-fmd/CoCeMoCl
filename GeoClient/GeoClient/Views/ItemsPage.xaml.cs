@@ -6,6 +6,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using GeoClient.Services.Boundary;
 using GeoClient.Services.Registration;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace GeoClient.Views
 {
@@ -41,9 +43,11 @@ namespace GeoClient.Views
         async void RefreshItems_Clicked(object sender, EventArgs e)
         {
             //await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
+                       
             if (_registrationService.IsRegistered())
             {
                 restService.GetScope();
+                getIncidents();
             } else
             {
                 await DisplayAlert("Nicht registriert", "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren", "OK");
@@ -57,6 +61,7 @@ namespace GeoClient.Views
             if (_registrationService.IsRegistered())
             {
                 restService.GetScope();
+                getIncidents();
             }
 
             if (viewModel.Items.Count == 0)
@@ -72,6 +77,31 @@ namespace GeoClient.Views
             {
                 await DisplayAlert("Datensparmodus ist aktiv!", "Position kann nicht zuverlässig gesendet werden.", "OK");
             }
+        }
+        public void getIncidents()
+        {
+            /*
+            if (restService.incidents != null)
+            {
+                foreach (var _incident in restService.incidents)
+                {
+                    IncidentItem incident = new IncidentItem((string)_incident["id"]);
+                    incident.Info = (string)_incident["info"];
+                    incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
+                    incident.Priority = (bool)_incident["priority"];
+                    incident.Blue = (bool)_incident["blue"];
+                    incident.Location = new GeoPoint((long)_incident["location"]["latitude"], (long)_incident["location"]["longitude"]);
+                    //incident.AssignedUnits = (string)_incident["assignedUnits"];
+                    Console.WriteLine(incident.ToString());
+                    MessagingCenter.Send(this, "AddItem", incident);
+                }
+            }
+            BindingContext = this;
+            Console.WriteLine(viewModel.Items.Count);
+            Console.WriteLine(viewModel.Items.ToString());
+            */
+            if (viewModel.Items.Count == 0)
+                viewModel.LoadItemsCommand.Execute(null);
         }
     }
 }

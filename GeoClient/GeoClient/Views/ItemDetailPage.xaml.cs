@@ -36,8 +36,17 @@ namespace GeoClient.Views
 
         private async void openLocation_Clicked(object sender, EventArgs e)
         {
-            // TODO create link to open maps application.
-            await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+            var item = viewModel.IncidentItem;
+
+            if (item.Location.Latitude > 0 && item.Location.Longitude > 0)
+            {
+                var request = string.Format("http://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                Device.OpenUri(new Uri(request));
+            }
+            else
+            {
+                await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+            }
         }
     }
 }

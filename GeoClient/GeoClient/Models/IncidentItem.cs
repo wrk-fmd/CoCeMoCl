@@ -13,6 +13,7 @@ namespace GeoClient.Models
         public bool Priority { get; set; }
         public bool Blue { get; set; }
         public GeoPoint Location { get; set; }
+        public List<string> AssignedUnits { get; set; }
         public Dictionary<string, IncidentTaskState> OtherTaskStates { get; set; }
         public IncidentTaskState? OwnTaskState { get; set; }
 

@@ -21,8 +21,9 @@ namespace GeoClient.ViewModels
             Items = new ObservableCollection<IncidentItem>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 
-            MessagingCenter.Subscribe<NewItemPage, IncidentItem>(this, "AddItem", async (obj, item) =>
+            MessagingCenter.Subscribe<ItemsPage, IncidentItem>(this, "AddItem", async (obj, item) =>
             {
+                
                 var newItem = item as IncidentItem;
                 Items.Add(newItem);
                 await DataStore.AddItemAsync(newItem);
@@ -38,6 +39,7 @@ namespace GeoClient.ViewModels
 
             try
             {
+
                 Items.Clear();
                 var items = await DataStore.GetItemsAsync(true);
                 foreach (var item in items)
