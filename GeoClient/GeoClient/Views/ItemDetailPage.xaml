@@ -3,6 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GeoClient.Views.ItemDetailPage"
              Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding IncidentItem.OwnTaskState}" />
+    </ContentPage.ToolbarItems>
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#B70E0C</Color>
@@ -16,6 +19,6 @@
         <Label Text="Andere Einheiten:" FontSize="Medium" />
         <Label Text="TODO: Add List" FontSize="Small"/>
 
-        <Button x:Name="registrationButton" Text="BO in Karte öffnen" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
 </StackLayout>
 </ContentPage>

@@ -11,7 +11,7 @@
     <ContentPage.Content>
         <StackLayout>
             <ListView x:Name="ItemsListView"
-                      ItemsSource="{Binding Items}"
+                      ItemsSource="{Binding Incidents}"
                       VerticalOptions="FillAndExpand"
                       HasUnevenRows="true"
                       RefreshCommand="{Binding LoadItemsCommand}"

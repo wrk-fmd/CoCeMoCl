@@ -40,7 +40,12 @@ namespace GeoClient.Views
 
             if (item.Location.Latitude > 0 && item.Location.Longitude > 0)
             {
-                var request = string.Format("http://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                #if __IOS__
+                    var request = string.Format("maps://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                #else
+                    var request = string.Format("http://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                #endif
+
                 Device.OpenUri(new Uri(request));
             }
             else

@@ -14,7 +14,7 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ItemsPage : ContentPage
     {
-        ItemsViewModel viewModel;
+        IncidentsViewModel viewModel;
         RestService restService;
         private readonly RegistrationService _registrationService;
 
@@ -25,7 +25,7 @@ namespace GeoClient.Views
             _registrationService = RegistrationService.Instance;
             restService = RestService.Instance;
             
-            BindingContext = viewModel = new ItemsViewModel();
+            BindingContext = viewModel = new IncidentsViewModel();
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
@@ -41,14 +41,13 @@ namespace GeoClient.Views
         }
 
         async void RefreshItems_Clicked(object sender, EventArgs e)
-        {
-            //await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
-                       
+        {              
             if (_registrationService.IsRegistered())
             {
                 restService.GetScope();
                 getIncidents();
-            } else
+            }
+            else
             {
                 await DisplayAlert("Nicht registriert", "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren", "OK");
             }
@@ -64,9 +63,6 @@ namespace GeoClient.Views
                 getIncidents();
             }
 
-            if (viewModel.Items.Count == 0)
-                viewModel.LoadItemsCommand.Execute(null);
-
             CheckIfDataSaverIsActive();
         }
 
@@ -80,28 +76,7 @@ namespace GeoClient.Views
         }
         public void getIncidents()
         {
-            /*
-            if (restService.incidents != null)
-            {
-                foreach (var _incident in restService.incidents)
-                {
-                    IncidentItem incident = new IncidentItem((string)_incident["id"]);
-                    incident.Info = (string)_incident["info"];
-                    incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
-                    incident.Priority = (bool)_incident["priority"];
-                    incident.Blue = (bool)_incident["blue"];
-                    incident.Location = new GeoPoint((long)_incident["location"]["latitude"], (long)_incident["location"]["longitude"]);
-                    //incident.AssignedUnits = (string)_incident["assignedUnits"];
-                    Console.WriteLine(incident.ToString());
-                    MessagingCenter.Send(this, "AddItem", incident);
-                }
-            }
-            BindingContext = this;
-            Console.WriteLine(viewModel.Items.Count);
-            Console.WriteLine(viewModel.Items.ToString());
-            */
-            if (viewModel.Items.Count == 0)
-                viewModel.LoadItemsCommand.Execute(null);
+            viewModel.LoadItemsCommand.Execute(null);
         }
     }
-}
+}   

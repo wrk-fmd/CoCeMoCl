@@ -25,7 +25,7 @@ namespace GeoClient.Services.Boundary
         private const string LocationEndpointUri = "endpoint/positions/";
         private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
-        ItemsViewModel viewModel;
+        IncidentsViewModel viewModel;
         public List<JObject> incidents; 
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
@@ -117,6 +117,7 @@ namespace GeoClient.Services.Boundary
 
                         JArray incidentArray = (JArray)scopeArray["incidents"];
                         incidents = incidentArray.Select(c => (JObject)c).ToList();
+                        
                     }
                     catch (Exception e)
                     {
