@@ -117,7 +117,6 @@ namespace GeoClient.Services.Boundary
 
                         JArray incidentArray = (JArray)scopeArray["incidents"];
                         incidents = incidentArray.Select(c => (JObject)c).ToList();
-                        
                     }
                     catch (Exception e)
                     {

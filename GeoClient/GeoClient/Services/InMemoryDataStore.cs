@@ -47,16 +47,25 @@ namespace GeoClient.Services
             {
                 foreach (var _incident in restService.incidents)
                 {
-                    long latitude = (long)_incident["location"]["latitude"];
-                    long longitude = (long)_incident["location"]["longitude"];
+                    string latitude = (string)_incident["location"]["latitude"];
+                    string longitude = (string)_incident["location"]["longitude"];
+                    
+
                     IncidentItem incident = new IncidentItem((string)_incident["id"]);
                     incident.Info = (string)_incident["info"];
                     incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
                     incident.Priority = bool.Parse((string)_incident["priority"]);
                     incident.Blue = bool.Parse((string)_incident["blue"]);
                     incident.Location = new GeoPoint(latitude, longitude);
-                    //incident.AssignedUnits = (string)_incident["assignedUnits"];
-                    Console.WriteLine("Incident Info: " + incident.Info);
+
+                    List<KeyValuePair<string, string>> assignedUnits = new List<KeyValuePair<string, string>>();
+                    Dictionary<string, string> units = _incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+                    foreach (KeyValuePair<string, string> unit in units)
+                    {
+                        assignedUnits.Add(new KeyValuePair<string, string>(unit.Key, unit.Value));
+                    }
+                    incident.AssignedUnits = assignedUnits;
+
                     await AddItemAsync(incident);
                 }
             }

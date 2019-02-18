@@ -6,10 +6,10 @@ namespace GeoClient.Models
 {
     public class GeoPoint
     {
-        public long Latitude { get; }
-        public long Longitude { get; }
+        public string Latitude { get; }
+        public string Longitude { get; }
 
-        public GeoPoint(long latitude, long longitude)
+        public GeoPoint(string latitude, string longitude)
         {
             Latitude = latitude;
             Longitude = longitude;

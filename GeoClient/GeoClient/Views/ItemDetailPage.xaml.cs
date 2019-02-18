@@ -38,7 +38,7 @@ namespace GeoClient.Views
         {
             var item = viewModel.IncidentItem;
 
-            if (item.Location.Latitude > 0 && item.Location.Longitude > 0)
+            if (item.Location.Latitude != "" && item.Location.Longitude != "")
             {
                 #if __IOS__
                     var request = string.Format("maps://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
