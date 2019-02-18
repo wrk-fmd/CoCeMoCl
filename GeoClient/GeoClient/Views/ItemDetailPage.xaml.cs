@@ -24,14 +24,34 @@ namespace GeoClient.Views
         {
             InitializeComponent();
 
-            var item = new Item
+            var item = new IncidentItem(Guid.NewGuid().ToString())
             {
-                Text = "Item 1",
-                Description = "This is an item description."
+                Type = GeoIncidentType.Task,
+                Info = "This is an test incident description."
             };
 
             viewModel = new ItemDetailViewModel(item);
             BindingContext = viewModel;
+        }
+
+        private async void openLocation_Clicked(object sender, EventArgs e)
+        {
+            var item = viewModel.IncidentItem;
+
+            if (item.Location.Latitude != "" && item.Location.Longitude != "")
+            {
+                #if __IOS__
+                    var request = string.Format("maps://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                #else
+                    var request = string.Format("http://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
+                #endif
+
+                Device.OpenUri(new Uri(request));
+            }
+            else
+            {
+                await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+            }
         }
     }
 }

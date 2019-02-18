@@ -7,6 +7,7 @@ using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
+using GeoClient.Services.Boundary;
 
 namespace GeoClient.Views
 {

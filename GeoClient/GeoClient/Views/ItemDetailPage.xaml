@@ -3,10 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GeoClient.Views.ItemDetailPage"
              Title="{Binding Title}">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding IncidentItem.OwnTaskState}" />
+    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#B70E0C</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <StackLayout Spacing="20" Padding="15">
-        <Label Text="Text:" FontSize="Medium" />
-        <Label Text="{Binding Item.Text}" FontSize="Small"/>
-        <Label Text="Description:" FontSize="Medium" />
-        <Label Text="{Binding Item.Description}" FontSize="Small"/>
-    </StackLayout>
+        
+        <Label Text="Info:" FontSize="Medium" />
+        <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap"/>
+
+        <Label Text="Andere Einheiten:" FontSize="Medium" />
+        <Label Text="TODO: Add List" FontSize="Small"/>
+
+        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+</StackLayout>
 </ContentPage>

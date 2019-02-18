@@ -4,24 +4,33 @@ using System;
 using GeoClient.Services.Utils;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using GeoClient.Services.Boundary;
+using GeoClient.Services.Registration;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace GeoClient.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ItemsPage : ContentPage
     {
-        ItemsViewModel viewModel;
+        IncidentsViewModel viewModel;
+        RestService restService;
+        private readonly RegistrationService _registrationService;
 
         public ItemsPage()
         {
             InitializeComponent();
-
-            BindingContext = viewModel = new ItemsViewModel();
+        
+            _registrationService = RegistrationService.Instance;
+            restService = RestService.Instance;
+            
+            BindingContext = viewModel = new IncidentsViewModel();
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as Item;
+            var item = args.SelectedItem as IncidentItem;
             if (item == null)
                 return;
 
@@ -31,17 +40,28 @@ namespace GeoClient.Views
             ItemsListView.SelectedItem = null;
         }
 
-        async void AddItem_Clicked(object sender, EventArgs e)
-        {
-            await Navigation.PushModalAsync(new NavigationPage(new NewItemPage()));
+        async void RefreshItems_Clicked(object sender, EventArgs e)
+        {              
+            if (_registrationService.IsRegistered())
+            {
+                restService.GetScope();
+                getIncidents();
+            }
+            else
+            {
+                await DisplayAlert("Nicht registriert", "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren", "OK");
+            }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            if (viewModel.Items.Count == 0)
-                viewModel.LoadItemsCommand.Execute(null);
+            if (_registrationService.IsRegistered())
+            {
+                restService.GetScope();
+                getIncidents();
+            }
 
             CheckIfDataSaverIsActive();
         }
@@ -54,5 +74,9 @@ namespace GeoClient.Views
                 await DisplayAlert("Datensparmodus ist aktiv!", "Position kann nicht zuverlässig gesendet werden.", "OK");
             }
         }
+        public void getIncidents()
+        {
+            viewModel.LoadItemsCommand.Execute(null);
+        }
     }
-}
+}   
