@@ -1,4 +1,5 @@
 ﻿using GeoClient.Models;
+using GeoClient.Services.Boundary;
 using System;
 using System.Collections.Concurrent;
 using Xamarin.Essentials;
