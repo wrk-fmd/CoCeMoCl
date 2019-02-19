@@ -7,7 +7,7 @@ namespace GeoClient.Models
         public string Id { get; }
         public string Name { get; set; }
 
-        // TODO: Code-Smell: This is actually a position, not only a point. There is more detailed information available.
+        // TODO: This is actually a position, not only a point. There is more detailed information available.
         public GeoPoint LastPoint { get; set; }
         public IncidentTaskState State { get; set; }
 

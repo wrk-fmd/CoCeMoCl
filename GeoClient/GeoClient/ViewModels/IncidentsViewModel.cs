@@ -1,14 +1,10 @@
-﻿using System;
+﻿using GeoClient.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-
-using GeoClient.Models;
-using GeoClient.Views;
 using GeoClient.Services.Boundary;
-using GeoClient.Services.Utils;
+using Xamarin.Forms;
 
 namespace GeoClient.ViewModels
 {
@@ -16,44 +12,27 @@ namespace GeoClient.ViewModels
     {
         public ObservableCollection<IncidentItem> Incidents { get; set; }
         public Command LoadItemsCommand { get; set; }
-        RestService restService = RestService.Instance;
+
+        private readonly RestService _restService;
 
         public IncidentsViewModel()
         {
             Title = "Aufträge / Einsätze";
             Incidents = new ObservableCollection<IncidentItem>();
-            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-            
-            MessagingCenter.Subscribe<ItemsPage, IncidentItem>(this, "AddItem", async (obj, item) =>
-            {
-                await DataStore.GetItemsAsync();
-            });            
-        }
+            LoadItemsCommand = new Command(ExecuteLoadItemsCommand);
 
-        private async Task ExecuteLoadItemsCommand()
+            _restService = RestService.Instance;
+        }
+        
+        private void ExecuteLoadItemsCommand()
         {
             if (IsBusy)
+            {
+                Console.WriteLine("Update of incidents is still busy.");
                 return;
+            }
 
-            IsBusy = true;
-
-            try
-            {
-                Incidents.Clear();
-                var incidents = await DataStore.GetItemsAsync(true);
-                foreach(IncidentItem incident in incidents)
-                {
-                    Incidents.Add(incident);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            _restService.GetScope();
         }
     }
 }

@@ -24,8 +24,6 @@ namespace GeoClient.Services.Boundary
         private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
 
-        // TODO: Code-Smell: field is exposed and not thread safe.
-        public List<JObject> incidents, units;
         private readonly RegistrationService _registrationService;
         private readonly HttpClient _positionHttpClient;
         private readonly TaskScheduler _taskScheduler;
@@ -108,10 +106,13 @@ namespace GeoClient.Services.Boundary
                     var responseString = getScopeResponse.Result.Content.ReadAsStringAsync().Result;
                     JObject scopeArray = JObject.Parse(responseString);
 
-                    JArray incidentArray = (JArray)scopeArray["incidents"];
-                    incidents = incidentArray.Select(c => (JObject)c).ToList();
-                    JArray unitsArray = (JArray)scopeArray["units"];
-                    units = unitsArray.Select(c => (JObject)c).ToList();
+                    JArray incidentArray = (JArray) scopeArray["incidents"];
+                    JArray unitsArray = (JArray) scopeArray["units"];
+                    var incidents = incidentArray.Select(c => (JObject) c).ToList();
+                    var units = unitsArray.Select(c => (JObject) c).ToList();
+
+                    var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units);
+                    IncidentUpdateRegistry.Instance.IncidentsUpdated(incidentItemList);
                 }
                 catch (Exception e)
                 {
