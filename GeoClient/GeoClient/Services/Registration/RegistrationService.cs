@@ -14,7 +14,7 @@ namespace GeoClient.Services.Registration
         private RegistrationInfo _cachedRegistrationInfo;
         private bool _wasConfigurationReadFromDisk;
         private const string UrlStorageKey = "url";
-
+        public string loadedUrl; 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
         static RegistrationService()
@@ -99,7 +99,7 @@ namespace GeoClient.Services.Registration
 
         public async void LoadRegistrationInfo()
         {
-            var loadedUrl = await SecureStorage.GetAsync(UrlStorageKey);
+            loadedUrl = await SecureStorage.GetAsync(UrlStorageKey);
             if (loadedUrl != null)
             {
                 ParseRegistrationInfoFromUrl(loadedUrl);

@@ -17,6 +17,7 @@ namespace GeoClient.Models
         public GeoPoint Location { get; set; }
         public List<KeyValuePair<string, string>> AssignedUnits { get; set; }
         public List<Unit> Units { get; set; }
+        
 
         public Dictionary<string, IncidentTaskState> OtherTaskStates { get; set; }
 
@@ -25,7 +26,7 @@ namespace GeoClient.Models
         public Color ForegroundColor => GetForegroundColor();
         public IncidentTaskState? OwnTaskState => GetOwnTaskState();
         public string OwnTaskStateIcon => GetOwnTaskStateIcon();
-       
+
         RegistrationService _registrationService = RegistrationService.Instance;
         
         public IncidentItem(string id)
@@ -85,6 +86,5 @@ namespace GeoClient.Models
         {
             return StatusIconResolver.GetIconForTaskState(OwnTaskState);
         }
-         
     }
 }

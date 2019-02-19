@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 
 using GeoClient.Models;
 using GeoClient.ViewModels;
+using GeoClient.Services.Registration;
 
 namespace GeoClient.Views
 {
@@ -16,7 +17,6 @@ namespace GeoClient.Views
         public ItemDetailPage(ItemDetailViewModel viewModel)
         {
             InitializeComponent();
-
             BindingContext = this.viewModel = viewModel;
         }
 
@@ -31,9 +31,15 @@ namespace GeoClient.Views
             };
 
             viewModel = new ItemDetailViewModel(item);
+            
             BindingContext = viewModel;
         }
-
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            RegistrationService registrationService = RegistrationService.Instance;
+            MapView.Source = registrationService.loadedUrl;
+        }
         private async void openLocation_Clicked(object sender, EventArgs e)
         {
             var item = viewModel.IncidentItem;
