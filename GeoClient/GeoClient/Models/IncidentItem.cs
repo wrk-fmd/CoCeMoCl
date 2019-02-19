@@ -15,7 +15,9 @@ namespace GeoClient.Models
         public bool Priority { get; set; }
         public bool Blue { get; set; }
         public GeoPoint Location { get; set; }
-        public List<KeyValuePair<string, string>> AssignedUnits { get; set; }
+
+        // TODO: Code Smell: Use type if ordering is relevant
+        public List<KeyValuePair<string, IncidentTaskState>> AssignedUnits { get; set; }
         public List<Unit> Units { get; set; }
 
         public Dictionary<string, IncidentTaskState> OtherTaskStates { get; set; }
@@ -25,9 +27,9 @@ namespace GeoClient.Models
         public Color ForegroundColor => GetForegroundColor();
         public IncidentTaskState? OwnTaskState => GetOwnTaskState();
         public string OwnTaskStateIcon => GetOwnTaskStateIcon();
-       
+
         RegistrationService _registrationService = RegistrationService.Instance;
-        
+
         public IncidentItem(string id)
         {
             Id = id;
@@ -51,8 +53,8 @@ namespace GeoClient.Models
 
         private Color GetBackgroundColor()
         {
-            Color _blue = System.Drawing.Color.FromArgb(72, 147, 216);
-            return Blue ? _blue : Color.Default;
+            Color customBlue = System.Drawing.Color.FromArgb(72, 147, 216);
+            return Blue ? customBlue : Color.Default;
         }
 
         private Color GetForegroundColor()
@@ -63,28 +65,28 @@ namespace GeoClient.Models
         private IncidentTaskState GetOwnTaskState()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            try
+            if (registrationInfo?.Id != null)
             {
                 Console.WriteLine(AssignedUnits);
-                string ownState = "";
-                foreach(KeyValuePair<string, string> unit in AssignedUnits) {
+                foreach (KeyValuePair<string, IncidentTaskState> unit in AssignedUnits)
+                {
                     if (unit.Key == registrationInfo.Id)
                     {
-                        ownState = unit.Value;
+                        return unit.Value;
                     }
                 }
-                return (IncidentTaskState)Enum.Parse(typeof(IncidentTaskState), ownState, true);
             }
-            catch
+            else
             {
-                return IncidentTaskState.Unknown;
+                Console.WriteLine("Device is not registered. Own task state cannot be read.");
             }
+
+            return IncidentTaskState.Unknown;
         }
 
         private string GetOwnTaskStateIcon()
         {
             return StatusIconResolver.GetIconForTaskState(OwnTaskState);
         }
-         
     }
 }

@@ -12,7 +12,7 @@ namespace GeoClient.Models
         public string Id { get; }
         public string Name { get; set; }
         public GeoPoint LastPoint { get; set; }
-        public string State { get; set; }
+        public IncidentTaskState State { get; set; }
         public Unit(string id)
         {
             Id = id;
