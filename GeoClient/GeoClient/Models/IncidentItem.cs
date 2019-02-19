@@ -63,7 +63,6 @@ namespace GeoClient.Models
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo?.Id != null)
             {
-                Console.WriteLine(Units);
                 foreach (Unit unit in Units)
                 {
                     if (unit.Id == registrationInfo.Id)

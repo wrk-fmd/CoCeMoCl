@@ -1,4 +1,5 @@
 ﻿using System;
+using GeoClient.Services.Utils;
 
 namespace GeoClient.Models
 {
@@ -11,6 +12,8 @@ namespace GeoClient.Models
         public GeoPoint LastPoint { get; set; }
         public IncidentTaskState State { get; set; }
 
+        public string TaskStateIcon => GetTaskStateIcon();
+
         public Unit(string id)
         {
             Id = id;
@@ -21,6 +24,11 @@ namespace GeoClient.Models
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
             return string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private string GetTaskStateIcon()
+        {
+            return StatusIconResolver.GetIconForTaskState(State);
         }
     }
 }
