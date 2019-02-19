@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
-
-using GeoClient.Models;
-using GeoClient.Views;
+﻿using GeoClient.Models;
 using GeoClient.Services.Boundary;
-using GeoClient.Services.Utils;
+using System;
+using System.Collections.ObjectModel;
+using Xamarin.Forms;
 
 namespace GeoClient.ViewModels
 {
@@ -16,44 +10,52 @@ namespace GeoClient.ViewModels
     {
         public ObservableCollection<IncidentItem> Incidents { get; set; }
         public Command LoadItemsCommand { get; set; }
-        RestService restService = RestService.Instance;
+
+        private string _emptyListMessage;
+
+        public string EmptyListMessage
+        {
+            get => _emptyListMessage;
+            set => SetProperty(ref _emptyListMessage, value);
+        }
+
+        private bool _isListEmpty;
+
+        public bool IsListEmpty
+        {
+            get => _isListEmpty;
+            set => SetProperty(ref _isListEmpty, value);
+        }
+
+        private readonly RestService _restService;
 
         public IncidentsViewModel()
         {
             Title = "Aufträge / Einsätze";
+            EmptyListMessage = "Daten wurden noch nicht geladen.";
+            IsListEmpty = true;
             Incidents = new ObservableCollection<IncidentItem>();
-            LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
-            
-            MessagingCenter.Subscribe<ItemsPage, IncidentItem>(this, "AddItem", async (obj, item) =>
-            {
-                await DataStore.GetItemsAsync();
-            });            
+            Incidents.CollectionChanged += (sender, args) => OnCollectionChanged();
+            LoadItemsCommand = new Command(ExecuteLoadItemsCommand);
+
+            _restService = RestService.Instance;
         }
 
-        private async Task ExecuteLoadItemsCommand()
+        private void OnCollectionChanged()
+        {
+            var isListEmpty = Incidents.Count == 0;
+            IsListEmpty = isListEmpty;
+        }
+
+        private void ExecuteLoadItemsCommand()
         {
             if (IsBusy)
+            {
+                Console.WriteLine("Update of incidents is still busy.");
                 return;
+            }
 
-            IsBusy = true;
-
-            try
-            {
-                Incidents.Clear();
-                var incidents = await DataStore.GetItemsAsync(true);
-                foreach(IncidentItem incident in incidents)
-                {
-                    Incidents.Add(incident);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            _restService.GetScope();
         }
     }
 }

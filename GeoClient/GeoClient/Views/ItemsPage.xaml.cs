@@ -1,31 +1,30 @@
 ﻿using GeoClient.Models;
-using GeoClient.ViewModels;
-using System;
-using GeoClient.Services.Utils;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 using GeoClient.Services.Boundary;
 using GeoClient.Services.Registration;
-using Newtonsoft.Json.Linq;
+using GeoClient.Services.Utils;
+using GeoClient.ViewModels;
+using System;
 using System.Collections.Generic;
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace GeoClient.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ItemsPage : ContentPage
+    public partial class ItemsPage : ContentPage, IIncidentUpdateListener
     {
-        IncidentsViewModel viewModel;
-        RestService restService;
+        private readonly IncidentsViewModel _viewModel;
+        private readonly RestService _restService;
         private readonly RegistrationService _registrationService;
 
         public ItemsPage()
         {
             InitializeComponent();
-        
+
             _registrationService = RegistrationService.Instance;
-            restService = RestService.Instance;
-            
-            BindingContext = viewModel = new IncidentsViewModel();
+            _restService = RestService.Instance;
+
+            BindingContext = _viewModel = new IncidentsViewModel();
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
@@ -41,26 +40,27 @@ namespace GeoClient.Views
         }
 
         async void RefreshItems_Clicked(object sender, EventArgs e)
-        {              
+        {
             if (_registrationService.IsRegistered())
             {
-                restService.GetScope();
-                getIncidents();
+                _restService.GetScope();
             }
             else
             {
-                await DisplayAlert("Nicht registriert", "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren", "OK");
+                await DisplayAlert("Nicht registriert",
+                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren",
+                    "OK");
             }
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            IncidentUpdateRegistry.Instance.RegisterListener(this);
 
             if (_registrationService.IsRegistered())
             {
-                restService.GetScope();
-                getIncidents();
+                _restService.GetScope();
             }
 
             CheckIfDataSaverIsActive();
@@ -71,12 +71,30 @@ namespace GeoClient.Views
             var isDataSaverBlockingBackgroundData = PrerequisitesChecking.IsDataSaverBlockingBackgroundData();
             if (isDataSaverBlockingBackgroundData)
             {
-                await DisplayAlert("Datensparmodus ist aktiv!", "Position kann nicht zuverlässig gesendet werden.", "OK");
+                await DisplayAlert(
+                    "Datensparmodus ist aktiv!",
+                    "Position kann nicht zuverlässig gesendet werden.",
+                    "OK");
             }
         }
-        public void getIncidents()
+
+        public void IncidentsUpdated(List<IncidentItem> updatedIncidents)
         {
-            viewModel.LoadItemsCommand.Execute(null);
+            IncidentsInvalidated();
+
+            foreach (var incident in updatedIncidents)
+            {
+                _viewModel.Incidents.Add(incident);
+            }
+
+            _viewModel.IsBusy = false;
+        }
+
+        public void IncidentsInvalidated()
+        {
+            _viewModel.EmptyListMessage = "Keine Aufträge / Einsätze.";
+            _viewModel.Incidents.Clear();
+            _viewModel.IsBusy = false;
         }
     }
-}   
+}

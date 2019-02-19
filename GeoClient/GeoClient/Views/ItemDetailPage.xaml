@@ -1,45 +1,53 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GeoClient.Views.ItemDetailPage"
              Title="{Binding Title}">
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{Binding IncidentItem.OwnTaskState}" />
-    </ContentPage.ToolbarItems>
     <ContentPage.Resources>
         <ResourceDictionary>
             <Color x:Key="Accent">#B70E0C</Color>
+            <Color x:Key="Headline">Black</Color>
+            <Color x:Key="UnitListItem">Black</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <StackLayout Spacing="20" Padding="15">
-        
-        <Label Text="Info:" FontSize="Medium" />
-        <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap"/>
+    <StackLayout Spacing="10" Padding="20">
 
-        <Label Text="Andere Einheiten:" FontSize="Medium" />
+        <StackLayout Orientation="Horizontal">
+            <Label Text=" " HorizontalOptions="FillAndExpand"/>
+            <!--Label Text="Status:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" HorizontalOptions="FillAndExpand"/-->
+            <Image HorizontalOptions="End" Scale="0.8" Source="{Binding IncidentItem.OwnTaskStateIcon}" />
+        </StackLayout>
+
+        <Label Text="Info:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
+        <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap" />
+
+        <Label Text="Einheiten:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
         <ListView x:Name="ItemsListView"
-                      ItemsSource="{Binding IncidentItem.Units}"
-                      VerticalOptions="FillAndExpand"
-                      HasUnevenRows="true"
-                      CachingStrategy="RecycleElement">
+                  ItemsSource="{Binding IncidentItem.Units}"
+                  VerticalOptions="FillAndExpand"
+                  HasUnevenRows="true"
+                  CachingStrategy="RecycleElement"
+                  IsEnabled="False">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Spacing="20" Orientation="Horizontal">
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                 <Label Text="{Binding Name}"
-                                           LineBreakMode="NoWrap"
-                                           Style="{DynamicResource ListItemTextStyle}"
-                                           FontSize="18" 
-                                           TextColor="Black"/>
+                                       LineBreakMode="NoWrap"
+                                       Style="{DynamicResource ListItemTextStyle}"
+                                       FontSize="18"
+                                       TextColor="{StaticResource UnitListItem}" />
                             </StackLayout>
-                            <Label Text="{Binding State}"/>
+                            <Image Scale="0.7" Source="{Binding TaskStateIcon}" />
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
-</StackLayout>
+        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked"
+                BackgroundColor="{StaticResource Accent}" TextColor="White" />
+    </StackLayout>
 </ContentPage>
