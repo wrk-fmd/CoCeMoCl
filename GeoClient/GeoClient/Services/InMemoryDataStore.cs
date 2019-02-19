@@ -5,17 +5,19 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace GeoClient.Services
 {
     public class InMemoryDataStore : IDataStore<IncidentItem>
     {
-        private ConcurrentDictionary<string, IncidentItem> _incidents;
-        RestService restService;
+        private readonly ConcurrentDictionary<string, IncidentItem> _incidents;
+        private readonly RestService _restService;
+
         public InMemoryDataStore()
         {
             _incidents = new ConcurrentDictionary<string, IncidentItem>();
-            restService = RestService.Instance;
+            _restService = RestService.Instance;
             GetItemsAsync(true);
         }
 
@@ -43,34 +45,41 @@ namespace GeoClient.Services
         public async Task<IEnumerable<IncidentItem>> GetItemsAsync(bool forceRefresh = false)
         {
 
-            if (restService.incidents != null)
+            if (_restService.incidents != null)
             {
-                foreach (var _incident in restService.incidents)
+                foreach (var incident in _restService.incidents)
                 {
-                    string latitude = (string)_incident["location"]["latitude"];
-                    string longitude = (string)_incident["location"]["longitude"];
-                    
+                    var incidentItem = CreateIncidentItem(incident);
 
-                    IncidentItem incident = new IncidentItem((string)_incident["id"]);
-                    incident.Info = (string)_incident["info"];
-                    incident.Type = GeoIncidentTypeFactory.GetTypeFromString((string)_incident["type"]);
-                    incident.Priority = bool.Parse((string)_incident["priority"]);
-                    incident.Blue = bool.Parse((string)_incident["blue"]);
-                    incident.Location = new GeoPoint(latitude, longitude);
-
-                    List<KeyValuePair<string, string>> assignedUnits = new List<KeyValuePair<string, string>>();
-                    Dictionary<string, string> units = _incident["assignedUnits"].ToObject<Dictionary<string, string>>();
-                    foreach (KeyValuePair<string, string> unit in units)
-                    {
-                        assignedUnits.Add(new KeyValuePair<string, string>(unit.Key, unit.Value));
-                    }
-                    incident.AssignedUnits = assignedUnits;
-
-                    await AddItemAsync(incident);
+                    await AddItemAsync(incidentItem);
                 }
             }
             Console.WriteLine(_incidents.Values);
             return await Task.FromResult(_incidents.Values);
+        }
+
+        private static IncidentItem CreateIncidentItem(JObject incident)
+        {
+            string latitude = (string) incident["location"]["latitude"];
+            string longitude = (string) incident["location"]["longitude"];
+
+
+            IncidentItem incidentItem = new IncidentItem((string) incident["id"]);
+            incidentItem.Info = (string) incident["info"];
+            incidentItem.Type = GeoIncidentTypeFactory.GetTypeFromString((string) incident["type"]);
+            incidentItem.Priority = bool.Parse((string) incident["priority"]);
+            incidentItem.Blue = bool.Parse((string) incident["blue"]);
+            incidentItem.Location = new GeoPoint(latitude, longitude);
+
+            List<KeyValuePair<string, string>> assignedUnits = new List<KeyValuePair<string, string>>();
+            Dictionary<string, string> units = incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+            foreach (KeyValuePair<string, string> unit in units)
+            {
+                assignedUnits.Add(new KeyValuePair<string, string>(unit.Key, unit.Value));
+            }
+
+            incidentItem.AssignedUnits = assignedUnits;
+            return incidentItem;
         }
     }
 }

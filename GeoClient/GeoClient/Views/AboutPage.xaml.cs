@@ -1,13 +1,11 @@
-﻿using GeoClient.Services;
+﻿using GeoClient.Services.Location;
+using GeoClient.Services.Registration;
 using System;
 using System.Threading.Tasks;
-using GeoClient.Services.Location;
-using GeoClient.Services.Registration;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using ZXing.Net.Mobile.Forms;
-using GeoClient.Services.Boundary;
 
 namespace GeoClient.Views
 {
@@ -81,7 +79,8 @@ namespace GeoClient.Views
             {
                 await DisplayAlert("Registrierung gelöscht", "Registrierung entfernt.", "OK");
                 ResetRegistrationInfo();
-            } else
+            }
+            else
             {
                 await DisplayAlert("Registrierung fehlgeschlagen", "Es wurde keine gültige Registrierungs URL gefunden.", "OK");
                 ResetRegistrationInfo();

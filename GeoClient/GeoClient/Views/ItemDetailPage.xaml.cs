@@ -1,10 +1,9 @@
-﻿using System;
-
+﻿using GeoClient.Models;
+using GeoClient.ViewModels;
+using GeoClient.Views.Utils;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using GeoClient.Models;
-using GeoClient.ViewModels;
 
 namespace GeoClient.Views
 {
@@ -20,33 +19,15 @@ namespace GeoClient.Views
             BindingContext = this.viewModel = viewModel;
         }
 
-        public ItemDetailPage()
-        {
-            InitializeComponent();
-
-            var item = new IncidentItem(Guid.NewGuid().ToString())
-            {
-                Type = GeoIncidentType.Task,
-                Info = "This is an test incident description."
-            };
-
-            viewModel = new ItemDetailViewModel(item);
-            BindingContext = viewModel;
-        }
-
         private async void openLocation_Clicked(object sender, EventArgs e)
         {
             var item = viewModel.IncidentItem;
 
-            if (item.Location.Latitude != "" && item.Location.Longitude != "")
-            {
-                #if __IOS__
-                    var request = string.Format("maps://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
-                #else
-                    var request = string.Format("http://maps.google.com/?daddr=" + item.Location.Latitude + "," + item.Location.Longitude + "");
-                #endif
+            var geoUri = GeoPointUtil.CreateGeoUri(item.Location, "GeoClient: Berufungsort");
 
-                Device.OpenUri(new Uri(request));
+            if (geoUri != null)
+            {
+                Device.OpenUri(geoUri);
             }
             else
             {
