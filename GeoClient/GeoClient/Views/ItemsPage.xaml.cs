@@ -66,11 +66,6 @@ namespace GeoClient.Views
             CheckIfDataSaverIsActive();
         }
 
-        protected override void OnDisappearing()
-        {
-            IncidentUpdateRegistry.Instance.UnregisterListener(this);
-        }
-
         private async void CheckIfDataSaverIsActive()
         {
             var isDataSaverBlockingBackgroundData = PrerequisitesChecking.IsDataSaverBlockingBackgroundData();
@@ -97,6 +92,7 @@ namespace GeoClient.Views
 
         public void IncidentsInvalidated()
         {
+            _viewModel.EmptyListMessage = "Keine Aufträge / Einsätze.";
             _viewModel.Incidents.Clear();
             _viewModel.IsBusy = false;
         }

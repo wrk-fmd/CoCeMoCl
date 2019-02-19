@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GeoClient.Services.Registration;
 using GeoClient.Services.Utils;
+using System;
+using System.Collections.Generic;
 using Xamarin.Forms;
-using System.Linq;
-using GeoClient.Services.Registration;
 
 namespace GeoClient.Models
 {

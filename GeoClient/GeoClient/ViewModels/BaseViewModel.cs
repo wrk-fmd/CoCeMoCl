@@ -10,14 +10,14 @@ namespace GeoClient.ViewModels
         bool isBusy = false;
         public bool IsBusy
         {
-            get { return isBusy; }
+            get => isBusy;
             set => SetProperty(ref isBusy, value);
         }
 
         string _title = string.Empty;
         public string Title
         {
-            get { return _title; }
+            get => _title;
             set => SetProperty(ref _title, value);
         }
 

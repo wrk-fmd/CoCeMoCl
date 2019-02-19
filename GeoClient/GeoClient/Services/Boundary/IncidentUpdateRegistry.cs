@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using GeoClient.Services.Registration;
 using Xamarin.Forms.Internals;
 
 namespace GeoClient.Services.Boundary
 {
-    public class IncidentUpdateRegistry : IIncidentUpdateListener
+    public class IncidentUpdateRegistry : IIncidentUpdateListener, IGeoRegistrationListener
     {
         private readonly ConcurrentDictionary<IIncidentUpdateListener, byte> _incidentUpdateListeners;
 
@@ -19,6 +20,7 @@ namespace GeoClient.Services.Boundary
         private IncidentUpdateRegistry()
         {
             _incidentUpdateListeners = new ConcurrentDictionary<IIncidentUpdateListener, byte>();
+            RegistrationService.Instance.RegisterListener(this);
         }
 
         public static IncidentUpdateRegistry Instance { get; } = new IncidentUpdateRegistry();
@@ -63,6 +65,16 @@ namespace GeoClient.Services.Boundary
         public void IncidentsInvalidated()
         {
             _incidentUpdateListeners.ForEach(listener => listener.Key.IncidentsInvalidated());
+        }
+
+        public void GeoServerRegistered()
+        {
+        }
+
+        public void GeoServerUnregistered()
+        {
+            Console.WriteLine("Device was unregistered. Current incidents are invalidated.");
+            IncidentsInvalidated();
         }
     }
 }
