@@ -59,17 +59,34 @@ namespace GeoClient.Services
                     incident.Location = new GeoPoint(latitude, longitude);
 
                     List<KeyValuePair<string, string>> assignedUnits = new List<KeyValuePair<string, string>>();
-                    Dictionary<string, string> units = _incident["assignedUnits"].ToObject<Dictionary<string, string>>();
-                    foreach (KeyValuePair<string, string> unit in units)
+                    Dictionary<string, string> _assignedUnits = _incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+                    foreach (KeyValuePair<string, string> unit in _assignedUnits)
                     {
                         assignedUnits.Add(new KeyValuePair<string, string>(unit.Key, unit.Value));
                     }
                     incident.AssignedUnits = assignedUnits;
-
+                    List<Unit> units = new List<Unit>();
+                    if (restService.units != null)
+                    {
+                        foreach(var _unit in restService.units)
+                        {
+                            Unit unit = new Unit((string)_unit["id"]);
+                            unit.Name = (string)_unit["name"];
+                            unit.LastPoint = new GeoPoint((string)_unit["lastPoint"]["latitude"], (string)_unit["lastPoint"]["longitude"]);
+                            foreach (KeyValuePair<string, string> _asUnit in _assignedUnits)
+                            {
+                                if(_asUnit.Key == (string)_unit["id"])
+                                {
+                                    unit.State = _asUnit.Value;
+                                }
+                            }
+                            units.Add(unit);
+                        }
+                    }
+                    incident.Units = units;
                     await AddItemAsync(incident);
                 }
             }
-            Console.WriteLine(_incidents.Values);
             return await Task.FromResult(_incidents.Values);
         }
     }

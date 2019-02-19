@@ -116,8 +116,9 @@ namespace GeoClient.Services.Boundary
                         JObject scopeArray = JObject.Parse(responseString);
 
                         JArray incidentArray = (JArray)scopeArray["incidents"];
-                        incidents = incidentArray.Select(c => (JObject)c).ToList();
                         JArray unitsArray = (JArray)scopeArray["units"];
+
+                        incidents = incidentArray.Select(c => (JObject)c).ToList();
                         units = unitsArray.Select(c => (JObject)c).ToList();
                     }
                     catch (Exception e)

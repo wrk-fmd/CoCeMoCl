@@ -17,7 +17,28 @@
         <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap"/>
 
         <Label Text="Andere Einheiten:" FontSize="Medium" />
-        <Label Text="TODO: Add List" FontSize="Small"/>
+        <ListView x:Name="ItemsListView"
+                      ItemsSource="{Binding IncidentItem.Units}"
+                      VerticalOptions="FillAndExpand"
+                      HasUnevenRows="true"
+                      CachingStrategy="RecycleElement">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Spacing="20" Orientation="Horizontal">
+                            <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding Name}"
+                                           LineBreakMode="NoWrap"
+                                           Style="{DynamicResource ListItemTextStyle}"
+                                           FontSize="18" 
+                                           TextColor="Black"/>
+                            </StackLayout>
+                            <Label Text="{Binding State}"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
 
         <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
 </StackLayout>
