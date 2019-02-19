@@ -1,41 +1,48 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:GeoClient.ViewModels;assembly=GeoClient"
              x:Class="GeoClient.Views.ItemsPage"
-              Title="{Binding Title}"
+             Title="{Binding Title}"
              x:Name="BrowseItemsPage">
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Clicked="AddItem_Clicked">
-            <ToolbarItem.Icon>
-                <OnPlatform x:TypeArguments="FileImageSource">
-                    <On Platform="UWP" Value="add.png"/>
-                </OnPlatform>
-            </ToolbarItem.Icon>
-        </ToolbarItem>
+        <ToolbarItem Text="Refresh" Clicked="RefreshItems_Clicked" Icon="refresh.png" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <ListView x:Name="ItemsListView" 
-                ItemsSource="{Binding Items}"
-                VerticalOptions="FillAndExpand"
-                 HasUnevenRows="true"
-                 RefreshCommand="{Binding LoadItemsCommand}"
-                 IsPullToRefreshEnabled="true"
-                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                 CachingStrategy="RecycleElement"
-                 ItemSelected="OnItemSelected">
+            <ContentView Padding="0,50" IsVisible="{Binding IsListEmpty}">
+                <Label Text="{Binding EmptyListMessage}"
+                       HorizontalOptions="CenterAndExpand" />
+            </ContentView>
+            <ListView x:Name="ItemsListView"
+                      ItemsSource="{Binding Incidents}"
+                      VerticalOptions="FillAndExpand"
+                      HasUnevenRows="true"
+                      RefreshCommand="{Binding LoadItemsCommand}"
+                      IsPullToRefreshEnabled="true"
+                      IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                      CachingStrategy="RecycleElement"
+                      ItemSelected="OnItemSelected">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Padding="10">
-                                <Label Text="{Binding Text}" 
-                       LineBreakMode="NoWrap" 
-                       Style="{DynamicResource ListItemTextStyle}" 
-                       FontSize="16" />
-                                <Label Text="{Binding Description}" 
-                       LineBreakMode="NoWrap"
-                       Style="{DynamicResource ListItemDetailTextStyle}"
-                       FontSize="13" />
+                            <StackLayout Spacing="20" Orientation="Horizontal"
+                                         BackgroundColor="{Binding BackgroundColor}">
+                                <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                                    <Label Text="{Binding DescriptiveType}"
+                                           LineBreakMode="NoWrap"
+                                           Style="{DynamicResource ListItemTextStyle}"
+                                           FontSize="18"
+                                           TextColor="{Binding ForegroundColor} " />
+                                    <Label Text="{Binding Info}"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="3"
+                                           Style="{DynamicResource ListItemDetailTextStyle}"
+                                           FontSize="14"
+                                           TextColor="{Binding ForegroundColor} " />
+                                </StackLayout>
+                                <Image HorizontalOptions="End" Source="{Binding OwnTaskStateIcon}" />
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

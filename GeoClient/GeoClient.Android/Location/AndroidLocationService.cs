@@ -1,13 +1,12 @@
 ﻿using Android.App;
 using Android.Content;
+using Android.Graphics;
 using Android.Locations;
 using Android.OS;
 using Android.Support.V4.App;
 using Android.Util;
 using GeoClient.Services.Location;
 using System;
-using Android.Graphics;
-using Android.Media;
 
 namespace GeoClient.Droid.Location
 {
@@ -21,6 +20,7 @@ namespace GeoClient.Droid.Location
         private const string NotificationChannelId = "at.wrk.fmd.geo.location.channel";
 
         private const long MinimumElapsedTimeInMilliseconds = 10000;
+
         // Only use coarse or fine here! Other values are only for bearing, horizontal accuracy, etc.
         private const Accuracy RequiredAccuracy = Accuracy.Fine;
 
@@ -62,25 +62,8 @@ namespace GeoClient.Droid.Location
             // Check if device is running Android 8.0 or higher and call StartForeground() if so
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                var notification = new NotificationCompat.Builder(this, NotificationChannelId)
-                    .SetContentTitle(Resources.GetString(Resource.String.app_name))
-                    .SetContentText(Resources.GetString(Resource.String.notification_text))
-                    .SetSmallIcon(Resource.Mipmap.notification_bar_icon)
-                    .SetLargeIcon(BitmapFactory.DecodeResource(Resources, Resource.Drawable.web_hi_res_512))
-                    .SetColor(Resource.Color.colorPrimary)
-                    .SetOngoing(true)
-                    .Build();
-
-                var notificationManager = GetSystemService(NotificationService) as NotificationManager;
-
-                var notificationChannel = new NotificationChannel(
-                    NotificationChannelId, 
-                    "Location Notification",
-                    NotificationImportance.Default);
-                notificationChannel.SetShowBadge(false);
-
-                notificationManager.CreateNotificationChannel(notificationChannel);
-
+                var notification = BuildForegroundServiceNotification();
+                CreateForegroundServiceNotificationChannel();
                 StartForeground(RunningServiceNotificationId, notification);
             }
 
@@ -96,16 +79,7 @@ namespace GeoClient.Droid.Location
 
             if (location != null)
             {
-                var updatedLocation = new Xamarin.Essentials.Location
-                {
-                    Accuracy = location.Accuracy,
-                    Altitude = location.Altitude,
-                    Course = location.Bearing,
-                    Latitude = location.Latitude,
-                    Longitude = location.Longitude,
-                    Speed = location.Speed,
-                    Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(location.Time)
-                };
+                var updatedLocation = CreateXamarinLocation(location);
 
                 _locationChangeRegistry.LocationUpdated(updatedLocation);
             }
@@ -130,7 +104,59 @@ namespace GeoClient.Droid.Location
 
         public void OnStatusChanged(string provider, Availability status, Bundle extras)
         {
-            Log.Info(LoggerTag, "Status of location provider changed. provider: " + provider + ", availability: " + status);
+            Log.Info(LoggerTag,
+                "Status of location provider changed. provider: " + provider + ", availability: " + status);
+        }
+
+        private static Xamarin.Essentials.Location CreateXamarinLocation(Android.Locations.Location location)
+        {
+            var updatedLocation = new Xamarin.Essentials.Location
+            {
+                Accuracy = location.Accuracy,
+                Altitude = location.Altitude,
+                Course = location.Bearing,
+                Latitude = location.Latitude,
+                Longitude = location.Longitude,
+                Speed = location.Speed,
+                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(location.Time)
+            };
+            return updatedLocation;
+        }
+
+        private void CreateForegroundServiceNotificationChannel()
+        {
+            var notificationManager = GetSystemService(NotificationService) as NotificationManager;
+
+            var notificationChannel = new NotificationChannel(
+                NotificationChannelId,
+                "Location Notification",
+                NotificationImportance.Low);
+            notificationChannel.SetShowBadge(false);
+
+            notificationManager.CreateNotificationChannel(notificationChannel);
+        }
+
+        private Notification BuildForegroundServiceNotification()
+        {
+            var pendingIntent = BuildMainActivityPendingIntent();
+
+            var notification = new NotificationCompat.Builder(this, NotificationChannelId)
+                .SetContentTitle(Resources.GetString(Resource.String.app_name))
+                .SetContentText(Resources.GetString(Resource.String.notification_text))
+                .SetSmallIcon(Resource.Mipmap.notification_bar_icon)
+                .SetLargeIcon(BitmapFactory.DecodeResource(Resources, Resource.Drawable.web_hi_res_512))
+                .SetColor(Resource.Color.colorPrimary)
+                .SetOngoing(true)
+                .SetContentIntent(pendingIntent)
+                .Build();
+            return notification;
+        }
+
+        private PendingIntent BuildMainActivityPendingIntent()
+        {
+            var resultIntent = new Intent(Application.Context, typeof(MainActivity));
+            var pendingIntent = PendingIntent.GetActivity(this, 0, resultIntent, PendingIntentFlags.UpdateCurrent);
+            return pendingIntent;
         }
 
         private void StartLocationUpdates()

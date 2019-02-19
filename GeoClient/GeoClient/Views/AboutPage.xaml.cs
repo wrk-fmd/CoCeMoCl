@@ -1,8 +1,7 @@
-﻿using GeoClient.Services;
+﻿using GeoClient.Services.Location;
+using GeoClient.Services.Registration;
 using System;
 using System.Threading.Tasks;
-using GeoClient.Services.Location;
-using GeoClient.Services.Registration;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -19,7 +18,6 @@ namespace GeoClient.Views
         {
             _registrationService = RegistrationService.Instance;
             InitializeComponent();
-            LocationChangeRegistry.Instance.RegisterListener(this);
         }
 
         protected override void OnAppearing()
@@ -28,6 +26,13 @@ namespace GeoClient.Views
             {
                 DisplayRegistrationInfo();
             }
+
+            LocationChangeRegistry.Instance.RegisterListener(this);
+        }
+
+        protected override void OnDisappearing()
+        {
+            LocationChangeRegistry.Instance.UnregisterListener(this);
         }
 
         private async void registerDevice_Clicked(object sender, EventArgs e)
@@ -74,7 +79,8 @@ namespace GeoClient.Views
             {
                 await DisplayAlert("Registrierung gelöscht", "Registrierung entfernt.", "OK");
                 ResetRegistrationInfo();
-            } else
+            }
+            else
             {
                 await DisplayAlert("Registrierung fehlgeschlagen", "Es wurde keine gültige Registrierungs URL gefunden.", "OK");
                 ResetRegistrationInfo();

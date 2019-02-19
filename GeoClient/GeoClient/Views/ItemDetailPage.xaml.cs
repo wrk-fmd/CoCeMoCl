@@ -1,10 +1,9 @@
-﻿using System;
-
+﻿using GeoClient.Models;
+using GeoClient.ViewModels;
+using GeoClient.Views.Utils;
+using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
-using GeoClient.Models;
-using GeoClient.ViewModels;
 
 namespace GeoClient.Views
 {
@@ -20,18 +19,20 @@ namespace GeoClient.Views
             BindingContext = this.viewModel = viewModel;
         }
 
-        public ItemDetailPage()
+        private async void openLocation_Clicked(object sender, EventArgs e)
         {
-            InitializeComponent();
+            var item = viewModel.IncidentItem;
 
-            var item = new Item
+            var geoUri = GeoPointUtil.CreateGeoUri(item.Location, "GeoClient: Berufungsort");
+
+            if (geoUri != null)
             {
-                Text = "Item 1",
-                Description = "This is an item description."
-            };
-
-            viewModel = new ItemDetailViewModel(item);
-            BindingContext = viewModel;
+                Device.OpenUri(geoUri);
+            }
+            else
+            {
+                await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+            }
         }
     }
 }

@@ -1,12 +1,15 @@
 ﻿using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
+using GeoClient.Services.Utils;
+using GeoClient.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GeoClient.Services.Utils;
 
 namespace GeoClient.Services.Boundary
 {
@@ -17,7 +20,8 @@ namespace GeoClient.Services.Boundary
     public class RestService : ILocationUpdateListener
     {
         public const string ServerBaseUrl = "https://geo.fmd.wrk.at/";
-        private const string EndpointUri = "endpoint/positions/";
+        private const string LocationEndpointUri = "endpoint/positions/";
+        private const string ScopeEndpointUri = "endpoint/scope/";
         private const string JsonContentType = "application/json";
 
         private readonly RegistrationService _registrationService;
@@ -51,9 +55,40 @@ namespace GeoClient.Services.Boundary
             }
         }
 
+        public async void GetScope()
+        {
+            if (!_registrationService.IsRegistered())
+                return;
+
+            var scopeUrl = CreateGeoServerScopeUrl();
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Getting Scope from Server");
+
+            await _positionHttpClient.GetAsync(scopeUrl).ContinueWith(getScopeResponse =>
+            {
+                try
+                {
+                    var responseString = getScopeResponse.Result.Content.ReadAsStringAsync().Result;
+                    JObject scopeArray = JObject.Parse(responseString);
+
+                    JArray incidentArray = (JArray) scopeArray["incidents"];
+                    JArray unitsArray = (JArray) scopeArray["units"];
+                    var incidents = incidentArray.Select(c => (JObject) c).ToList();
+                    var units = unitsArray.Select(c => (JObject) c).ToList();
+
+                    var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units);
+                    IncidentUpdateRegistry.Instance.IncidentsUpdated(incidentItemList);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failed to get response from server!");
+                    Console.WriteLine(e.ToString());
+                }
+            });
+        }
+
         private void SendPosition(Xamarin.Essentials.Location location)
         {
-            var positionsUrl = CreateGeoServerUrl();
+            var positionsUrl = CreateGeoServerLocationUrl();
             var positionObject = new JObject
             {
                 {"latitude", location.Latitude},
@@ -90,10 +125,16 @@ namespace GeoClient.Services.Boundary
             }).RunSynchronously(_taskScheduler);
         }
 
-        private string CreateGeoServerUrl()
+        private string CreateGeoServerLocationUrl()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            return ServerBaseUrl + EndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+            return ServerBaseUrl + LocationEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+        }
+
+        private string CreateGeoServerScopeUrl()
+        {
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            return ServerBaseUrl + ScopeEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
         }
     }
 }
