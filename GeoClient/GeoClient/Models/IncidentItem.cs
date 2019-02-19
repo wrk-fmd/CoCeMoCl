@@ -16,11 +16,7 @@ namespace GeoClient.Models
         public bool Blue { get; set; }
         public GeoPoint Location { get; set; }
 
-        // TODO: Code Smell: Use type if ordering is relevant
-        public List<KeyValuePair<string, IncidentTaskState>> AssignedUnits { get; set; }
-        public List<Unit> Units { get; set; }
-
-        public Dictionary<string, IncidentTaskState> OtherTaskStates { get; set; }
+        public SortedSet<Unit> Units { get; set; }
 
         public string DescriptiveType => GetDescriptiveType();
         public Color BackgroundColor => GetBackgroundColor();
@@ -67,12 +63,12 @@ namespace GeoClient.Models
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo?.Id != null)
             {
-                Console.WriteLine(AssignedUnits);
-                foreach (KeyValuePair<string, IncidentTaskState> unit in AssignedUnits)
+                Console.WriteLine(Units);
+                foreach (Unit unit in Units)
                 {
-                    if (unit.Key == registrationInfo.Id)
+                    if (unit.Id == registrationInfo.Id)
                     {
-                        return unit.Value;
+                        return unit.State;
                     }
                 }
             }

@@ -28,7 +28,7 @@ namespace GeoClient.Views.Utils
             return geoPoint != null && NotBlank(geoPoint.Latitude) && NotBlank(geoPoint.Longitude);
         }
 
-        private static bool NotBlank(string inputString)
+        public static bool NotBlank(string inputString)
         {
             return inputString != null && inputString.Trim() != "";
         }

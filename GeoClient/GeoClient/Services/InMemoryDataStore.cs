@@ -1,11 +1,12 @@
 ﻿using GeoClient.Models;
 using GeoClient.Services.Boundary;
 using GeoClient.Services.Utils;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using GeoClient.Views.Utils;
 
 namespace GeoClient.Services
 {
@@ -18,7 +19,6 @@ namespace GeoClient.Services
         {
             _incidents = new ConcurrentDictionary<string, IncidentItem>();
             _restService = RestService.Instance;
-            GetItemsAsync(true);
         }
 
         public async Task<bool> AddItemAsync(IncidentItem incidentItem)
@@ -28,24 +28,9 @@ namespace GeoClient.Services
             return await Task.FromResult(true);
         }
 
-        public async Task<bool> UpdateItemAsync(IncidentItem incidentItem)
-        {
-            _incidents.TryAdd(incidentItem.Id, incidentItem);
-
-            return await Task.FromResult(true);
-        }
-
-        public async Task<bool> DeleteItemAsync(string id)
-        {
-            _incidents.TryRemove(id, out _);
-
-            return await Task.FromResult(true);
-        }
-
         // TODO: Code-Smell: Get informed about fetched data, do not read it from field in other class.
-        public async Task<IEnumerable<IncidentItem>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<IncidentItem>> GetItemsAsync()
         {
-
             if (_restService.incidents != null)
             {
                 foreach (var incident in _restService.incidents)
@@ -55,52 +40,57 @@ namespace GeoClient.Services
                     await AddItemAsync(incidentItem);
                 }
             }
+
             Console.WriteLine(_incidents.Values);
             return await Task.FromResult(_incidents.Values);
         }
 
         private IncidentItem CreateIncidentItem(JObject incident)
         {
-            string latitude = (string) incident["location"]["latitude"];
-            string longitude = (string) incident["location"]["longitude"];
-
-
             IncidentItem incidentItem = new IncidentItem((string) incident["id"]);
             incidentItem.Info = (string) incident["info"];
             incidentItem.Type = GeoIncidentTypeFactory.GetTypeFromString((string) incident["type"]);
             incidentItem.Priority = bool.Parse((string) incident["priority"]);
             incidentItem.Blue = bool.Parse((string) incident["blue"]);
-            incidentItem.Location = new GeoPoint(latitude, longitude);
+            incidentItem.Location = CreateGeoPoint(incident["location"]);
 
-            List<KeyValuePair<string, IncidentTaskState>> assignedUnits = new List<KeyValuePair<string, IncidentTaskState>>();
-            Dictionary<string, string> rawAssignedUnits = incident["assignedUnits"].ToObject<Dictionary<string, string>>();
-            foreach (KeyValuePair<string, string> unit in rawAssignedUnits)
-            {
-                assignedUnits.Add(new KeyValuePair<string, IncidentTaskState>(unit.Key, IncidentTaskStateFactory.GetTaskStateFromString(unit.Value)));
-            }
+            Dictionary<string, string> rawAssignedUnits =
+                incident["assignedUnits"].ToObject<Dictionary<string, string>>();
 
-            incidentItem.AssignedUnits = assignedUnits;
-            
             incidentItem.Units = CreateUnitList(rawAssignedUnits);
 
             return incidentItem;
         }
 
-        private List<Unit> CreateUnitList(Dictionary<string, string> rawAssignedUnits)
+        private static GeoPoint CreateGeoPoint(JToken incidentPoint)
         {
-            List<Unit> units = new List<Unit>();
+            GeoPoint geoPoint = null;
+
+            string latitude = (string)incidentPoint?["latitude"];
+            string longitude = (string)incidentPoint?["longitude"];
+
+            if (GeoPointUtil.NotBlank(latitude) && GeoPointUtil.NotBlank(longitude))
+            {
+                geoPoint = new GeoPoint(latitude, longitude);
+            }
+
+            return geoPoint;
+        }
+
+        private SortedSet<Unit> CreateUnitList(IReadOnlyDictionary<string, string> rawAssignedUnits)
+        {
+            var units = new SortedSet<Unit>();
             if (_restService.units != null)
             {
                 foreach (var unitJsonObject in _restService.units)
                 {
                     Unit unit = new Unit((string) unitJsonObject["id"]);
                     unit.Name = (string) unitJsonObject["name"];
-                    unit.LastPoint = new GeoPoint((string) unitJsonObject["lastPoint"]["latitude"],
-                        (string) unitJsonObject["lastPoint"]["longitude"]);
+                    unit.LastPoint = CreateGeoPoint(unitJsonObject["lastPoint"]);
 
                     rawAssignedUnits.TryGetValue(unit.Id, out var rawUnitState);
                     unit.State = IncidentTaskStateFactory.GetTaskStateFromString(rawUnitState);
-                    
+
                     units.Add(unit);
                 }
             }
