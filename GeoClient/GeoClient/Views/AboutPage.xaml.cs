@@ -1,4 +1,5 @@
-﻿using GeoClient.Services.Location;
+﻿using GeoClient.Services;
+using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
 using System;
 using System.Threading.Tasks;

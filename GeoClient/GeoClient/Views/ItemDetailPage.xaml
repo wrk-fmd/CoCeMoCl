@@ -11,43 +11,48 @@
             <Color x:Key="UnitListItem">Black</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <StackLayout Spacing="10" Padding="20">
+    <StackLayout>
+        <StackLayout Spacing="10" Padding="20">
+            <StackLayout Orientation="Horizontal">
 
-        <StackLayout Orientation="Horizontal">
-            <Label Text=" " HorizontalOptions="FillAndExpand"/>
-            <!--Label Text="Status:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" HorizontalOptions="FillAndExpand"/-->
-            <Image HorizontalOptions="End" Scale="0.8" Source="{Binding IncidentItem.OwnTaskStateIcon}" />
+                <StackLayout HorizontalOptions="StartAndExpand">
+                    <Label Text="Info:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
+                    <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap" />
+                </StackLayout>
+                <StackLayout HorizontalOptions="End">
+                    <Image  Scale="0.8" Source="{Binding IncidentItem.OwnTaskStateIcon}" />
+                </StackLayout>
+            </StackLayout>
+
+            <Label Text="Einheiten:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
+            <ScrollView>
+                <ListView x:Name="ItemsListView"
+                          ItemsSource="{Binding IncidentItem.Units}"
+                          VerticalOptions="FillAndExpand"
+                          HasUnevenRows="true"
+                          CachingStrategy="RecycleElement"
+                          IsEnabled="False">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+                                <StackLayout Spacing="20" Orientation="Horizontal">
+                                    <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                                        <Label Text="{Binding Name}"
+                                               LineBreakMode="NoWrap"
+                                               Style="{DynamicResource ListItemTextStyle}"
+                                               FontSize="18"
+                                               TextColor="{StaticResource UnitListItem}" />
+                                    </StackLayout>
+                                    <Image Scale="0.7" Source="{Binding TaskStateIcon}" />
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
         </StackLayout>
-
-        <Label Text="Info:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
-        <Label Text="{Binding IncidentItem.Info}" FontSize="Small" LineBreakMode="WordWrap" />
-
-        <Label Text="Einheiten:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" />
-        <ListView x:Name="ItemsListView"
-                  ItemsSource="{Binding IncidentItem.Units}"
-                  VerticalOptions="FillAndExpand"
-                  HasUnevenRows="true"
-                  CachingStrategy="RecycleElement"
-                  IsEnabled="False">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Spacing="20" Orientation="Horizontal">
-                            <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding Name}"
-                                       LineBreakMode="NoWrap"
-                                       Style="{DynamicResource ListItemTextStyle}"
-                                       FontSize="18"
-                                       TextColor="{StaticResource UnitListItem}" />
-                            </StackLayout>
-                            <Image Scale="0.7" Source="{Binding TaskStateIcon}" />
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
-        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked"
-                BackgroundColor="{StaticResource Accent}" TextColor="White" />
+        <StackLayout VerticalOptions="End">
+            <Button x:Name="registrationButton" Text="Navigation zum Berufungsort starten" Clicked="openLocation_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+        </StackLayout>
     </StackLayout>
 </ContentPage>
