@@ -87,14 +87,19 @@ namespace GeoClient.Views
                 _viewModel.Incidents.Add(incident);
             }
 
-            _viewModel.IsBusy = false;
+            SetBusyIndicationToFalse();
         }
 
         public void IncidentsInvalidated()
         {
             _viewModel.EmptyListMessage = "Keine Aufträge / Einsätze.";
             _viewModel.Incidents.Clear();
-            _viewModel.IsBusy = false;
+            SetBusyIndicationToFalse();
+        }
+
+        private void SetBusyIndicationToFalse()
+        {
+            Device.BeginInvokeOnMainThread(() => _viewModel.IsBusy = false);
         }
     }
 }
