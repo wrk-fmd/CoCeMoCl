@@ -13,9 +13,9 @@
     </ContentPage.Resources>
     <StackLayout Spacing="10" Padding="20">
 
-        <StackLayout Orientation="Horizontal">
+        <StackLayout Orientation="Horizontal" IsVisible="{Binding IncidentItem.IsUnitAssignedToTask}">
             <Label Text=" " HorizontalOptions="FillAndExpand"/>
-            <!--Label Text="Status:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" HorizontalOptions="FillAndExpand"/-->
+            <Label Text="Eigener Status:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" HorizontalOptions="FillAndExpand"/>
             <Image HorizontalOptions="End" Scale="0.8" Source="{Binding IncidentItem.OwnTaskStateIcon}" />
         </StackLayout>
 

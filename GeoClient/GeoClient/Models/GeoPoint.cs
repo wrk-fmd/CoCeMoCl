@@ -13,7 +13,7 @@
 
         protected bool Equals(GeoPoint other)
         {
-            return string.Equals(Latitude, other.Latitude) && string.Equals(Longitude, other.Longitude);
+            return Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
         }
 
         public override bool Equals(object obj)
@@ -21,7 +21,7 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((GeoPoint)obj);
+            return Equals((GeoPoint) obj);
         }
 
         public override int GetHashCode()

@@ -42,7 +42,7 @@
                                            FontSize="14"
                                            TextColor="{Binding ForegroundColor} " />
                                 </StackLayout>
-                                <Image HorizontalOptions="End" Source="{Binding OwnTaskStateIcon}" />
+                                <Image HorizontalOptions="End" Source="{Binding OwnTaskStateIcon}" IsVisible="{Binding IsUnitAssignedToTask}"/>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

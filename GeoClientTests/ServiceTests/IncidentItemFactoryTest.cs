@@ -1,24 +1,22 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using GeoClient.Models;
+﻿using GeoClient.Models;
 using GeoClient.Services;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Xamarin.UITest;
-using Xamarin.UITest.Queries;
+using System.Collections.Generic;
+using System.IO;
 
 namespace GeoClientTests.ServiceTests
 {
     [TestFixture]
     public class IncidentItemFactoryTest
     {
-
         [Test]
         public void CreateIncidentItemList_MultipleIncidents_UnitOnlyShownForAssignedIncidents()
         {
-            var units1String = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "..\\TestResources\\units1.json");
-            var incidents1String = File.ReadAllText(TestContext.CurrentContext.TestDirectory + "..\\TestResources\\incidents1.json");
+            var units1String =
+                File.ReadAllText(TestContext.CurrentContext.TestDirectory + "..\\TestResources\\units1.json");
+            var incidents1String =
+                File.ReadAllText(TestContext.CurrentContext.TestDirectory + "..\\TestResources\\incidents1.json");
 
             var units = ReadJObjectList(units1String);
             var incidents = ReadJObjectList(incidents1String);
@@ -33,52 +31,54 @@ namespace GeoClientTests.ServiceTests
 
         private static IncidentItem CreateExpectedItem1()
         {
-            var expectedItem1 = new IncidentItem("incident-id-1")
-            {
-                Info = "Info 1",
-                Location = new GeoPoint(48, 16),
-                Type = GeoIncidentType.Task,
-                Units = new SortedSet<Unit>
+            var expectedItem1 = new IncidentItem(
+                "incident-id-1",
+                GeoIncidentType.Task,
+                "Info 1",
+                location: new GeoPoint(48, 16),
+                units: new List<Unit>
                 {
-                    new Unit("unit-id-1")
-                    {
-                        LastPoint = new GeoPoint(48.5, 16.5),
-                        Name = "Own Unit",
-                        State = IncidentTaskState.Abo
-                    },
-                    new Unit("unit-id-2")
-                    {
-                        Name = "No position unit",
-                        State = IncidentTaskState.Assigned
-                    }
-                }
-            };
+                    CreateUnit1(IncidentTaskState.Abo),
+                    CreateUnit2()
+                });
             return expectedItem1;
         }
 
         private static IncidentItem CreateExpectedItem2()
         {
-            var expectedItem1 = new IncidentItem("incident-id-2")
-            {
-                Info = "Info 2",
-                Location = new GeoPoint(49, 17),
-                Type = GeoIncidentType.Task,
-                Units = new SortedSet<Unit>
+            var expectedItem1 = new IncidentItem(
+                "incident-id-2",
+                info: "Info 2",
+                location: new GeoPoint(49, 17),
+                type: GeoIncidentType.Task,
+                units: new List<Unit>
                 {
-                    new Unit("unit-id-1")
-                    {
-                        LastPoint = new GeoPoint(48.5, 16.5),
-                        Name = "Own Unit",
-                        State = IncidentTaskState.Zbo
-                    }
-                }
-            };
+                    CreateUnit1(IncidentTaskState.Zbo)
+                });
             return expectedItem1;
+        }
+
+        private static Unit CreateUnit1(IncidentTaskState expectedState)
+        {
+            return new Unit("unit-id-1",
+                "Own Unit",
+                new GeoPoint(48.5, 16.5),
+                expectedState
+            );
+        }
+
+        private static Unit CreateUnit2()
+        {
+            return new Unit("unit-id-2",
+                "No position unit",
+                state: IncidentTaskState.Assigned
+            );
         }
 
         private static List<JObject> ReadJObjectList(string inputString)
         {
             var jArray = JArray.Parse(inputString);
+
             var list = new List<JObject>();
             foreach (var jToken in jArray)
             {

@@ -34,19 +34,19 @@ namespace GeoClient.Services
 
         private static IncidentItem CreateIncidentItem(JObject incident, List<JObject> unitJsonObjects)
         {
-            IncidentItem incidentItem = new IncidentItem((string) incident["id"]);
-            incidentItem.Info = (string) incident["info"];
-            incidentItem.Type = GeoIncidentTypeFactory.GetTypeFromString((string) incident["type"]);
-            incidentItem.Priority = bool.Parse((string) incident["priority"]);
-            incidentItem.Blue = bool.Parse((string) incident["blue"]);
-            incidentItem.Location = CreateGeoPoint(incident["location"]);
 
             Dictionary<string, string> rawAssignedUnits =
                 incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+            var unitList = CreateUnitList(rawAssignedUnits, unitJsonObjects);
 
-            incidentItem.Units = CreateUnitList(rawAssignedUnits, unitJsonObjects);
-
-            return incidentItem;
+            return new IncidentItem(
+                incident.Value<string>("id"),
+                GeoIncidentTypeFactory.GetTypeFromString((string)incident["type"]),
+            incident.Value<string>("info"),
+                incident.Value<bool>("priority"),
+                incident.Value<bool>("blue"),
+                CreateGeoPoint(incident["location"]),
+                unitList);
         }
 
         private static GeoPoint CreateGeoPoint(JToken pointJToken)
@@ -91,17 +91,17 @@ namespace GeoClient.Services
             return geoPoint;
         }
 
-        private static SortedSet<Unit> CreateUnitList(
+        private static List<Unit> CreateUnitList(
             IReadOnlyDictionary<string, string> rawAssignedUnits,
             List<JObject> unitJsonObjects)
         {
-            var units = new SortedSet<Unit>();
+            var units = new List<Unit>();
             if (unitJsonObjects != null)
             {
                 foreach (var rawAssignedUnit in rawAssignedUnits)
                 {
-                    var unit = GetUnitFromUnitList(rawAssignedUnit.Key, unitJsonObjects);
-                    unit.State = IncidentTaskStateFactory.GetTaskStateFromString(rawAssignedUnit.Value);
+                    var taskState = IncidentTaskStateFactory.GetTaskStateFromString(rawAssignedUnit.Value);
+                    var unit = GetUnitFromUnitList(rawAssignedUnit.Key, unitJsonObjects, taskState);
                     units.Add(unit);
                 }
             }
@@ -109,17 +109,17 @@ namespace GeoClient.Services
             return units;
         }
 
-        private static Unit GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects)
+        private static Unit GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects, IncidentTaskState taskStateOfUnit)
         {
             foreach (var unitJsonObject in unitJsonObjects)
             {
                 if ((string) unitJsonObject["id"] == unitId)
                 {
-                    Unit unit = new Unit(unitId)
-                    {
-                        Name = (string) unitJsonObject["name"],
-                        LastPoint = CreateGeoPoint(unitJsonObject["lastPoint"])
-                    };
+                    Unit unit = new Unit(unitId,
+                        unitJsonObject.Value<string>("name"),
+                        CreateGeoPoint(unitJsonObject["lastPoint"]),
+                        taskStateOfUnit
+                    );
 
                     return unit;
                 }

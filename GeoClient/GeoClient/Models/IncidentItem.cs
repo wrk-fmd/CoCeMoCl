@@ -2,6 +2,7 @@
 using GeoClient.Services.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace GeoClient.Models
@@ -9,25 +10,39 @@ namespace GeoClient.Models
     public class IncidentItem
     {
         public string Id { get; }
-        public GeoIncidentType? Type { get; set; }
-        public string Info { get; set; }
-        public bool Priority { get; set; }
-        public bool Blue { get; set; }
-        public GeoPoint Location { get; set; }
+        public GeoIncidentType? Type { get; }
+        public string Info { get; }
+        public bool Priority { get; }
+        public bool Blue { get; }
+        public GeoPoint Location { get; }
 
-        public SortedSet<Unit> Units { get; set; }
+        public List<Unit> Units { get; }
 
         public string DescriptiveType => GetDescriptiveType();
         public Color BackgroundColor => GetBackgroundColor();
         public Color ForegroundColor => GetForegroundColor();
         public IncidentTaskState? OwnTaskState => GetOwnTaskState();
         public string OwnTaskStateIcon => GetOwnTaskStateIcon();
+        public bool IsUnitAssignedToTask => GetIsUnitAssignedToTask();
 
         RegistrationService _registrationService = RegistrationService.Instance;
 
-        public IncidentItem(string id)
+        public IncidentItem(
+            string id, 
+            GeoIncidentType type = GeoIncidentType.Unknown, 
+            string info = "", 
+            bool priority = false, 
+            bool blue = false, 
+            GeoPoint location = null, 
+            List<Unit> units = null)
         {
             Id = id;
+            Type = type;
+            Info = info;
+            Priority = priority;
+            Blue = blue;
+            Location = location;
+            Units = units ?? new List<Unit>();
         }
 
         protected bool Equals(IncidentItem other)
@@ -38,23 +53,23 @@ namespace GeoClient.Models
                    && Priority == other.Priority
                    && Blue == other.Blue
                    && Equals(Location, other.Location)
-                   && SetEquals(Units, other.Units);
+                   && ListEquals(Units, other.Units);
         }
 
-        private bool SetEquals(SortedSet<Unit> units, SortedSet<Unit> otherUnits)
+        private bool ListEquals(List<Unit> units, List<Unit> otherUnits)
         {
             if (units == null)
                 return otherUnits == null;
             if (otherUnits == null)
                 return false;
-            return units.SetEquals(otherUnits);
+            return units.SequenceEqual(otherUnits);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((IncidentItem) obj);
         }
 
@@ -130,6 +145,11 @@ namespace GeoClient.Models
         private string GetOwnTaskStateIcon()
         {
             return StatusIconResolver.GetIconForTaskState(OwnTaskState);
+        }
+
+        private bool GetIsUnitAssignedToTask()
+        {
+            return OwnTaskState != IncidentTaskState.Unknown;
         }
     }
 }
