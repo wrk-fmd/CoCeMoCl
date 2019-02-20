@@ -89,35 +89,35 @@ namespace GeoClient.Views
 
         private void ResetRegistrationInfo()
         {
-            registrationinfo.Text = "Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt.";
-            registrationButton.Text = "Jetzt registrieren";
+            RegistrationInfo.Text = "Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt.";
+            RegistrationButton.Text = "Jetzt registrieren";
         }
 
         private void DisplayRegistrationInfo()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            registrationinfo.Text = "Dieses Gerät hat die ID " + registrationInfo.Id + " mit dem Token " + registrationInfo.Token;
-            registrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
+            RegistrationInfo.Text = "Dieses Gerät hat die ID " + registrationInfo.Id + " mit dem Token " + registrationInfo.Token;
+            RegistrationButton.Text = "Erneut registrieren / Zu anderer Einheit zuordnen";
         }
 
         public void LocationUpdated(Location updatedLocation)
         {
             if (updatedLocation != null)
             {
-                lblLatitude.Text = "Latitude: " + updatedLocation.Latitude;
-                lblLongitude.Text = "Longitude: " + updatedLocation.Longitude;
-                lblSpeed.Text = "Speed: " + updatedLocation.Speed;
-                lblAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy;
-                lblAltitude.Text = "Altitude: " + updatedLocation.Altitude;
+                LabelLatitude.Text = "Latitude: " + updatedLocation.Latitude;
+                LabelLongitude.Text = "Longitude: " + updatedLocation.Longitude;
+                LabelSpeed.Text = "Speed: " + updatedLocation.Speed;
+                LabelAccuracy.Text = "Accuracy: " + updatedLocation.Accuracy;
+                LabelAltitude.Text = "Altitude: " + updatedLocation.Altitude;
             }
             else
             {
                 Console.WriteLine("Updated location is null.");
-                lblLatitude.Text = "Latitude: N/A";
-                lblLongitude.Text = "Longitude: N/A";
-                lblSpeed.Text = "Speed: N/A";
-                lblAccuracy.Text = "Accuracy: N/A";
-                lblAltitude.Text = "Altitude: N/A";
+                LabelLatitude.Text = "Latitude: N/A";
+                LabelLongitude.Text = "Longitude: N/A";
+                LabelSpeed.Text = "Speed: N/A";
+                LabelAccuracy.Text = "Accuracy: N/A";
+                LabelAltitude.Text = "Altitude: N/A";
             }
         }
     }
