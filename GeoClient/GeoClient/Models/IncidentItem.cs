@@ -3,11 +3,12 @@ using GeoClient.Services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GeoClient.Views.Utils;
 using Xamarin.Forms;
 
 namespace GeoClient.Models
 {
-    public class IncidentItem
+    public class IncidentItem : IComparable<IncidentItem>
     {
         public string Id { get; }
         public GeoIncidentType? Type { get; }
@@ -23,17 +24,18 @@ namespace GeoClient.Models
         public Color ForegroundColor => GetForegroundColor();
         public IncidentTaskState? OwnTaskState => GetOwnTaskState();
         public string OwnTaskStateIcon => GetOwnTaskStateIcon();
+        public string OwnTaskStateDescription => OwnTaskState?.GetDescription();
         public bool IsUnitAssignedToTask => GetIsUnitAssignedToTask();
 
         RegistrationService _registrationService = RegistrationService.Instance;
 
         public IncidentItem(
-            string id, 
-            GeoIncidentType type = GeoIncidentType.Unknown, 
-            string info = "", 
-            bool priority = false, 
-            bool blue = false, 
-            GeoPoint location = null, 
+            string id,
+            GeoIncidentType type = GeoIncidentType.Unknown,
+            string info = "",
+            bool priority = false,
+            bool blue = false,
+            GeoPoint location = null,
             List<Unit> units = null)
         {
             Id = id;
@@ -150,6 +152,29 @@ namespace GeoClient.Models
         private bool GetIsUnitAssignedToTask()
         {
             return OwnTaskState != IncidentTaskState.Unknown;
+        }
+
+        public int CompareTo(IncidentItem other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+
+            var assignmentComparison = IsUnitAssignedToTask.CompareTo(other.IsUnitAssignedToTask);
+            if (assignmentComparison != 0)
+                return -assignmentComparison;
+
+            var blueComparison = Blue.CompareTo(other.Blue);
+            if (blueComparison != 0)
+                return -blueComparison;
+
+            var priorityComparison = Priority.CompareTo(other.Priority);
+            if (priorityComparison != 0)
+                return -priorityComparison;
+
+            var typeComparison = Nullable.Compare(Type, other.Type);
+            if (typeComparison != 0) return typeComparison;
+
+            return string.Compare(Info, other.Info, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -5,6 +5,7 @@ using GeoClient.Services.Utils;
 using GeoClient.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -82,7 +83,9 @@ namespace GeoClient.Views
         {
             IncidentsInvalidated();
 
-            foreach (var incident in updatedIncidents)
+            var sortedIncidents = updatedIncidents.OrderBy(x => x);
+
+            foreach (var incident in sortedIncidents)
             {
                 _viewModel.Incidents.Add(incident);
             }

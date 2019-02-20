@@ -8,8 +8,8 @@ namespace GeoClient.ViewModels
 {
     public class IncidentsViewModel : BaseViewModel
     {
-        public ObservableCollection<IncidentItem> Incidents { get; set; }
-        public Command LoadItemsCommand { get; set; }
+        public ObservableCollection<IncidentItem> Incidents { get; }
+        public Command LoadItemsCommand { get; }
 
         private bool _isBusy;
         private string _emptyListMessage;
