@@ -25,7 +25,7 @@ namespace GeoClient.Views.Utils
 
         private static bool IsGeoPointValid(GeoPoint geoPoint)
         {
-            return geoPoint != null && NotBlank(geoPoint.Latitude) && NotBlank(geoPoint.Longitude);
+            return geoPoint != null;
         }
 
         public static bool NotBlank(string inputString)

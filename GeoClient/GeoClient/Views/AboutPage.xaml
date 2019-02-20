@@ -26,7 +26,7 @@
                             <FormattedString.Spans>
                                 <Span Text="GeoClient" FontAttributes="Bold" FontSize="22" />
                                 <Span Text=" " />
-                                <Span Text="1.1.0" ForegroundColor="{StaticResource LightTextColor}" />
+                                <Span Text="1.1.1" ForegroundColor="{StaticResource LightTextColor}" />
                             </FormattedString.Spans>
                         </FormattedString>
                     </Label.FormattedText>
@@ -44,13 +44,13 @@
                     <Label.FormattedText>
                         <FormattedString>
                             <FormattedString.Spans>
-                                <Span x:Name="registrationinfo" Text="Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt." />
+                                <Span x:Name="RegistrationInfo" Text="Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt." />
                             </FormattedString.Spans>
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Button Margin="0,10,0,0" x:Name="registrationButton" Text="Jetzt registrieren" Clicked="registerDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
-                <Button Margin="0,10,0,0" x:Name="unregisterButton" Text="Registrierung löschen" Clicked="unregisterDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+                <Button Margin="0,10,0,0" x:Name="RegistrationButton" Text="Jetzt registrieren" Clicked="registerDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
+                <Button Margin="0,10,0,0" x:Name="UnregisterButton" Text="Registrierung löschen" Clicked="unregisterDevice_Clicked" BackgroundColor="{StaticResource Accent}" TextColor="White" />
                 <Button Margin="0,10,0,0" Text="Weitere Infos" Command="{Binding OpenWebCommand}" BackgroundColor="{StaticResource Accent}" TextColor="White" />
                 <StackLayout HorizontalOptions="Center" VerticalOptions="Start">
                     <Label FontSize="22">
@@ -62,11 +62,11 @@
                             </FormattedString>
                         </Label.FormattedText>
                     </Label>
-                    <Label HorizontalTextAlignment="Center" x:Name="lblLatitude" Text="Latitude"></Label>
-                    <Label HorizontalTextAlignment="Center" x:Name="lblLongitude" Text="Longitude"></Label>
-                    <Label HorizontalTextAlignment="Center" x:Name="lblSpeed" Text="Speed"></Label>
-                    <Label HorizontalTextAlignment="Center" x:Name="lblAccuracy" Text="Accuracy"></Label>
-                    <Label HorizontalTextAlignment="Center" x:Name="lblAltitude" Text="Altitude"></Label>
+                    <Label HorizontalTextAlignment="Center" x:Name="LabelLatitude" Text="Latitude"></Label>
+                    <Label HorizontalTextAlignment="Center" x:Name="LabelLongitude" Text="Longitude"></Label>
+                    <Label HorizontalTextAlignment="Center" x:Name="LabelSpeed" Text="Speed"></Label>
+                    <Label HorizontalTextAlignment="Center" x:Name="LabelAccuracy" Text="Accuracy"></Label>
+                    <Label HorizontalTextAlignment="Center" x:Name="LabelAltitude" Text="Altitude"></Label>
                 </StackLayout>
             </StackLayout>
             

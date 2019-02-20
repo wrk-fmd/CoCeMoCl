@@ -1,0 +1,20 @@
+﻿[
+    {
+        "id": "unit-id-1",
+        "name": "Own Unit",
+        "lastPoint": {
+            "latitude": 48.50,
+            "longitude": 16.50
+        },
+        "currentPosition": {
+            "timestamp": "2019-02-20T18:20:54Z",
+            "accuracy": 37.0,
+            "latitude": 48.60,
+            "longitude": 16.60
+        }
+    },
+    {
+        "id": "unit-id-2",
+        "name": "No position unit"
+    }
+]

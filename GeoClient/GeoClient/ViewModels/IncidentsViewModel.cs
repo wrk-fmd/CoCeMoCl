@@ -8,10 +8,17 @@ namespace GeoClient.ViewModels
 {
     public class IncidentsViewModel : BaseViewModel
     {
-        public ObservableCollection<IncidentItem> Incidents { get; set; }
-        public Command LoadItemsCommand { get; set; }
+        public ObservableCollection<IncidentItem> Incidents { get; }
+        public Command LoadItemsCommand { get; }
 
+        private bool _isBusy;
         private string _emptyListMessage;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => SetProperty(ref _isBusy, value);
+        }
 
         public string EmptyListMessage
         {
@@ -54,6 +61,8 @@ namespace GeoClient.ViewModels
                 Console.WriteLine("Update of incidents is still busy.");
                 return;
             }
+
+            IsBusy = true;
 
             _restService.GetScope();
         }

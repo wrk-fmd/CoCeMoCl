@@ -6,8 +6,8 @@
     <Authors>Daniel Steiner, Robert Wittek</Authors>
     <Copyright>MIT License</Copyright>
     <Description>App to share the position data</Description>
-    <Version>1.1.0</Version>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <Version>1.1.1</Version>
+    <AssemblyVersion>1.1.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

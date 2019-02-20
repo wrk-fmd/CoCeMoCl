@@ -1,12 +1,11 @@
 ﻿using GeoClient.Models;
-using GeoClient.Services.Boundary;
 using GeoClient.Services.Utils;
+using GeoClient.Views.Utils;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using GeoClient.Views.Utils;
+using System.Globalization;
+using static System.Double;
 
 namespace GeoClient.Services
 {
@@ -25,61 +24,109 @@ namespace GeoClient.Services
                     incidentList.Add(incidentItem);
                 }
             }
+            else
+            {
+                Console.WriteLine("Provided incidents are null. Cannot parse incident items.");
+            }
 
             return incidentList;
         }
 
         private static IncidentItem CreateIncidentItem(JObject incident, List<JObject> unitJsonObjects)
         {
-            IncidentItem incidentItem = new IncidentItem((string) incident["id"]);
-            incidentItem.Info = (string) incident["info"];
-            incidentItem.Type = GeoIncidentTypeFactory.GetTypeFromString((string) incident["type"]);
-            incidentItem.Priority = bool.Parse((string) incident["priority"]);
-            incidentItem.Blue = bool.Parse((string) incident["blue"]);
-            incidentItem.Location = CreateGeoPoint(incident["location"]);
 
             Dictionary<string, string> rawAssignedUnits =
                 incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+            var unitList = CreateUnitList(rawAssignedUnits, unitJsonObjects);
 
-            incidentItem.Units = CreateUnitList(rawAssignedUnits, unitJsonObjects);
-
-            return incidentItem;
+            return new IncidentItem(
+                incident.Value<string>("id"),
+                GeoIncidentTypeFactory.GetTypeFromString((string)incident["type"]),
+            incident.Value<string>("info"),
+                incident.Value<bool>("priority"),
+                incident.Value<bool>("blue"),
+                CreateGeoPoint(incident["location"]),
+                unitList);
         }
 
-        private static GeoPoint CreateGeoPoint(JToken incidentPoint)
+        private static GeoPoint CreateGeoPoint(JToken pointJToken)
         {
             GeoPoint geoPoint = null;
 
-            string latitude = (string)incidentPoint?["latitude"];
-            string longitude = (string)incidentPoint?["longitude"];
+            string latitudeString = (string) pointJToken?["latitude"];
+            string longitudeString = (string) pointJToken?["longitude"];
 
-            if (GeoPointUtil.NotBlank(latitude) && GeoPointUtil.NotBlank(longitude))
+            if (GeoPointUtil.NotBlank(latitudeString) && GeoPointUtil.NotBlank(longitudeString))
             {
-                geoPoint = new GeoPoint(latitude, longitude);
+                geoPoint = CreateGeoPoint(latitudeString, longitudeString);
             }
 
             return geoPoint;
         }
 
-        private static SortedSet<Unit> CreateUnitList(IReadOnlyDictionary<string, string> rawAssignedUnits, List<JObject> unitJsonObjects)
+        private static GeoPoint CreateGeoPoint(string latitudeString, string longitudeString)
         {
-            var units = new SortedSet<Unit>();
+            GeoPoint geoPoint = null;
+            try
+            {
+                double latitude = Parse(latitudeString, CultureInfo.InvariantCulture);
+                double longitude = Parse(longitudeString, CultureInfo.InvariantCulture);
+                geoPoint = new GeoPoint(latitude, longitude);
+            }
+            catch (ArgumentNullException)
+            {
+                Console.WriteLine("Cannot parse double of coordinate value 'null'.");
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine(
+                    "Provided coordinates does not contain valid numbers. lat=" + latitudeString +
+                    ", lon=" + longitudeString);
+            }
+            catch (OverflowException)
+            {
+                Console.WriteLine("Coordinate values are out of range.");
+            }
+
+            return geoPoint;
+        }
+
+        private static List<Unit> CreateUnitList(
+            IReadOnlyDictionary<string, string> rawAssignedUnits,
+            List<JObject> unitJsonObjects)
+        {
+            var units = new List<Unit>();
             if (unitJsonObjects != null)
             {
-                foreach (var unitJsonObject in unitJsonObjects)
+                foreach (var rawAssignedUnit in rawAssignedUnits)
                 {
-                    Unit unit = new Unit((string) unitJsonObject["id"]);
-                    unit.Name = (string) unitJsonObject["name"];
-                    unit.LastPoint = CreateGeoPoint(unitJsonObject["lastPoint"]);
-
-                    rawAssignedUnits.TryGetValue(unit.Id, out var rawUnitState);
-                    unit.State = IncidentTaskStateFactory.GetTaskStateFromString(rawUnitState);
-
+                    var taskState = IncidentTaskStateFactory.GetTaskStateFromString(rawAssignedUnit.Value);
+                    var unit = GetUnitFromUnitList(rawAssignedUnit.Key, unitJsonObjects, taskState);
                     units.Add(unit);
                 }
             }
 
             return units;
+        }
+
+        private static Unit GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects, IncidentTaskState taskStateOfUnit)
+        {
+            foreach (var unitJsonObject in unitJsonObjects)
+            {
+                if ((string) unitJsonObject["id"] == unitId)
+                {
+                    Unit unit = new Unit(unitId,
+                        unitJsonObject.Value<string>("name"),
+                        CreateGeoPoint(unitJsonObject["lastPoint"]),
+                        taskStateOfUnit
+                    );
+
+                    return unit;
+                }
+            }
+
+            Console.WriteLine($"Unit with ID {unitId} is not present in list of units!");
+            return null;
         }
     }
 }

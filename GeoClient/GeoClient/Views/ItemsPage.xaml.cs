@@ -5,6 +5,7 @@ using GeoClient.Services.Utils;
 using GeoClient.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -82,19 +83,26 @@ namespace GeoClient.Views
         {
             IncidentsInvalidated();
 
-            foreach (var incident in updatedIncidents)
+            var sortedIncidents = updatedIncidents.OrderBy(x => x);
+
+            foreach (var incident in sortedIncidents)
             {
                 _viewModel.Incidents.Add(incident);
             }
 
-            _viewModel.IsBusy = false;
+            SetBusyIndicationToFalse();
         }
 
         public void IncidentsInvalidated()
         {
             _viewModel.EmptyListMessage = "Keine Aufträge / Einsätze.";
             _viewModel.Incidents.Clear();
-            _viewModel.IsBusy = false;
+            SetBusyIndicationToFalse();
+        }
+
+        private void SetBusyIndicationToFalse()
+        {
+            Device.BeginInvokeOnMainThread(() => _viewModel.IsBusy = false);
         }
     }
 }

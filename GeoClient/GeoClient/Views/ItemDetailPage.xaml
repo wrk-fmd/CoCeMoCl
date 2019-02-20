@@ -13,9 +13,19 @@
     </ContentPage.Resources>
     <StackLayout Spacing="10" Padding="20">
 
-        <StackLayout Orientation="Horizontal">
-            <Label Text=" " HorizontalOptions="FillAndExpand"/>
-            <!--Label Text="Status:" FontSize="Large" FontAttributes="Bold" TextColor="{StaticResource Headline}" HorizontalOptions="FillAndExpand"/-->
+        <StackLayout Orientation="Horizontal" IsVisible="{Binding IncidentItem.IsUnitAssignedToTask}">
+            <Label
+                Text="Status: "
+                FontSize="Large"
+                FontAttributes="Bold"
+                TextColor="{StaticResource Headline}"
+                HorizontalOptions="Start"
+                VerticalTextAlignment="Center" />
+            <Label
+                Text="{Binding IncidentItem.OwnTaskStateDescription}"
+                FontSize="Medium"
+                HorizontalOptions="FillAndExpand"
+                VerticalTextAlignment="Center" />
             <Image HorizontalOptions="End" Scale="0.8" Source="{Binding IncidentItem.OwnTaskStateIcon}" />
         </StackLayout>
 
@@ -34,11 +44,12 @@
                     <ViewCell>
                         <StackLayout Spacing="20" Orientation="Horizontal">
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding Name}"
-                                       LineBreakMode="NoWrap"
-                                       Style="{DynamicResource ListItemTextStyle}"
-                                       FontSize="18"
-                                       TextColor="{StaticResource UnitListItem}" />
+                                <Label
+                                    Text="{Binding Name}"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemTextStyle}"
+                                    FontSize="18"
+                                    TextColor="{StaticResource UnitListItem}" />
                             </StackLayout>
                             <Image Scale="0.7" Source="{Binding TaskStateIcon}" />
                         </StackLayout>
@@ -47,7 +58,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <Button x:Name="registrationButton" Text="Berufungsort auf Karte anzeigen" Clicked="openLocation_Clicked"
-                BackgroundColor="{StaticResource Accent}" TextColor="White" />
+        <Button 
+            x:Name="RegistrationButton" 
+            Text="Berufungsort auf Karte anzeigen" 
+            Clicked="openLocation_Clicked"
+            BackgroundColor="{StaticResource Accent}" TextColor="White" />
     </StackLayout>
 </ContentPage>
