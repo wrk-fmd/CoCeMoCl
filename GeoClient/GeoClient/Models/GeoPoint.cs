@@ -1,18 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoClient.Models
+﻿namespace GeoClient.Models
 {
     public class GeoPoint
     {
-        public string Latitude { get; }
-        public string Longitude { get; }
+        public double Latitude { get; }
+        public double Longitude { get; }
 
-        public GeoPoint(string latitude, string longitude)
+        public GeoPoint(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
+        }
+
+        protected bool Equals(GeoPoint other)
+        {
+            return string.Equals(Latitude, other.Latitude) && string.Equals(Longitude, other.Longitude);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((GeoPoint)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Latitude.GetHashCode() * 397) ^ Longitude.GetHashCode();
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Latitude)}: {Latitude}, {nameof(Longitude)}: {Longitude}";
         }
     }
 }

@@ -1,0 +1,29 @@
+﻿[
+    {
+        "id": "incident-id-1",
+        "type": "Task",
+        "priority": false,
+        "blue": false,
+        "info": "Info 1",
+        "location": {
+            "latitude": 48,
+            "longitude": 16
+        },
+        "assignedUnits": {
+            "unit-id-1": "ABO",
+            "unit-id-2": "Assigned"
+        }
+    },
+    {
+        "id": "incident-id-2",
+        "type": "Task",
+        "priority": false,
+        "blue": false,
+        "info": "Info 2",
+        "location": {
+            "latitude": 49,
+            "longitude": 17
+        },
+        "assignedUnits": { "unit-id-1": "ZBO" }
+    }
+]

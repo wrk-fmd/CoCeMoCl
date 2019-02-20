@@ -26,6 +26,11 @@ namespace GeoClient.Models
             return string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }
 
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}, {nameof(Name)}: {Name}, {nameof(LastPoint)}: {LastPoint}, {nameof(State)}: {State}";
+        }
+
         private string GetTaskStateIcon()
         {
             return StatusIconResolver.GetIconForTaskState(State);
