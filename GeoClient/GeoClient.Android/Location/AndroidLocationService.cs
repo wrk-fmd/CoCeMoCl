@@ -11,7 +11,7 @@ using System;
 namespace GeoClient.Droid.Location
 {
     [Service]
-    public class AndroidLocationService : Service, ILocationListener
+    public class AndroidLocationService : Service
     {
         private const string LoggerTag = "AndroidLocationService";
         private const string WakeLockTag = "cocemocl:locationServiceWakeLock";
@@ -19,18 +19,13 @@ namespace GeoClient.Droid.Location
         private const int RunningServiceNotificationId = 144;
         private const string NotificationChannelId = "at.wrk.fmd.geo.location.channel";
 
-        private const long MinimumElapsedTimeInMilliseconds = 10000;
-
-        // Only use coarse or fine here! Other values are only for bearing, horizontal accuracy, etc.
-        private const Accuracy RequiredAccuracy = Accuracy.Fine;
-
-        private readonly LocationManager _locationManager;
         private readonly LocationChangeRegistry _locationChangeRegistry;
         private readonly PowerManager _powerManager;
 
+        private ILocationProvider _locationProvider;
+
         public AndroidLocationService()
         {
-            _locationManager = Application.Context.GetSystemService(LocationService) as LocationManager;
             _powerManager = Application.Context.GetSystemService(PowerService) as PowerManager;
             _locationChangeRegistry = LocationChangeRegistry.Instance;
         }
@@ -52,7 +47,7 @@ namespace GeoClient.Droid.Location
             base.OnDestroy();
             Log.Debug(LoggerTag, "Service has been terminated");
 
-            _locationManager.RemoveUpdates(this);
+            RemoveLocationProviderIfPresent();
         }
 
         public override StartCommandResult OnStartCommand(Intent intent, StartCommandFlags flags, int startId)
@@ -70,17 +65,15 @@ namespace GeoClient.Droid.Location
             return StartCommandResult.Sticky;
         }
 
-        public void OnLocationChanged(Android.Locations.Location location)
+        private void OnLocationChanged(Xamarin.Essentials.Location updatedLocation)
         {
-            Log.Debug(LoggerTag, "Got a location update from android location manager. location: " + location);
+            Log.Debug(LoggerTag, "Got a location update from location provider. location: " + updatedLocation);
             var wakeLock = _powerManager.NewWakeLock(WakeLockFlags.Partial, WakeLockTag);
             wakeLock.Acquire();
-            Log.Debug(LoggerTag, "Acquired wake lock.");
+            Log.Debug(LoggerTag, "Acquired wake lock in android location service.");
 
-            if (location != null)
+            if (updatedLocation != null)
             {
-                var updatedLocation = CreateXamarinLocation(location);
-
                 _locationChangeRegistry.LocationUpdated(updatedLocation);
             }
             else
@@ -89,38 +82,7 @@ namespace GeoClient.Droid.Location
             }
 
             wakeLock.Release();
-            Log.Debug(LoggerTag, "Released wake lock.");
-        }
-
-        public void OnProviderDisabled(string provider)
-        {
-            Log.Warn(LoggerTag, "Location provider was disabled! provider: " + provider);
-        }
-
-        public void OnProviderEnabled(string provider)
-        {
-            Log.Info(LoggerTag, "Location provider was enabled. provider: " + provider);
-        }
-
-        public void OnStatusChanged(string provider, Availability status, Bundle extras)
-        {
-            Log.Info(LoggerTag,
-                "Status of location provider changed. provider: " + provider + ", availability: " + status);
-        }
-
-        private static Xamarin.Essentials.Location CreateXamarinLocation(Android.Locations.Location location)
-        {
-            var updatedLocation = new Xamarin.Essentials.Location
-            {
-                Accuracy = location.Accuracy,
-                Altitude = location.Altitude,
-                Course = location.Bearing,
-                Latitude = location.Latitude,
-                Longitude = location.Longitude,
-                Speed = location.Speed,
-                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(location.Time)
-            };
-            return updatedLocation;
+            Log.Debug(LoggerTag, "Released wake lock in android location service.");
         }
 
         private void CreateForegroundServiceNotificationChannel()
@@ -161,22 +123,27 @@ namespace GeoClient.Droid.Location
 
         private void StartLocationUpdates()
         {
-            var locationProvider = GetLocationProvider();
-            _locationManager.RequestLocationUpdates(locationProvider, MinimumElapsedTimeInMilliseconds, 0, this);
-            Log.Debug(LoggerTag, "Service is registered for location updates.");
+            RemoveLocationProviderIfPresent();
+
+            AssignNewLocationProvider();
+            _locationProvider.StartLocationProvider();
         }
 
-        private string GetLocationProvider()
+        private void AssignNewLocationProvider()
         {
-            var locationCriteria = new Criteria
-            {
-                Accuracy = RequiredAccuracy,
-                PowerRequirement = Power.NoRequirement
-            };
+            _locationProvider = new NativeAndroidLocationProvider();
+            _locationProvider.RegisterLocationUpdateDelegate(OnLocationChanged);
+        }
 
-            var locationProvider = _locationManager.GetBestProvider(locationCriteria, true);
-            Log.Debug(LoggerTag, $"You are about to get location updates via {locationProvider}");
-            return locationProvider;
+        private void RemoveLocationProviderIfPresent()
+        {
+            if (_locationProvider != null)
+            {
+                var oldProvider = _locationProvider;
+                _locationProvider = null;
+
+                oldProvider.StopLocationProvider();
+            }
         }
     }
 }

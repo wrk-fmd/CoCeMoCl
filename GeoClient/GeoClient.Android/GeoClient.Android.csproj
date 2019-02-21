@@ -79,7 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Location\AndroidLocationService.cs" />
+    <Compile Include="Location\ILocationProvider.cs" />
     <Compile Include="Location\InterceptedTaskSchedulerWakeLock.cs" />
+    <Compile Include="Location\NativeAndroidLocationProvider.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
