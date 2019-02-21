@@ -21,6 +21,7 @@ namespace GeoClient.Droid.Location
 
         private readonly LocationChangeRegistry _locationChangeRegistry;
         private readonly PowerManager _powerManager;
+        private readonly LocationProviderFactory _locationProviderFactory;
 
         private ILocationProvider _locationProvider;
 
@@ -28,6 +29,7 @@ namespace GeoClient.Droid.Location
         {
             _powerManager = Application.Context.GetSystemService(PowerService) as PowerManager;
             _locationChangeRegistry = LocationChangeRegistry.Instance;
+            _locationProviderFactory = new LocationProviderFactory();
         }
 
         public override IBinder OnBind(Intent intent)
@@ -131,7 +133,7 @@ namespace GeoClient.Droid.Location
 
         private void AssignNewLocationProvider()
         {
-            _locationProvider = new NativeAndroidLocationProvider();
+            _locationProvider = _locationProviderFactory.CreateLocationProvider();
             _locationProvider.RegisterLocationUpdateDelegate(OnLocationChanged);
         }
 

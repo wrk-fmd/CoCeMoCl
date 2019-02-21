@@ -48,7 +48,7 @@ namespace GeoClient.Droid.Location
 
         public void OnLocationChanged(Android.Locations.Location location)
         {
-            var updatedLocation = CreateXamarinLocation(location);
+            var updatedLocation = XamarinLocationFactory.CreateXamarinLocation(location);
             _locationUpdateDelegate.Invoke(updatedLocation);
         }
 
@@ -80,21 +80,6 @@ namespace GeoClient.Droid.Location
             var locationProvider = _locationManager.GetBestProvider(locationCriteria, true);
             Log.Debug(LoggerTag, $"You are about to get location updates via {locationProvider}");
             return locationProvider;
-        }
-
-        private static Xamarin.Essentials.Location CreateXamarinLocation(Android.Locations.Location location)
-        {
-            var updatedLocation = new Xamarin.Essentials.Location
-            {
-                Accuracy = location.Accuracy,
-                Altitude = location.Altitude,
-                Course = location.Bearing,
-                Latitude = location.Latitude,
-                Longitude = location.Longitude,
-                Speed = location.Speed,
-                Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(location.Time)
-            };
-            return updatedLocation;
         }
     }
 }
