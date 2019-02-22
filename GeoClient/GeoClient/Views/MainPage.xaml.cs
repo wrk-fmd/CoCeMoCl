@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using GeoClient.Services.Utils;
+using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 namespace GeoClient.Views
@@ -9,6 +10,24 @@ namespace GeoClient.Views
         public MainPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnAppearing()
+        {
+            AddDebugPageIfNecessary();
+        }
+
+        private void AddDebugPageIfNecessary()
+        {
+            var isDeveloperModeActive = PrerequisitesChecking.IsDeveloperModeActive();
+
+            if (isDeveloperModeActive)
+            {
+                TabbedPageInstance.Children.Add(new NavigationPage(new DebugPage())
+                {
+                    Title = "Debug"
+                });
+            }
         }
     }
 }

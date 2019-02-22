@@ -9,7 +9,7 @@ namespace GeoClient.ViewModels
     {
         public AboutViewModel()
         {
-            Title = "Über / Einstellungen";
+            Title = "Einstellungen";
 
             OpenWebCommand = new Command(() => Device.OpenUri(new Uri("https://intranet.wrk.at/confluence/display/KHD/Infoblatt+Geoclient")));
         }
