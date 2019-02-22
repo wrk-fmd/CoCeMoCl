@@ -3,7 +3,10 @@ using System;
 
 namespace GeoClient.Models
 {
-    public class Unit : IComparable<Unit>
+    /// <summary>
+    /// Class to describe a unit in the context of an incident.
+    /// </summary>
+    public class UnitOfIncident : IComparable<UnitOfIncident>
     {
         public string Id { get; }
         public string Name { get; }
@@ -14,7 +17,7 @@ namespace GeoClient.Models
 
         public string TaskStateIcon => GetTaskStateIcon();
 
-        public Unit(
+        public UnitOfIncident(
             string id,
             string name,
             GeoPoint lastPoint = null,
@@ -26,14 +29,14 @@ namespace GeoClient.Models
             State = state;
         }
 
-        public int CompareTo(Unit other)
+        public int CompareTo(UnitOfIncident other)
         {
             if (ReferenceEquals(this, other)) return 0;
             if (ReferenceEquals(null, other)) return 1;
             return string.Compare(Name, other.Name, StringComparison.OrdinalIgnoreCase);
         }
 
-        protected bool Equals(Unit other)
+        protected bool Equals(UnitOfIncident other)
         {
             return string.Equals(Id, other.Id)
                    && string.Equals(Name, other.Name)
@@ -46,7 +49,7 @@ namespace GeoClient.Models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Unit) obj);
+            return Equals((UnitOfIncident) obj);
         }
 
         public override int GetHashCode()

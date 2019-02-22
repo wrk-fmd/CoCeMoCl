@@ -8,7 +8,8 @@ namespace GeoClient.Services.Utils
 
     public static class PrerequisitesChecking
     {
-
         public static BooleanDelegate IsDataSaverBlockingBackgroundData = () => false;
+
+        public static BooleanDelegate IsDeveloperModeActive = () => false;
     }
 }
