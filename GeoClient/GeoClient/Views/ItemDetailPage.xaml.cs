@@ -1,7 +1,7 @@
-﻿using GeoClient.Models;
-using GeoClient.ViewModels;
+﻿using GeoClient.ViewModels;
 using GeoClient.Views.Utils;
 using System;
+using GeoClient.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,18 +10,77 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class ItemDetailPage : ContentPage
     {
-        ItemDetailViewModel viewModel;
+        private readonly ItemDetailViewModel _viewModel;
 
         public ItemDetailPage(ItemDetailViewModel viewModel)
         {
             InitializeComponent();
+            BindingContext = _viewModel = viewModel;
 
-            BindingContext = this.viewModel = viewModel;
+            InitializeUnitList();
+        }
+
+        private void InitializeUnitList()
+        {
+            UnitList.Children.Add(CreateHorizontalLine());
+            _viewModel.IncidentItem.Units.ForEach(unit =>
+            {
+                UnitList.Children.Add(CreateAssignedUnitLine(unit));
+                UnitList.Children.Add(CreateHorizontalLine());
+            });
+        }
+
+        private static BoxView CreateHorizontalLine()
+        {
+            return new BoxView
+            {
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                HeightRequest = 1,
+                BackgroundColor = Color.DarkGray
+            };
+        }
+
+        private static StackLayout CreateAssignedUnitLine(UnitOfIncident unitToBind)
+        {
+            var label = CreateUnitLabel();
+            var statusIcon = CreateStatusIconImage();
+
+            return new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                Children = {label, statusIcon},
+                BindingContext = unitToBind
+            };
+        }
+
+        private static Image CreateStatusIconImage()
+        {
+            var statusIcon = new Image
+            {
+                Scale = 0.7,
+                HorizontalOptions = LayoutOptions.End
+            };
+            statusIcon.SetBinding(Image.SourceProperty, "TaskStateIcon");
+            return statusIcon;
+        }
+
+        private static Label CreateUnitLabel()
+        {
+            var label = new Label
+            {
+                LineBreakMode = LineBreakMode.NoWrap,
+                FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
+                TextColor = Color.Black,
+                HorizontalOptions = LayoutOptions.StartAndExpand,
+                VerticalTextAlignment = TextAlignment.Center
+            };
+            label.SetBinding(Label.TextProperty, "Name");
+            return label;
         }
 
         private async void openLocation_Clicked(object sender, EventArgs e)
         {
-            var item = viewModel.IncidentItem;
+            var item = _viewModel.IncidentItem;
 
             var geoUri = GeoPointUtil.CreateGeoUri(item.Location, "GeoClient: Berufungsort");
 
@@ -31,7 +90,10 @@ namespace GeoClient.Views
             }
             else
             {
-                await DisplayAlert("Adresse nicht verortet", "Die Adresse konnte leider nicht automatisch verortet werden.", "OK");
+                await DisplayAlert(
+                    "Adresse nicht verortet",
+                    "Die Adresse konnte leider nicht automatisch verortet werden.",
+                    "OK");
             }
         }
     }
