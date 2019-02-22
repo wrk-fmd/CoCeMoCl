@@ -11,7 +11,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <ContentView Padding="0,50" IsVisible="{Binding IsListEmpty}">
+            <ContentView Padding="16,50" IsVisible="{Binding IsListEmpty}">
                 <Label Text="{Binding EmptyListMessage}"
                        HorizontalOptions="CenterAndExpand" />
             </ContentView>
