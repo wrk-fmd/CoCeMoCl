@@ -46,7 +46,7 @@ namespace GeoClient.Views
             if (updatedLocation != null)
             {
                 ContentSentAt.Text = updatedLocation.Timestamp.LocalDateTime.ToString(GermanCultureInfo);
-                ContentAccuracy.Text = updatedLocation.Accuracy?.ToString();
+                ContentAccuracy.Text = updatedLocation.Accuracy?.ToString("F0");
             }
         }
 
