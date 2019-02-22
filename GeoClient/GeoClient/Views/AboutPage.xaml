@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="GeoClient.Views.AboutPage"
@@ -14,95 +15,141 @@
             <Color x:Key="ButtonTextColor">White</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <ScrollView Grid.Row="1">
-            <StackLayout Orientation="Vertical" Padding="16,40,16,40" Spacing="10">
-                <Label FontSize="22">
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span Text="GeoClient" FontAttributes="Bold" FontSize="22" />
-                                <Span Text=" " />
-                                <Span Text="1.1.2" ForegroundColor="{StaticResource LightTextColor}" />
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label>
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span 
-                                    Text="Diese App dient der genauen Verortung von Einheiten bei Ambulanzen des Wiener Roten Kreuzes." />
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Label>
-                    <Label.FormattedText>
-                        <FormattedString>
-                            <FormattedString.Spans>
-                                <Span 
-                                    x:Name="RegistrationInfo" 
-                                    Text="Dieser Client ist derzeit keiner Einheit zugeordnet. Bitte registrieren Sie das Gerät mit dem ausgehändigten Informatonsblatt." />
-                            </FormattedString.Spans>
-                        </FormattedString>
-                    </Label.FormattedText>
-                </Label>
-                <Button 
-                    Margin="0,10,0,0" 
-                    x:Name="RegistrationButton" 
-                    Text="Jetzt registrieren" 
-                    Clicked="registerDevice_Clicked" 
-                    BackgroundColor="{StaticResource Accent}" 
-                    TextColor="{StaticResource ButtonTextColor}" />
-                <Button 
-                    Margin="0,10,0,0" 
-                    x:Name="UnregisterButton" 
-                    Text="Registrierung löschen" 
-                    Clicked="unregisterDevice_Clicked" 
-                    BackgroundColor="{StaticResource Accent}" 
-                    TextColor="{StaticResource ButtonTextColor}" />
-                <Button 
-                    Margin="0,10,0,0" 
-                    Text="Weitere Infos" 
-                    Command="{Binding OpenWebCommand}" 
-                    BackgroundColor="{StaticResource Accent}" 
-                    TextColor="{StaticResource ButtonTextColor}" />
-                <StackLayout VerticalOptions="Start">
-                    <Label FontSize="22">
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <FormattedString.Spans>
-                                    <Span Text="Letztes Standortupdate" FontAttributes="Bold" FontSize="22" />
-                                </FormattedString.Spans>
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                    <Label>
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="Gesendet um: "  FontAttributes="Bold"/>
-                                <Span Text="N/A" x:Name="ContentSentAt"/>
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
+    <ScrollView>
+        <StackLayout Orientation="Vertical" Margin="16,0" Spacing="10">
+            <Label Margin="0,20,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span
+                                Text="GeoClient "
+                                FontAttributes="Bold"
+                                FontSize="Large" />
+                            <Span
+                                Text="1.1.2"
+                                FontSize="Large"
+                                ForegroundColor="{StaticResource LightTextColor}" />
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
 
-                    <Label>
-                        <Label.FormattedText>
-                            <FormattedString>
-                                <Span Text="Genauigkeit (Meter): "  FontAttributes="Bold"/>
-                                <Span Text="N/A" x:Name="ContentAccuracy"/>
-                            </FormattedString>
-                        </Label.FormattedText>
-                    </Label>
-                </StackLayout>
+            <Label
+                Text="Diese App dient der Verortung von Einheiten des Wiener Roten Kreuzes im Zuge von Ambulanzen. Eine Verwendung ist nur mit gültigen Zugangsdaten (QR Code) möglich." />
+
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span
+                                Text="Weitere Details zu der App sind für Mitarbeiter des WRK " />
+
+                            <Span
+                                Text="hier im Intranet (Confluence) ersichtlich."
+                                TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenWebCommand}" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label
+                Text="Registrierte Einheit"
+                FontSize="Medium"
+                FontAttributes="Bold"
+                Margin="0,20,0,0"/>
+
+            <Label
+                Text="Das Gerät kann mittels QR Code einer Einheit zugeordnet werden. Scanne hierfür den Code auf deinem Informationsblatt." />
+
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Einheit zugeordnet: " FontAttributes="Bold" />
+                        <Span Text="N/A" x:Name="ContentUnitRegistered" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Technische ID: " FontAttributes="Bold" />
+                        <Span Text="N/A" x:Name="ContentUnitId" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Einheit: " FontAttributes="Bold" />
+                        <Span Text="N/A" x:Name="ContentUnitName" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Padding has to be overriden manually. See https://forums.xamarin.com/discussion/29385/button-text-getting-cutoff-on-android -->
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    x:Name="RegisterButton"
+                    Text="Jetzt registrieren"
+                    Clicked="registerDevice_Clicked"
+                    BackgroundColor="{StaticResource Accent}"
+                    TextColor="{StaticResource ButtonTextColor}"
+                    Padding="0,0,0,0" />
+
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    x:Name="UnregisterButton"
+                    Text="Registrierung löschen"
+                    Clicked="unregisterDevice_Clicked"
+                    BackgroundColor="{StaticResource Accent}"
+                    TextColor="{StaticResource ButtonTextColor}"
+                    Padding="0,0,0,0" />
+            </Grid>
+
+            <StackLayout 
+                VerticalOptions="Start"
+                Margin="0,20">
+                <Label
+                    FontSize="Large"
+                    FontAttributes="Bold"
+                    Text="Letztes Standortupdate" />
+
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Gesendet um: " FontAttributes="Bold" />
+                            <Span Text="N/A" x:Name="ContentSentAt" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Genauigkeit (Meter): " FontAttributes="Bold" />
+                            <Span Text="N/A" x:Name="ContentAccuracy" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </StackLayout>
-            
-        </ScrollView>
-    </Grid>
+        </StackLayout>
+
+    </ScrollView>
 </ContentPage>

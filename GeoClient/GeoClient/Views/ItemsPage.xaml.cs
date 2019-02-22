@@ -30,8 +30,7 @@ namespace GeoClient.Views
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as IncidentItem;
-            if (item == null)
+            if (!(args.SelectedItem is IncidentItem item))
                 return;
 
             await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
@@ -40,7 +39,7 @@ namespace GeoClient.Views
             ItemsListView.SelectedItem = null;
         }
 
-        async void RefreshItems_Clicked(object sender, EventArgs e)
+        private async void RefreshItems_Clicked(object sender, EventArgs e)
         {
             if (_registrationService.IsRegistered())
             {

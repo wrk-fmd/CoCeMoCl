@@ -8,9 +8,17 @@ namespace GeoClient.Services.Registration
 {
     public sealed class RegistrationService
     {
+        private UnitInformation _registeredUnitInformation;
+        public UnitInformation RegisteredUnitInformation
+        {
+            get => _registeredUnitInformation;
+            set => SetRegisteredUnitInformation(value);
+        }
+
         private readonly ConcurrentDictionary<IGeoRegistrationListener, byte> _registrationListeners;
 
         private RegistrationInfo _cachedRegistrationInfo;
+
         private bool _wasConfigurationReadFromDisk;
         private const string UrlStorageKey = "url";
 
@@ -102,6 +110,18 @@ namespace GeoClient.Services.Registration
             if (loadedUrl != null)
             {
                 ParseRegistrationInfoFromUrl(loadedUrl);
+            }
+        }
+
+        private void SetRegisteredUnitInformation(UnitInformation value)
+        {
+            if (IsRegistered())
+            {
+                _registeredUnitInformation = value;
+            }
+            else
+            {
+                Console.WriteLine("Cannot set unit information without registration information set!");
             }
         }
 

@@ -7,6 +7,8 @@ namespace GeoClient.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPage : TabbedPage
     {
+        private bool _isDebugPageAdded = false;
+
         public MainPage()
         {
             InitializeComponent();
@@ -19,10 +21,11 @@ namespace GeoClient.Views
 
         private void AddDebugPageIfNecessary()
         {
-            var isDeveloperModeActive = PrerequisitesChecking.IsDeveloperModeActive();
+            var needToAddDebugPage = !_isDebugPageAdded && PrerequisitesChecking.IsDeveloperModeActive();
 
-            if (isDeveloperModeActive)
+            if (needToAddDebugPage)
             {
+                _isDebugPageAdded = true;
                 TabbedPageInstance.Children.Add(new NavigationPage(new DebugPage())
                 {
                     Title = "Debug"

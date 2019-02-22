@@ -110,6 +110,7 @@ namespace GeoClient.Droid
             Log.Debug(LoggerTag, "Starting main activity of android specific implementation.");
             Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            ZXing.Net.Mobile.Forms.Android.Platform.Init();
             LoadApplication(new App());
         }
 

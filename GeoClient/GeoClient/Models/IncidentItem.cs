@@ -17,7 +17,7 @@ namespace GeoClient.Models
         public bool Blue { get; }
         public GeoPoint Location { get; }
 
-        public List<Unit> Units { get; }
+        public List<UnitOfIncident> Units { get; }
 
         public string DescriptiveType => GetDescriptiveType();
         public Color BackgroundColor => GetBackgroundColor();
@@ -36,7 +36,7 @@ namespace GeoClient.Models
             bool priority = false,
             bool blue = false,
             GeoPoint location = null,
-            List<Unit> units = null)
+            List<UnitOfIncident> units = null)
         {
             Id = id;
             Type = type;
@@ -44,7 +44,7 @@ namespace GeoClient.Models
             Priority = priority;
             Blue = blue;
             Location = location;
-            Units = units ?? new List<Unit>();
+            Units = units ?? new List<UnitOfIncident>();
         }
 
         protected bool Equals(IncidentItem other)
@@ -58,7 +58,7 @@ namespace GeoClient.Models
                    && ListEquals(Units, other.Units);
         }
 
-        private bool ListEquals(List<Unit> units, List<Unit> otherUnits)
+        private bool ListEquals(List<UnitOfIncident> units, List<UnitOfIncident> otherUnits)
         {
             if (units == null)
                 return otherUnits == null;
@@ -128,7 +128,7 @@ namespace GeoClient.Models
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo?.Id != null)
             {
-                foreach (Unit unit in Units)
+                foreach (UnitOfIncident unit in Units)
                 {
                     if (unit.Id == registrationInfo.Id)
                     {

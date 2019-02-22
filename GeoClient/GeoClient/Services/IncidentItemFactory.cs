@@ -5,6 +5,8 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using GeoClient.Models.Geobroker;
 using static System.Double;
 
 namespace GeoClient.Services
@@ -34,18 +36,18 @@ namespace GeoClient.Services
 
         private static IncidentItem CreateIncidentItem(JObject incident, List<JObject> unitJsonObjects)
         {
-
             Dictionary<string, string> rawAssignedUnits =
-                incident["assignedUnits"].ToObject<Dictionary<string, string>>();
+                incident[GeobrokerConstants.IncidentAssignedUnitsProperty]
+                    .ToObject<Dictionary<string, string>>();
             var unitList = CreateUnitList(rawAssignedUnits, unitJsonObjects);
 
             return new IncidentItem(
-                incident.Value<string>("id"),
-                GeoIncidentTypeFactory.GetTypeFromString((string)incident["type"]),
-            incident.Value<string>("info"),
-                incident.Value<bool>("priority"),
-                incident.Value<bool>("blue"),
-                CreateGeoPoint(incident["location"]),
+                incident.Value<string>(GeobrokerConstants.IncidentIdProperty),
+                GeoIncidentTypeFactory.GetTypeFromString(incident.Value<string>(GeobrokerConstants.IncidentTypeProperty)),
+                incident.Value<string>(GeobrokerConstants.IncidentInfoProperty),
+                incident.Value<bool>(GeobrokerConstants.IncidentPriorityProperty),
+                incident.Value<bool>(GeobrokerConstants.IncidentBlueProperty),
+                CreateGeoPoint(incident[GeobrokerConstants.IncidentLocationProperty]),
                 unitList);
         }
 
@@ -53,8 +55,8 @@ namespace GeoClient.Services
         {
             GeoPoint geoPoint = null;
 
-            string latitudeString = (string) pointJToken?["latitude"];
-            string longitudeString = (string) pointJToken?["longitude"];
+            var latitudeString = pointJToken?.Value<string>(GeobrokerConstants.GeoPointLatitudeProperty);
+            var longitudeString = pointJToken?.Value<string>(GeobrokerConstants.GeoPointLongitudeProperty);
 
             if (GeoPointUtil.NotBlank(latitudeString) && GeoPointUtil.NotBlank(longitudeString))
             {
@@ -91,11 +93,11 @@ namespace GeoClient.Services
             return geoPoint;
         }
 
-        private static List<Unit> CreateUnitList(
+        private static List<UnitOfIncident> CreateUnitList(
             IReadOnlyDictionary<string, string> rawAssignedUnits,
             List<JObject> unitJsonObjects)
         {
-            var units = new List<Unit>();
+            var units = new List<UnitOfIncident>();
             if (unitJsonObjects != null)
             {
                 foreach (var rawAssignedUnit in rawAssignedUnits)
@@ -109,24 +111,28 @@ namespace GeoClient.Services
             return units;
         }
 
-        private static Unit GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects, IncidentTaskState taskStateOfUnit)
+        private static UnitOfIncident GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects,
+            IncidentTaskState taskStateOfUnit)
         {
-            foreach (var unitJsonObject in unitJsonObjects)
-            {
-                if ((string) unitJsonObject["id"] == unitId)
-                {
-                    Unit unit = new Unit(unitId,
-                        unitJsonObject.Value<string>("name"),
-                        CreateGeoPoint(unitJsonObject["lastPoint"]),
-                        taskStateOfUnit
-                    );
+            UnitOfIncident ownUnit = null;
 
-                    return unit;
-                }
+            var ownUnitJson =
+                unitJsonObjects.FirstOrDefault(unit => unit.Value<string>(GeobrokerConstants.UnitIdProperty) == unitId);
+
+            if (ownUnitJson != null)
+            {
+                ownUnit = new UnitOfIncident(unitId,
+                    ownUnitJson.Value<string>(GeobrokerConstants.UnitNameProperty),
+                    CreateGeoPoint(ownUnitJson[GeobrokerConstants.UnitLastPointProperty]),
+                    taskStateOfUnit
+                );
+            }
+            else
+            {
+                Console.WriteLine($"Unit with ID {unitId} is not present in list of units!");
             }
 
-            Console.WriteLine($"Unit with ID {unitId} is not present in list of units!");
-            return null;
+            return ownUnit;
         }
     }
 }
