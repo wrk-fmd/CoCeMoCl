@@ -49,8 +49,9 @@ namespace GeoClient.Views
             }
             else
             {
-                await DisplayAlert("Nicht registriert",
-                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren",
+                await DisplayAlert(
+                    "Nicht registriert",
+                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, muss das Gerät zuerst registriert werden.",
                     "OK");
             }
         }
