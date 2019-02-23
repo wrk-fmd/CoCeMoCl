@@ -6,8 +6,8 @@
     <Authors>Daniel Steiner, Robert Wittek</Authors>
     <Copyright>MIT License</Copyright>
     <Description>App to share the position data</Description>
-    <Version>1.1.1</Version>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    <Version>1.1.2</Version>
+    <AssemblyVersion>1.1.2.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -26,5 +26,11 @@
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="1.13.0" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="1.13.0" />
     <PackageReference Include="Microsoft.AppCenter.Distribute" Version="1.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\DebugPage.xaml.cs">
+      <DependentUpon>DebugPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

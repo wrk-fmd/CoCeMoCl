@@ -62,9 +62,9 @@ namespace GeoClient.Services.Boundary
             });
         }
 
-        public void IncidentsInvalidated()
+        public void IncidentsInvalidated(IncidentInvalidationReason reason)
         {
-            _incidentUpdateListeners.ForEach(listener => listener.Key.IncidentsInvalidated());
+            _incidentUpdateListeners.ForEach(listener => listener.Key.IncidentsInvalidated(reason));
         }
 
         public void GeoServerRegistered()
@@ -74,7 +74,7 @@ namespace GeoClient.Services.Boundary
         public void GeoServerUnregistered()
         {
             Console.WriteLine("Device was unregistered. Current incidents are invalidated.");
-            IncidentsInvalidated();
+            IncidentsInvalidated(IncidentInvalidationReason.ClientNoLongerRegistered);
         }
     }
 }

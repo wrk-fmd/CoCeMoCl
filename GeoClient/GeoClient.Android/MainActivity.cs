@@ -12,6 +12,7 @@ using GeoClient.Droid.Location;
 using GeoClient.Services.Registration;
 using GeoClient.Services.Utils;
 using System.Threading.Tasks;
+using Android.Provider;
 
 namespace GeoClient.Droid
 {
@@ -34,6 +35,9 @@ namespace GeoClient.Droid
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
+            PrerequisitesChecking.IsDeveloperModeActive = IsDeveloperModeActive;
+
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 
@@ -41,7 +45,6 @@ namespace GeoClient.Droid
             PerformXamarinStartup(savedInstanceState);
 
             InterceptedTaskSchedulerWakeLock.BindWakeLocksToInterceptorTaskScheduler();
-            PrerequisitesChecking.IsDataSaverBlockingBackgroundData = IsDataSaverEnabled;
             RegistrationService.Instance.RegisterListener(this);
 
             RequestCameraPermissionIfNecessary();
@@ -95,11 +98,19 @@ namespace GeoClient.Droid
             return dataSaverEnabled;
         }
 
+        private bool IsDeveloperModeActive()
+        {
+            var intOfDevSetting = Settings.Secure.GetInt(ContentResolver, Settings.Global.DevelopmentSettingsEnabled, 0);
+            Log.Debug(LoggerTag, "Developer setting enabled returned: " + intOfDevSetting);
+            return intOfDevSetting != 0;
+        }
+
         private void PerformXamarinStartup(Bundle savedInstanceState)
         {
             Log.Debug(LoggerTag, "Starting main activity of android specific implementation.");
             Xamarin.Forms.Forms.Init(this, savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+            ZXing.Net.Mobile.Forms.Android.Platform.Init();
             LoadApplication(new App());
         }
 

@@ -73,13 +73,21 @@
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.CardView" Version="28.0.0.1" />
     <PackageReference Include="Xamarin.Android.Support.v7.MediaRouter" Version="28.0.0.1" />
+    <PackageReference Include="Xamarin.GooglePlayServices.Location">
+      <Version>29.0.0.2</Version>
+    </PackageReference>
     <PackageReference Include="ZXing.Net.Mobile">
       <Version>2.4.1</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Location\AndroidLocationService.cs" />
+    <Compile Include="Location\GooglePlayLocationProvider.cs" />
+    <Compile Include="Location\ILocationProvider.cs" />
     <Compile Include="Location\InterceptedTaskSchedulerWakeLock.cs" />
+    <Compile Include="Location\LocationProviderFactory.cs" />
+    <Compile Include="Location\NativeAndroidLocationProvider.cs" />
+    <Compile Include="Location\XamarinLocationFactory.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

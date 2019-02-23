@@ -17,6 +17,7 @@ namespace GeoClient.Views
         private readonly IncidentsViewModel _viewModel;
         private readonly RestService _restService;
         private readonly RegistrationService _registrationService;
+        private readonly IncidentUpdateRegistry _incidentUpdateRegistry;
 
         public ItemsPage()
         {
@@ -24,14 +25,14 @@ namespace GeoClient.Views
 
             _registrationService = RegistrationService.Instance;
             _restService = RestService.Instance;
+            _incidentUpdateRegistry = IncidentUpdateRegistry.Instance;
 
             BindingContext = _viewModel = new IncidentsViewModel();
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as IncidentItem;
-            if (item == null)
+            if (!(args.SelectedItem is IncidentItem item))
                 return;
 
             await Navigation.PushAsync(new ItemDetailPage(new ItemDetailViewModel(item)));
@@ -40,7 +41,7 @@ namespace GeoClient.Views
             ItemsListView.SelectedItem = null;
         }
 
-        async void RefreshItems_Clicked(object sender, EventArgs e)
+        private async void RefreshItems_Clicked(object sender, EventArgs e)
         {
             if (_registrationService.IsRegistered())
             {
@@ -48,23 +49,32 @@ namespace GeoClient.Views
             }
             else
             {
-                await DisplayAlert("Nicht registriert",
-                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, müssen Sie das Gerät zuerst registrieren",
+                await DisplayAlert(
+                    "Nicht registriert",
+                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, muss das Gerät zuerst registriert werden.",
                     "OK");
             }
         }
 
         protected override void OnAppearing()
         {
-            base.OnAppearing();
-            IncidentUpdateRegistry.Instance.RegisterListener(this);
+            _incidentUpdateRegistry.RegisterListener(this);
 
             if (_registrationService.IsRegistered())
             {
                 _restService.GetScope();
             }
+            else
+            {
+                IncidentsInvalidated(IncidentInvalidationReason.ClientNoLongerRegistered);
+            }
 
             CheckIfDataSaverIsActive();
+        }
+
+        protected override void OnDisappearing()
+        {
+            _incidentUpdateRegistry.UnregisterListener(this);
         }
 
         private async void CheckIfDataSaverIsActive()
@@ -81,28 +91,56 @@ namespace GeoClient.Views
 
         public void IncidentsUpdated(List<IncidentItem> updatedIncidents)
         {
-            IncidentsInvalidated();
-
             var sortedIncidents = updatedIncidents.OrderBy(x => x);
 
-            foreach (var incident in sortedIncidents)
+            Device.BeginInvokeOnMainThread(() =>
             {
-                _viewModel.Incidents.Add(incident);
-            }
+                _viewModel.Incidents.Clear();
+                foreach (var incident in sortedIncidents)
+                {
+                    _viewModel.Incidents.Add(incident);
+                }
 
-            SetBusyIndicationToFalse();
+                SetBusyIndicationToFalse();
+            });
         }
 
-        public void IncidentsInvalidated()
+        public void IncidentsInvalidated(IncidentInvalidationReason reason)
         {
-            _viewModel.EmptyListMessage = "Keine Aufträge / Einsätze.";
-            _viewModel.Incidents.Clear();
-            SetBusyIndicationToFalse();
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                _viewModel.EmptyListMessage = CreateEmptyListMessage(reason);
+                _viewModel.Incidents.Clear();
+                SetBusyIndicationToFalse();
+            });
+        }
+
+        private string CreateEmptyListMessage(IncidentInvalidationReason reason)
+        {
+            string message;
+
+            switch (reason)
+            {
+                case IncidentInvalidationReason.ClientNoLongerRegistered:
+                    message = "Gerät ist nicht registriert.";
+                    break;
+                case IncidentInvalidationReason.UnitNotAvailableOnServer:
+                    message = "Derzeit keine Daten verfügbar. Bitte versuche es später erneut.";
+                    break;
+                case IncidentInvalidationReason.ConnectionError:
+                    message = "Verbindungsfehler. Bitte versuche es später erneut.";
+                    break;
+                default:
+                    message = "Keine Aufträge / Einsätze.";
+                    break;
+            }
+
+            return message;
         }
 
         private void SetBusyIndicationToFalse()
         {
-            Device.BeginInvokeOnMainThread(() => _viewModel.IsBusy = false);
+            _viewModel.IsBusy = false;
         }
     }
 }

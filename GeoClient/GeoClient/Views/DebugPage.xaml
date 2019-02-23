@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="GeoClient.Views.DebugPage"
+             xmlns:vm="clr-namespace:GeoClient.ViewModels"
+             Title="{Binding Title}">
+    <ContentPage.BindingContext>
+        <vm:DebugViewModel />
+    </ContentPage.BindingContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ScrollView Grid.Row="1">
+            <StackLayout Orientation="Vertical" Padding="16,0,16,40" Spacing="10">
+
+                <StackLayout VerticalOptions="Start">
+                    <Label 
+                        Text="Aktueller Standort"
+                        FontAttributes="Bold"
+                        FontSize="Large">
+                    </Label>
+
+                    <Label x:Name="LabelLatitude" Text="Latitude" />
+                    <Label x:Name="LabelLongitude" Text="Longitude" />
+                    <Label x:Name="LabelSpeed" Text="Speed" />
+                    <Label x:Name="LabelAccuracy" Text="Accuracy" />
+                    <Label x:Name="LabelAltitude" Text="Altitude" />
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

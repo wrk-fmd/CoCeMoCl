@@ -11,7 +11,7 @@
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <ContentView Padding="0,50" IsVisible="{Binding IsListEmpty}">
+            <ContentView Padding="16,50" IsVisible="{Binding IsListEmpty}">
                 <Label Text="{Binding EmptyListMessage}"
                        HorizontalOptions="CenterAndExpand" />
             </ContentView>
@@ -30,19 +30,22 @@
                             <StackLayout Spacing="20" Orientation="Horizontal"
                                          BackgroundColor="{Binding BackgroundColor}">
                                 <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
-                                    <Label Text="{Binding DescriptiveType}"
-                                           LineBreakMode="NoWrap"
-                                           Style="{DynamicResource ListItemTextStyle}"
-                                           FontSize="18"
-                                           TextColor="{Binding ForegroundColor} " />
-                                    <Label Text="{Binding Info}"
-                                           LineBreakMode="TailTruncation"
-                                           MaxLines="3"
-                                           Style="{DynamicResource ListItemDetailTextStyle}"
-                                           FontSize="14"
-                                           TextColor="{Binding ForegroundColor} " />
+                                    <Label
+                                        Text="{Binding DescriptiveType}"
+                                        LineBreakMode="NoWrap"
+                                        FontSize="Large"
+                                        TextColor="{Binding ForegroundColor} " />
+                                    <Label
+                                        Text="{Binding Info}"
+                                        LineBreakMode="TailTruncation"
+                                        MaxLines="3"
+                                        FontSize="Small"
+                                        TextColor="{Binding ForegroundColor} " />
                                 </StackLayout>
-                                <Image HorizontalOptions="End" Source="{Binding OwnTaskStateIcon}" IsVisible="{Binding IsUnitAssignedToTask}"/>
+                                <Image
+                                    HorizontalOptions="End"
+                                    Source="{Binding OwnTaskStateIcon}"
+                                    IsVisible="{Binding IsUnitAssignedToTask}" />
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

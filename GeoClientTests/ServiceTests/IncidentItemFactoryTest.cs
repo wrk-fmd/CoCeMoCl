@@ -36,7 +36,7 @@ namespace GeoClientTests.ServiceTests
                 GeoIncidentType.Task,
                 "Info 1",
                 location: new GeoPoint(48, 16),
-                units: new List<Unit>
+                units: new List<UnitOfIncident>
                 {
                     CreateUnit1(IncidentTaskState.Abo),
                     CreateUnit2()
@@ -51,25 +51,25 @@ namespace GeoClientTests.ServiceTests
                 info: "Info 2",
                 location: new GeoPoint(49, 17),
                 type: GeoIncidentType.Task,
-                units: new List<Unit>
+                units: new List<UnitOfIncident>
                 {
                     CreateUnit1(IncidentTaskState.Zbo)
                 });
             return expectedItem1;
         }
 
-        private static Unit CreateUnit1(IncidentTaskState expectedState)
+        private static UnitOfIncident CreateUnit1(IncidentTaskState expectedState)
         {
-            return new Unit("unit-id-1",
+            return new UnitOfIncident("unit-id-1",
                 "Own Unit",
                 new GeoPoint(48.5, 16.5),
                 expectedState
             );
         }
 
-        private static Unit CreateUnit2()
+        private static UnitOfIncident CreateUnit2()
         {
-            return new Unit("unit-id-2",
+            return new UnitOfIncident("unit-id-2",
                 "No position unit",
                 state: IncidentTaskState.Assigned
             );
