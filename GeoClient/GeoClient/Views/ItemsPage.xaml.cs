@@ -95,7 +95,9 @@ namespace GeoClient.Views
 
             Device.BeginInvokeOnMainThread(() =>
             {
+                _viewModel.EmptyListMessage = CreateEmptyListMessage(IncidentInvalidationReason.EmptyUpdateFromServer);
                 _viewModel.Incidents.Clear();
+
                 foreach (var incident in sortedIncidents)
                 {
                     _viewModel.Incidents.Add(incident);
