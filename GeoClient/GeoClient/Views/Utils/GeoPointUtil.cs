@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Web;
 using GeoClient.Models;
 
@@ -12,7 +13,11 @@ namespace GeoClient.Views.Utils
 
             if (GeoPointUtil.IsGeoPointValid(geoPoint))
             {
-                var request = string.Format("geo:{0},{1}?q={0},{1}({2})", geoPoint.Latitude, geoPoint.Longitude, HttpUtility.UrlEncode(geoPointerTag));
+                var request = string.Format(
+                    "geo:{0},{1}?q={0},{1}({2})",
+                    geoPoint.Latitude.ToString(CultureInfo.InvariantCulture),
+                    geoPoint.Longitude.ToString(CultureInfo.InvariantCulture),
+                    HttpUtility.UrlEncode(geoPointerTag));
                 geoUri = new Uri(request);
             }
             else
