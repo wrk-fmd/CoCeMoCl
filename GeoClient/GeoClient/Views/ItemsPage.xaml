@@ -2,19 +2,19 @@
 
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewModels="clr-namespace:GeoClient.ViewModels;assembly=GeoClient"
              x:Class="GeoClient.Views.ItemsPage"
-             Title="{Binding Title}"
-             x:Name="BrowseItemsPage">
+             Title="{Binding Title}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Refresh" Clicked="RefreshItems_Clicked" Icon="refresh.png" />
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <StackLayout>
-            <ContentView Padding="16,50" IsVisible="{Binding IsListEmpty}">
-                <Label Text="{Binding EmptyListMessage}"
-                       HorizontalOptions="CenterAndExpand" />
-            </ContentView>
+            <Label
+                Text="{Binding EmptyListMessage}"
+                HorizontalOptions="CenterAndExpand"
+                Margin="16,50"
+                IsVisible="{Binding IsListEmpty}" />
+
             <ListView x:Name="ItemsListView"
                       ItemsSource="{Binding Incidents}"
                       VerticalOptions="FillAndExpand"
@@ -27,9 +27,14 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
-                            <StackLayout Spacing="20" Orientation="Horizontal"
-                                         BackgroundColor="{Binding BackgroundColor}">
-                                <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                            <StackLayout
+                                Spacing="20"
+                                Orientation="Horizontal"
+                                BackgroundColor="{Binding BackgroundColor}">
+                                <StackLayout
+                                    Orientation="Vertical"
+                                    Padding="10"
+                                    HorizontalOptions="StartAndExpand">
                                     <Label
                                         Text="{Binding DescriptiveType}"
                                         LineBreakMode="NoWrap"

@@ -27,7 +27,7 @@ namespace GeoClient.Views
             _restService = RestService.Instance;
             _incidentUpdateRegistry = IncidentUpdateRegistry.Instance;
 
-            BindingContext = _viewModel = new IncidentsViewModel();
+            BindingContext = _viewModel = new IncidentsViewModel(new Command(LoadScopeIfNotBusyYet));
         }
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
@@ -39,21 +39,6 @@ namespace GeoClient.Views
 
             // Manually deselect item.
             ItemsListView.SelectedItem = null;
-        }
-
-        private async void RefreshItems_Clicked(object sender, EventArgs e)
-        {
-            if (_registrationService.IsRegistered())
-            {
-                _restService.GetScope();
-            }
-            else
-            {
-                await DisplayAlert(
-                    "Nicht registriert",
-                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, muss das Gerät zuerst registriert werden.",
-                    "OK");
-            }
         }
 
         protected override void OnAppearing()
@@ -75,18 +60,6 @@ namespace GeoClient.Views
         protected override void OnDisappearing()
         {
             _incidentUpdateRegistry.UnregisterListener(this);
-        }
-
-        private async void CheckIfDataSaverIsActive()
-        {
-            var isDataSaverBlockingBackgroundData = PrerequisitesChecking.IsDataSaverBlockingBackgroundData();
-            if (isDataSaverBlockingBackgroundData)
-            {
-                await DisplayAlert(
-                    "Datensparmodus ist aktiv!",
-                    "Position kann nicht zuverlässig gesendet werden.",
-                    "OK");
-            }
         }
 
         public void IncidentsUpdated(List<IncidentItem> updatedIncidents)
@@ -115,6 +88,45 @@ namespace GeoClient.Views
                 _viewModel.Incidents.Clear();
                 SetBusyIndicationToFalse();
             });
+        }
+
+        private void RefreshItems_Clicked(object sender, EventArgs e)
+        {
+            LoadScopeIfNotBusyYet();
+        }
+
+        private async void LoadScopeIfNotBusyYet()
+        {
+            if (_viewModel.IsBusy)
+            {
+                Console.WriteLine("Update of incidents is still busy.");
+                return;
+            }
+
+            if (_registrationService.IsRegistered())
+            {
+                Device.BeginInvokeOnMainThread(() => { _viewModel.IsBusy = true; });
+                _restService.GetScope();
+            }
+            else
+            {
+                await DisplayAlert(
+                    "Nicht registriert",
+                    "Um die Liste mit aktuellen Einsätzen zu aktualisieren, muss das Gerät zuerst registriert werden.",
+                    "OK");
+            }
+        }
+
+        private async void CheckIfDataSaverIsActive()
+        {
+            var isDataSaverBlockingBackgroundData = PrerequisitesChecking.IsDataSaverBlockingBackgroundData();
+            if (isDataSaverBlockingBackgroundData)
+            {
+                await DisplayAlert(
+                    "Datensparmodus ist aktiv!",
+                    "Position kann nicht zuverlässig gesendet werden.",
+                    "OK");
+            }
         }
 
         private string CreateEmptyListMessage(IncidentInvalidationReason reason)
