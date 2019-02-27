@@ -65,7 +65,7 @@ namespace GeoClient.Services.Boundary
                 return;
 
             var scopeUrl = CreateGeoServerScopeUrl();
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Getting Scope from Server");
+            Console.WriteLine("Getting Scope from Server");
 
             await _positionHttpClient.GetAsync(scopeUrl).ContinueWith(getScopeResponse =>
             {

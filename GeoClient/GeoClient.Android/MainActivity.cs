@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Net;
 using Android.OS;
+using Android.Provider;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.Content;
@@ -11,15 +12,15 @@ using Android.Util;
 using GeoClient.Droid.Location;
 using GeoClient.Services.Registration;
 using GeoClient.Services.Utils;
+using Java.Lang;
 using System.Threading.Tasks;
-using Android.Provider;
 
 namespace GeoClient.Droid
 {
     [Activity(
-        Label = "GeoClient", 
-        Icon = "@mipmap/icon", 
-        Theme = "@style/MainTheme", 
+        Label = "GeoClient",
+        Icon = "@mipmap/icon",
+        Theme = "@style/MainTheme",
         MainLauncher = true,
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
         LaunchMode = LaunchMode.SingleTop)]
@@ -32,6 +33,8 @@ namespace GeoClient.Droid
 
         private static readonly int RequestCameraPermissionCode = 0;
         private static readonly string[] RequiredCameraPermissions = { Manifest.Permission.Camera };
+
+        private static readonly long CleanupTimeoutInMilliseconds = 24 * 60 * 60 * 1000;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -87,11 +90,11 @@ namespace GeoClient.Droid
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
             {
-                var connectivityManager = (ConnectivityManager) GetSystemService(Context.ConnectivityService);
+                var connectivityManager = (ConnectivityManager)GetSystemService(Context.ConnectivityService);
 
                 if (connectivityManager.RestrictBackgroundStatus == RestrictBackgroundStatus.Enabled)
                 {
-                        dataSaverEnabled = true;
+                    dataSaverEnabled = true;
                 }
             }
 
@@ -100,7 +103,8 @@ namespace GeoClient.Droid
 
         private bool IsDeveloperModeActive()
         {
-            var intOfDevSetting = Settings.Secure.GetInt(ContentResolver, Settings.Global.DevelopmentSettingsEnabled, 0);
+            var intOfDevSetting =
+                Settings.Secure.GetInt(ContentResolver, Settings.Global.DevelopmentSettingsEnabled, 0);
             Log.Debug(LoggerTag, "Developer setting enabled returned: " + intOfDevSetting);
             return intOfDevSetting != 0;
         }
@@ -172,7 +176,7 @@ namespace GeoClient.Droid
                         delegate
                         {
                             ActivityCompat.RequestPermissions(
-                                this, 
+                                this,
                                 RequiredCameraPermissions,
                                 RequestCameraPermissionCode);
                         }
@@ -195,7 +199,7 @@ namespace GeoClient.Droid
                 {
                     Log.Debug(LoggerTag, "Request to disable the battery optimizations.");
                     var intent = new Intent();
-                    intent.SetAction(Android.Provider.Settings.ActionRequestIgnoreBatteryOptimizations);
+                    intent.SetAction(Settings.ActionRequestIgnoreBatteryOptimizations);
                     intent.SetData(Uri.Parse("package:" + packageName));
                     StartActivity(intent);
                 }
@@ -236,11 +240,44 @@ namespace GeoClient.Droid
         public void GeoServerRegistered()
         {
             InitializeLocationChangeHandling();
+            RequestAlarmForCleanup();
         }
 
         public void GeoServerUnregistered()
         {
             StopLocationService();
+            CancelAlarmForCleanup();
+        }
+
+        private void RequestAlarmForCleanup()
+        {
+            var pendingIntent = CreatePendingIntentForCleanup();
+            var alarmManager = GetAlarmManager();
+            // Previous alarm has to be canceled explicitly, because cancel_current option did not work out.
+            alarmManager.Cancel(pendingIntent);
+            alarmManager.Set(
+                AlarmType.RtcWakeup,
+                JavaSystem.CurrentTimeMillis() + CleanupTimeoutInMilliseconds,
+                pendingIntent);
+        }
+
+        private void CancelAlarmForCleanup()
+        {
+            var pendingIntent = CreatePendingIntentForCleanup();
+            GetAlarmManager().Cancel(pendingIntent);
+        }
+
+        private AlarmManager GetAlarmManager()
+        {
+            var alarmManager = GetSystemService(AlarmService) as AlarmManager;
+            return alarmManager;
+        }
+
+        private PendingIntent CreatePendingIntentForCleanup()
+        {
+            var alarmIntent = new Intent(this, typeof(RegistrationCleanupBroadcastReceiver));
+            var pendingIntent = PendingIntent.GetBroadcast(this, 0, alarmIntent, PendingIntentFlags.UpdateCurrent);
+            return pendingIntent;
         }
     }
 }

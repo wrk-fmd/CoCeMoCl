@@ -61,6 +61,7 @@ namespace GeoClient.Services.Registration
 
         public bool IsRegistered()
         {
+            TryToLoadRegistrationInfo();
             return _cachedRegistrationInfo != null;
         }
 

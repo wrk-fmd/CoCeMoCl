@@ -5,9 +5,6 @@ using GeoClient.Views;
 using System;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 
@@ -19,8 +16,6 @@ namespace GeoClient
         {
             InitializeComponent();
             MainPage = new MainPage();
-
-            LocationChangeRegistry.Instance.RegisterListener(RestService.Instance);
         }
 
         protected override void OnStart()

@@ -6,6 +6,11 @@ namespace GeoClient.Services.Boundary
     public enum IncidentInvalidationReason
     {
         /// <summary>
+        /// The update from the server did not contain any incidents.
+        /// </summary>
+        EmptyUpdateFromServer,
+
+        /// <summary>
         /// The client is no longer registered on the server.
         /// </summary>
         ClientNoLongerRegistered,

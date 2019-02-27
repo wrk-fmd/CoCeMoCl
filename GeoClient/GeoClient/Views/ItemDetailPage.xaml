@@ -6,7 +6,6 @@
              Title="{Binding Title}">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Color x:Key="Accent">#B70E0C</Color>
             <Color x:Key="Headline">Black</Color>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -60,9 +59,9 @@
 
                 <Button
                     x:Name="OpenLocationButton"
-                    Text="Berufungsort auf Karte anzeigen"
+                    Text="{Binding OpenLocationButtonText}"
                     Clicked="openLocation_Clicked"
-                    BackgroundColor="{StaticResource Accent}"
+                    BackgroundColor="{Binding OpenLocationButtonColor}"
                     TextColor="White"
                     VerticalOptions="End" />
 
