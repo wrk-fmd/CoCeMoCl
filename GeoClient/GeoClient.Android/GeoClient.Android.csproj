@@ -89,6 +89,7 @@
     <Compile Include="Location\NativeAndroidLocationProvider.cs" />
     <Compile Include="Location\XamarinLocationFactory.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="RegistrationCleanupBroadcastReceiver.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

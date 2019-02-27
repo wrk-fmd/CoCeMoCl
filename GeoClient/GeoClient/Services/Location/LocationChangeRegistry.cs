@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using GeoClient.Services.Boundary;
 using Xamarin.Forms.Internals;
 
 namespace GeoClient.Services.Location
@@ -17,6 +18,7 @@ namespace GeoClient.Services.Location
         private LocationChangeRegistry()
         {
             _locationListeners = new ConcurrentDictionary<ILocationUpdateListener, byte>();
+            RegisterListener(RestService.Instance);
         }
 
         public static LocationChangeRegistry Instance { get; } = new LocationChangeRegistry();
