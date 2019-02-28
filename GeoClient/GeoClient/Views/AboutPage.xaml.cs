@@ -127,7 +127,7 @@ namespace GeoClient.Views
             ContentUnitName.Text =
                 _registrationService.RegisteredUnitInformation?.UnitName ??
                 "Wird von Server abgefragt...";
-            ContentUnitName.Text = "öffnen";
+            ContentUnitUrl.Text = "öffnen";
 
             RegisterButton.Text = "Andere Einheit registrieren";
         }
