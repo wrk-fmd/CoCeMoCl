@@ -52,13 +52,8 @@ namespace GeoClient.Views
 
         private async void openUrl_Tapped(object sender, EventArgs e)
         {
-            var registrationInfo = _registrationService.GetRegistrationInfo();
-
-            // XXX to be implemented
-            await DisplayAlert(
-                "Nicht implementiert",
-                registrationInfo.Url,
-                "OK");
+            // XXX fire and forget
+            _registrationService.OpenUri();
         }
 
         private async void registerDevice_Clicked(object sender, EventArgs e)
