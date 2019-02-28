@@ -17,7 +17,7 @@ namespace GeoClient.Services.Registration
                 var id = url.Substring(startIndexOfId, indexOfToken - startIndexOfId);
                 var token = url.Substring(indexOfToken + 7);
 
-                info = new RegistrationInfo(id, token);
+                info = new RegistrationInfo(id, token, url);
             }
             else
             {

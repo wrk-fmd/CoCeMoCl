@@ -50,6 +50,17 @@ namespace GeoClient.Views
             }
         }
 
+        private async void openUrl_Tapped(object sender, EventArgs e)
+        {
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+
+            // XXX to be implemented
+            await DisplayAlert(
+                "Nicht implementiert",
+                registrationInfo.Url,
+                "OK");
+        }
+
         private async void registerDevice_Clicked(object sender, EventArgs e)
         {
 #if __ANDROID__
@@ -101,8 +112,9 @@ namespace GeoClient.Views
         private void ResetRegistrationInfo()
         {
             ContentUnitRegistered.Text = "Nein";
-            ContentUnitId.Text = "-";
-            ContentUnitName.Text = "-";
+            ContentUnitId.Text = "";
+            ContentUnitName.Text = "";
+            ContentUnitUrl.Text = "";
             RegisterButton.Text = "Jetzt registrieren";
         }
 
@@ -115,6 +127,7 @@ namespace GeoClient.Views
             ContentUnitName.Text =
                 _registrationService.RegisteredUnitInformation?.UnitName ??
                 "Wird von Server abgefragt...";
+            ContentUnitName.Text = "öffnen";
 
             RegisterButton.Text = "Andere Einheit registrieren";
         }
