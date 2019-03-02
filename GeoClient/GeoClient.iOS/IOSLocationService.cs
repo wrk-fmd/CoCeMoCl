@@ -3,19 +3,22 @@
 using CoreLocation;
 using UIKit;
 using Foundation;
+using GeoClient.Services.Registration;
+using GeoClient.Services.Location;
 
 namespace GeoClient.iOS
 {
-    public class IOSLocationService
+    public class IOSLocationService: IGeoRegistrationListener
     {
         protected CLLocationManager locMgr;
+        private readonly LocationChangeRegistry _locationChangeRegistry;
         // event for the location changing
         public event EventHandler<LocationUpdatedEventArgs> LocationUpdated = delegate { };
 
         public IOSLocationService()
         {
             this.locMgr = new CLLocationManager();
-
+            _locationChangeRegistry = LocationChangeRegistry.Instance;
             this.locMgr.PausesLocationUpdatesAutomatically = false;
 
             // iOS 8 has additional permissions requirements
@@ -37,7 +40,6 @@ namespace GeoClient.iOS
         {
             get { return this.locMgr; }
         }
-
 
         public void StartLocationUpdates()
         {
@@ -95,12 +97,45 @@ namespace GeoClient.iOS
         public void PrintLocation(object sender, LocationUpdatedEventArgs e)
         {
             CLLocation location = e.Location;
+            var updatedLocation = CreateXamarinLocation(location);
 
             Console.WriteLine("Altitude: " + location.Altitude + " meters");
             Console.WriteLine("Longitude: " + location.Coordinate.Longitude);
             Console.WriteLine("Latitude: " + location.Coordinate.Latitude);
             Console.WriteLine("Course: " + location.Course);
             Console.WriteLine("Speed: " + location.Speed);
+
+            _locationChangeRegistry.LocationUpdated(updatedLocation);
+        }
+
+        private static Xamarin.Essentials.Location CreateXamarinLocation(CLLocation location)
+        {
+            var date = location.Timestamp;
+            DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
+            DateTime currentDate = reference.AddSeconds(date.SecondsSinceReferenceDate);
+            DateTime locationTimestamp = currentDate.ToLocalTime();
+
+            var updatedLocation = new Xamarin.Essentials.Location
+            {
+                Accuracy = location.HorizontalAccuracy,
+                Altitude = location.Altitude,
+                Course = location.Course,
+                Latitude = location.Coordinate.Latitude,
+                Longitude = location.Coordinate.Longitude,
+                Speed = location.Speed,
+                Timestamp = locationTimestamp
+            };
+            return updatedLocation;
+        }
+
+        public void GeoServerRegistered()
+        {
+            StartLocationUpdates();
+        }
+
+        public void GeoServerUnregistered()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -65,8 +65,8 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Location\IOSLocationService.cs" />
-    <Compile Include="Location\LocationUpdatedEventArgs.cs" />
+    <Compile Include="IOSLocationService.cs" />
+    <Compile Include="LocationUpdatedEventArgs.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="Entitlements.plist" />
