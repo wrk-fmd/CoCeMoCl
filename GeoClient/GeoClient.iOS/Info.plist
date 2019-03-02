@@ -41,5 +41,9 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Please allow access to the camera to scan barcodes</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>
