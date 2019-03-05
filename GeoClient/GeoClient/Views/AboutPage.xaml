@@ -60,7 +60,7 @@
                 Text="Registrierte Einheit"
                 FontSize="Medium"
                 FontAttributes="Bold"
-                Margin="0,20,0,0"/>
+                Margin="0,20,0,0" />
 
             <Label
                 Text="Das Gerät kann mittels QR Code einer Einheit zugeordnet werden. Scanne hierfür den Code auf deinem Informationsblatt." />
@@ -92,6 +92,22 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
+
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Kartenansicht: " FontAttributes="Bold" />
+                            <Span
+                                Text="N/A"
+                                x:Name="ContentUnitUrl"
+                                TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OpenUnitUrl_Clicked" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </StackLayout>
 
             <Grid Margin="0,10">
@@ -109,7 +125,7 @@
                     Grid.Column="0"
                     x:Name="RegisterButton"
                     Text="Jetzt registrieren"
-                    Clicked="registerDevice_Clicked"
+                    Clicked="RegisterDevice_Clicked"
                     BackgroundColor="{StaticResource Accent}"
                     TextColor="{StaticResource ButtonTextColor}"
                     Padding="0,0,0,0" />
@@ -119,13 +135,13 @@
                     Grid.Column="1"
                     x:Name="UnregisterButton"
                     Text="Registrierung löschen"
-                    Clicked="unregisterDevice_Clicked"
+                    Clicked="UnregisterDevice_Clicked"
                     BackgroundColor="{StaticResource Accent}"
                     TextColor="{StaticResource ButtonTextColor}"
                     Padding="0,0,0,0" />
             </Grid>
 
-            <StackLayout 
+            <StackLayout
                 VerticalOptions="Start"
                 Margin="0,20">
                 <Label

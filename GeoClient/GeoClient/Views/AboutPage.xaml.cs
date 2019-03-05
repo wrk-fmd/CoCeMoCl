@@ -50,7 +50,23 @@ namespace GeoClient.Views
             }
         }
 
-        private async void registerDevice_Clicked(object sender, EventArgs e)
+        private async void OpenUnitUrl_Clicked(object sender, EventArgs e)
+        {
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            if (registrationInfo != null)
+            {
+                Device.OpenUri(new Uri(registrationInfo.GetMapViewUrl()));
+            }
+            else
+            {
+                await DisplayAlert(
+                    "Gerät nicht registriert",
+                    "Die App ist nicht registriert. Scanne deinen QR Code um auf die Kartenansicht zugreifen zu können.",
+                    "OK");
+            }
+        }
+
+        private async void RegisterDevice_Clicked(object sender, EventArgs e)
         {
 #if __ANDROID__
 	            // Initialize the scanner first so it can track the current context
@@ -61,7 +77,7 @@ namespace GeoClient.Views
             await Navigation.PushModalAsync(scanPage);
         }
 
-        private void unregisterDevice_Clicked(object sender, EventArgs e)
+        private void UnregisterDevice_Clicked(object sender, EventArgs e)
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -101,8 +117,9 @@ namespace GeoClient.Views
         private void ResetRegistrationInfo()
         {
             ContentUnitRegistered.Text = "Nein";
-            ContentUnitId.Text = "-";
-            ContentUnitName.Text = "-";
+            ContentUnitId.Text = "";
+            ContentUnitName.Text = "";
+            ContentUnitUrl.Text = "nicht verfügbar";
             RegisterButton.Text = "Jetzt registrieren";
         }
 
@@ -115,6 +132,7 @@ namespace GeoClient.Views
             ContentUnitName.Text =
                 _registrationService.RegisteredUnitInformation?.UnitName ??
                 "Wird von Server abgefragt...";
+            ContentUnitUrl.Text = "Im Browser öffnen";
 
             RegisterButton.Text = "Andere Einheit registrieren";
         }

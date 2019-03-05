@@ -6,15 +6,23 @@
 
         public string Token { get; }
 
-        public RegistrationInfo(string id, string token)
+        public string BaseUrl { get; }
+
+        public RegistrationInfo(string id, string token, string baseUrl)
         {
             Id = id;
             Token = token;
+            BaseUrl = baseUrl;
+        }
+
+        public string GetMapViewUrl()
+        {
+            return $"{BaseUrl}/?id={Id}&token={Token}";
         }
 
         public override string ToString()
         {
-            return "RegistrationInfo[Id=" + Id + ", Token=" + Token + "]";
+            return $"{nameof(Id)}: {Id}, {nameof(Token)}: {Token}, {nameof(BaseUrl)}: {BaseUrl}";
         }
     }
 }

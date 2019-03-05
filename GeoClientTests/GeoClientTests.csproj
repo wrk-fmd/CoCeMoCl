@@ -46,6 +46,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RegistrationInfoParserTest.cs" />
     <Compile Include="ServiceTests\IncidentItemFactoryTest.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="AppInitializer.cs" />
