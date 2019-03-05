@@ -15,5 +15,7 @@ namespace GeoClient.ViewModels
         }
 
         public ICommand OpenWebCommand { get; }
+
+        public ICommand OpenMapViewCommand { get;  }
     }
 }

@@ -3,6 +3,7 @@ using GeoClient.Models.Geobroker;
 using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
 using GeoClient.Services.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace GeoClient.Services.Boundary
 {
@@ -21,9 +21,9 @@ namespace GeoClient.Services.Boundary
 
     public class RestService : ILocationUpdateListener
     {
-        public const string ServerBaseUrl = "https://geo.fmd.wrk.at/";
-        private const string LocationEndpointUri = "endpoint/positions/";
-        private const string ScopeEndpointUri = "endpoint/scope/";
+        private const string LocationEndpointUri = "/endpoint/positions/";
+        private const string ScopeEndpointUri = "/endpoint/scope/";
+
         private const string JsonContentType = "application/json";
 
         private readonly RegistrationService _registrationService;
@@ -42,7 +42,7 @@ namespace GeoClient.Services.Boundary
         private RestService()
         {
             _registrationService = RegistrationService.Instance;
-            _positionHttpClient = new HttpClient {Timeout = TimeSpan.FromSeconds(10)};
+            _positionHttpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
             _taskScheduler = new InterceptedSingleThreadTaskScheduler();
             _incidentUpdateRegistry = IncidentUpdateRegistry.Instance;
         }
@@ -116,10 +116,10 @@ namespace GeoClient.Services.Boundary
         {
             JObject scopeArray = JObject.Parse(responseString);
 
-            JArray incidentArray = (JArray) scopeArray[GeobrokerConstants.ScopeIncidentsProperty];
-            JArray unitsArray = (JArray) scopeArray[GeobrokerConstants.ScopeUnitsProperty];
-            incidents = incidentArray.Select(c => (JObject) c).ToList();
-            units = unitsArray.Select(c => (JObject) c).ToList();
+            JArray incidentArray = (JArray)scopeArray[GeobrokerConstants.ScopeIncidentsProperty];
+            JArray unitsArray = (JArray)scopeArray[GeobrokerConstants.ScopeUnitsProperty];
+            incidents = incidentArray.Select(c => (JObject)c).ToList();
+            units = unitsArray.Select(c => (JObject)c).ToList();
         }
 
         private void SendPosition(Xamarin.Essentials.Location location)
@@ -164,13 +164,15 @@ namespace GeoClient.Services.Boundary
         private string CreateGeoServerLocationUrl()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            return ServerBaseUrl + LocationEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+            return registrationInfo.BaseUrl + LocationEndpointUri + registrationInfo.Id + "?token=" +
+                   registrationInfo.Token;
         }
 
         private string CreateGeoServerScopeUrl()
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
-            return ServerBaseUrl + ScopeEndpointUri + registrationInfo.Id + "?token=" + registrationInfo.Token;
+            return registrationInfo.BaseUrl + ScopeEndpointUri + registrationInfo.Id + "?token=" +
+                   registrationInfo.Token;
         }
     }
 }

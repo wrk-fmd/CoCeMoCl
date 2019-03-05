@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace GeoClient.Services.Registration
@@ -84,21 +83,6 @@ namespace GeoClient.Services.Registration
         {
             TryToLoadRegistrationInfo();
             return _cachedRegistrationInfo;
-        }
-
-        public bool OpenUri()
-        {
-            bool result = false;
-            if (IsRegistered())
-            {
-                Device.OpenUri(new Uri(_cachedRegistrationInfo.Url));
-                result = true;
-            }
-            else
-            {
-                Console.WriteLine("Not registered, cannot open url.");
-            }
-            return result;
         }
 
         private void TryToLoadRegistrationInfo()

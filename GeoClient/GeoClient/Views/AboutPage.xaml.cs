@@ -50,13 +50,23 @@ namespace GeoClient.Views
             }
         }
 
-        private async void openUrl_Tapped(object sender, EventArgs e)
+        private async void OpenUnitUrl_Clicked(object sender, EventArgs e)
         {
-            // XXX fire and forget
-            _registrationService.OpenUri();
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            if (registrationInfo != null)
+            {
+                Device.OpenUri(new Uri(registrationInfo.GetMapViewUrl()));
+            }
+            else
+            {
+                await DisplayAlert(
+                    "Gerät nicht registriert",
+                    "Die App ist nicht registriert. Scanne deinen QR Code um auf die Kartenansicht zugreifen zu können.",
+                    "OK");
+            }
         }
 
-        private async void registerDevice_Clicked(object sender, EventArgs e)
+        private async void RegisterDevice_Clicked(object sender, EventArgs e)
         {
 #if __ANDROID__
 	            // Initialize the scanner first so it can track the current context
@@ -67,7 +77,7 @@ namespace GeoClient.Views
             await Navigation.PushModalAsync(scanPage);
         }
 
-        private void unregisterDevice_Clicked(object sender, EventArgs e)
+        private void UnregisterDevice_Clicked(object sender, EventArgs e)
         {
             Device.BeginInvokeOnMainThread(async () =>
             {
@@ -109,7 +119,7 @@ namespace GeoClient.Views
             ContentUnitRegistered.Text = "Nein";
             ContentUnitId.Text = "";
             ContentUnitName.Text = "";
-            ContentUnitUrl.Text = "";
+            ContentUnitUrl.Text = "nicht verfügbar";
             RegisterButton.Text = "Jetzt registrieren";
         }
 
@@ -122,7 +132,7 @@ namespace GeoClient.Views
             ContentUnitName.Text =
                 _registrationService.RegisteredUnitInformation?.UnitName ??
                 "Wird von Server abgefragt...";
-            ContentUnitUrl.Text = "öffnen";
+            ContentUnitUrl.Text = "Im Browser öffnen";
 
             RegisterButton.Text = "Andere Einheit registrieren";
         }
