@@ -37,25 +37,6 @@
             <Label
                 Text="Diese App dient der Verortung von Einheiten des Wiener Roten Kreuzes im Zuge von Ambulanzen. Eine Verwendung ist nur mit gültigen Zugangsdaten (QR Code) möglich." />
 
-            <Label>
-                <Label.FormattedText>
-                    <FormattedString>
-                        <FormattedString.Spans>
-                            <Span
-                                Text="Weitere Details zu der App sind für Mitarbeiter des WRK " />
-
-                            <Span
-                                Text="hier im Intranet (Confluence) ersichtlich."
-                                TextDecorations="Underline">
-                                <Span.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding OpenWebCommand}" />
-                                </Span.GestureRecognizers>
-                            </Span>
-                        </FormattedString.Spans>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
-
             <Label
                 Text="Registrierte Einheit"
                 FontSize="Medium"
@@ -93,16 +74,32 @@
                     </Label.FormattedText>
                 </Label>
 
-                <Label>
+                <Label x:Name="LabelUnitUrl">
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="Kartenansicht: " FontAttributes="Bold" />
                             <Span
-                                Text="N/A"
+                                Text="Im Browser öffnen"
                                 x:Name="ContentUnitUrl"
                                 TextDecorations="Underline">
                                 <Span.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OpenUnitUrl_Clicked" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+
+                <Label x:Name="LabelInfoSheetUrl">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Infoblatt: " FontAttributes="Bold" />
+                            <Span
+                                Text="Im Browser öffnen"
+                                x:Name="ContentInfoSheetUrl"
+                                TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OpenInfoSheetUrl_Clicked" />
                                 </Span.GestureRecognizers>
                             </Span>
                         </FormattedString>

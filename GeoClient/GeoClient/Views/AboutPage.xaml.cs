@@ -50,19 +50,21 @@ namespace GeoClient.Views
             }
         }
 
-        private async void OpenUnitUrl_Clicked(object sender, EventArgs e)
+        private void OpenUnitUrl_Clicked(object sender, EventArgs e)
         {
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo != null)
             {
                 Device.OpenUri(new Uri(registrationInfo.GetMapViewUrl()));
             }
-            else
+        }
+
+        private void OpenInfoSheetUrl_Clicked(object sender, EventArgs e)
+        {
+            var registrationInfo = _registrationService.GetRegistrationInfo();
+            if (registrationInfo != null)
             {
-                await DisplayAlert(
-                    "Gerät nicht registriert",
-                    "Die App ist nicht registriert. Scanne deinen QR Code um auf die Kartenansicht zugreifen zu können.",
-                    "OK");
+                Device.OpenUri(new Uri(registrationInfo.BaseUrl + "/about.html"));
             }
         }
 
@@ -119,7 +121,10 @@ namespace GeoClient.Views
             ContentUnitRegistered.Text = "Nein";
             ContentUnitId.Text = "";
             ContentUnitName.Text = "";
-            ContentUnitUrl.Text = "nicht verfügbar";
+
+            LabelUnitUrl.IsVisible = false;
+            LabelInfoSheetUrl.IsVisible = false;
+
             RegisterButton.Text = "Jetzt registrieren";
         }
 
@@ -132,7 +137,9 @@ namespace GeoClient.Views
             ContentUnitName.Text =
                 _registrationService.RegisteredUnitInformation?.UnitName ??
                 "Wird von Server abgefragt...";
-            ContentUnitUrl.Text = "Im Browser öffnen";
+
+            LabelUnitUrl.IsVisible = true;
+            LabelInfoSheetUrl.IsVisible = true;
 
             RegisterButton.Text = "Andere Einheit registrieren";
         }
