@@ -60,8 +60,15 @@
                 <Button
                     x:Name="OpenLocationButton"
                     Text="{Binding OpenLocationButtonText}"
-                    Clicked="openLocation_Clicked"
+                    Clicked="OpenLocation_Clicked"
                     BackgroundColor="{Binding OpenLocationButtonColor}"
+                    TextColor="White"
+                    VerticalOptions="End" />
+                <Button
+                    x:Name="OpenDestinationButton"
+                    Text="{Binding OpenDestinationButtonText}"
+                    Clicked="OpenDestination_Clicked"
+                    BackgroundColor="{Binding OpenDestinationButtonColor}"
                     TextColor="White"
                     VerticalOptions="End" />
 

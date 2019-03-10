@@ -13,6 +13,9 @@ namespace GeoClient.ViewModels
         public Color OpenLocationButtonColor => GetOpenLocationButtonColor();
         public string OpenLocationButtonText => GetOpenLocationButtonText();
 
+        public Color OpenDestinationButtonColor => GetOpenDestinationButtonColor();
+        public string OpenDestinationButtonText => GetOpenDestinationButtonText();
+
         public ItemDetailViewModel(IncidentItem incidentItem = null)
         {
             Title = incidentItem?.DescriptiveType;
@@ -26,12 +29,27 @@ namespace GeoClient.ViewModels
 
         private string GetOpenLocationButtonText()
         {
-            return IsLocationAvailable() ? "Berufungsort auf Karte anzeigen" : "Berufungsort ist nicht verortet";
+            return IsLocationAvailable() ? "Berufungsort auf Karte anzeigen" : "Berufungsort nicht verfügbar";
         }
 
         private bool IsLocationAvailable()
         {
             return IncidentItem?.Location != null;
+        }
+
+        private Color GetOpenDestinationButtonColor()
+        {
+            return IsDestinationAvailable() ? ActiveButtonColor : DisableButtonColor;
+        }
+
+        private string GetOpenDestinationButtonText()
+        {
+            return IsDestinationAvailable() ? "Zielort auf Karte anzeigen" : "Zielort nicht verfügbar";
+        }
+
+        private bool IsDestinationAvailable()
+        {
+            return IncidentItem?.Destination != null;
         }
     }
 }
