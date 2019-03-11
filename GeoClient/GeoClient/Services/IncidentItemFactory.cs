@@ -48,6 +48,7 @@ namespace GeoClient.Services
                 incident.Value<bool>(GeobrokerConstants.IncidentPriorityProperty),
                 incident.Value<bool>(GeobrokerConstants.IncidentBlueProperty),
                 CreateGeoPoint(incident[GeobrokerConstants.IncidentLocationProperty]),
+                CreateGeoPoint(incident[GeobrokerConstants.IncidentDestinationProperty]),
                 unitList);
         }
 

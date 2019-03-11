@@ -16,6 +16,7 @@ namespace GeoClient.Models
         public bool Priority { get; }
         public bool Blue { get; }
         public GeoPoint Location { get; }
+        public GeoPoint Destination { get; }
 
         public List<UnitOfIncident> Units { get; }
 
@@ -36,6 +37,7 @@ namespace GeoClient.Models
             bool priority = false,
             bool blue = false,
             GeoPoint location = null,
+            GeoPoint destination = null,
             List<UnitOfIncident> units = null)
         {
             Id = id;
@@ -44,6 +46,7 @@ namespace GeoClient.Models
             Priority = priority;
             Blue = blue;
             Location = location;
+            Destination = destination;
             Units = units ?? new List<UnitOfIncident>();
         }
 
@@ -55,6 +58,7 @@ namespace GeoClient.Models
                    && Priority == other.Priority
                    && Blue == other.Blue
                    && Equals(Location, other.Location)
+                   && Equals(Destination, other.Destination)
                    && ListEquals(Units, other.Units);
         }
 
@@ -85,6 +89,7 @@ namespace GeoClient.Models
                 hashCode = (hashCode * 397) ^ Priority.GetHashCode();
                 hashCode = (hashCode * 397) ^ Blue.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Location != null ? Location.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Destination != null ? Destination.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Units != null ? Units.GetHashCode() : 0);
                 return hashCode;
             }
@@ -93,7 +98,7 @@ namespace GeoClient.Models
         public override string ToString()
         {
             return
-                $"{nameof(Id)}: {Id}, {nameof(Type)}: {Type}, {nameof(Info)}: {Info}, {nameof(Priority)}: {Priority}, {nameof(Blue)}: {Blue}, {nameof(Location)}: {Location}, Units.Count: {Units.Count}";
+                $"{nameof(Id)}: {Id}, {nameof(Type)}: {Type}, {nameof(Info)}: {Info}, {nameof(Priority)}: {Priority}, {nameof(Blue)}: {Blue}, {nameof(Location)}: {Location}, {nameof(Destination)}: {Destination}, Units.Count: {Units.Count}";
         }
 
         private string GetDescriptiveType()
@@ -128,12 +133,10 @@ namespace GeoClient.Models
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo?.Id != null)
             {
-                foreach (UnitOfIncident unit in Units)
+                foreach (var unit in Units)
                 {
                     if (unit.Id == registrationInfo.Id)
-                    {
                         return unit.State;
-                    }
                 }
             }
             else

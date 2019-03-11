@@ -1,6 +1,7 @@
 ﻿using GeoClient.ViewModels;
 using GeoClient.Views.Utils;
 using System;
+using System.Threading.Tasks;
 using GeoClient.Models;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -78,7 +79,7 @@ namespace GeoClient.Views
             return label;
         }
 
-        private async void openLocation_Clicked(object sender, EventArgs e)
+        private async void OpenLocation_Clicked(object sender, EventArgs e)
         {
             var item = _viewModel.IncidentItem;
 
@@ -90,11 +91,32 @@ namespace GeoClient.Views
             }
             else
             {
-                await DisplayAlert(
-                    "Adresse nicht verortet",
-                    "Die Adresse konnte leider nicht automatisch verortet werden.",
-                    "OK");
+                await ShowGeoUriNotAvailableError();
             }
+        }
+
+        private async void OpenDestination_Clicked(object sender, EventArgs e)
+        {
+            var item = _viewModel.IncidentItem;
+
+            var geoUri = GeoPointUtil.CreateGeoUri(item.Destination, "GeoClient: Zielort");
+
+            if (geoUri != null)
+            {
+                Device.OpenUri(geoUri);
+            }
+            else
+            {
+                await ShowGeoUriNotAvailableError();
+            }
+        }
+
+        private async Task ShowGeoUriNotAvailableError()
+        {
+            await DisplayAlert(
+                "Adresse nicht verortet",
+                "Die Adresse konnte leider nicht automatisch verortet werden.",
+                "OK");
         }
     }
 }
