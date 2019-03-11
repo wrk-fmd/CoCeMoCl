@@ -26,7 +26,7 @@
                                 FontAttributes="Bold"
                                 FontSize="Large" />
                             <Span
-                                Text="1.1.4"
+                                Text="1.1.5"
                                 FontSize="Large"
                                 ForegroundColor="{StaticResource LightTextColor}" />
                         </FormattedString.Spans>

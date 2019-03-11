@@ -7,8 +7,8 @@
     <Copyright>MIT License</Copyright>
     <Description>App to share the position data</Description>
     <Version>1.1.4</Version>
-    <AssemblyVersion>1.1.4.1</AssemblyVersion>
-    <FileVersion>1.1.4.1</FileVersion>
+    <AssemblyVersion>1.1.5.0</AssemblyVersion>
+    <FileVersion>1.1.5.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
