@@ -11,6 +11,7 @@
         public const string IncidentPriorityProperty = "priority";
         public const string IncidentBlueProperty = "blue";
         public const string IncidentLocationProperty = "location";
+        public const string IncidentDestinationProperty = "destination";
         public const string IncidentAssignedUnitsProperty = "assignedUnits";
 
         public const string UnitIdProperty = "id";

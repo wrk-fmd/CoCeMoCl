@@ -36,6 +36,7 @@ namespace GeoClientTests.ServiceTests
                 GeoIncidentType.Task,
                 "Info 1",
                 location: new GeoPoint(48, 16),
+                destination: new GeoPoint(19, 21),
                 units: new List<UnitOfIncident>
                 {
                     CreateUnit1(IncidentTaskState.Abo),
