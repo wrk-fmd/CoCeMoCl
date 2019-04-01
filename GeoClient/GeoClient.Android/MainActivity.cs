@@ -51,7 +51,8 @@ namespace GeoClient.Droid
             RegistrationService.Instance.RegisterListener(this);
 
             RequestCameraPermissionIfNecessary();
-            RequestBatteryOptimizationWhitelisting();
+            // Do not request battery optimization to fulfill MDM restrictions.
+            // RequestBatteryOptimizationWhitelisting();
         }
 
         protected override void OnDestroy()
@@ -103,10 +104,11 @@ namespace GeoClient.Droid
 
         private bool IsDeveloperModeActive()
         {
-            var intOfDevSetting =
-                Settings.Secure.GetInt(ContentResolver, Settings.Global.DevelopmentSettingsEnabled, 0);
-            Log.Debug(LoggerTag, "Developer setting enabled returned: " + intOfDevSetting);
-            return intOfDevSetting != 0;
+            // var intOfDevSetting =
+            //     Settings.Secure.GetInt(ContentResolver, Settings.Global.DevelopmentSettingsEnabled, 0);
+            // Log.Debug(LoggerTag, "Developer setting enabled returned: " + intOfDevSetting);
+            // return intOfDevSetting != 0;
+            return false;
         }
 
         private void PerformXamarinStartup(Bundle savedInstanceState)
