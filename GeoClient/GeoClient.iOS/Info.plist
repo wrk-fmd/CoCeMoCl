@@ -26,7 +26,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>GeoClient</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.companyname.GeoClient</string>
+	<string>at.wrk.fmd.cocemocl.GeoClient</string>
 	<key>CFBundleVersion</key>
 	<string>1.1.5</string>
 	<key>UILaunchStoryboardName</key>
@@ -41,5 +41,11 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Please allow access to the camera to scan barcodes</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.1.5</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>

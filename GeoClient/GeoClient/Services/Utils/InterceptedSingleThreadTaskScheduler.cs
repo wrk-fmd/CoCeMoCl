@@ -16,7 +16,7 @@ namespace GeoClient.Services.Utils
 
         public static BeforeTaskExecutionHook AroundTaskExecution = delegate
         {
-            Console.WriteLine("Not delegate for intercepted task scheduler registered.");
+            Console.WriteLine("No delegate for intercepted task scheduler registered.");
             return () => { };
         };
 

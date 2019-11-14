@@ -25,5 +25,7 @@
         public const string GeoPositionLongitudeProperty = GeoPointLongitudeProperty;
         public const string GeoPositionAccuracyProperty = "accuracy";
         public const string GeoPositionTimestampProperty = "timestamp";
+        public const string GeoPositionHeadingProperty = "heading";
+        public const string GeoPositionSpeedProperty = "speed";
     }
 }

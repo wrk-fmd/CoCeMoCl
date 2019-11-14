@@ -1,12 +1,10 @@
 ﻿using Android.App;
 using Android.Content;
 using Android.Graphics;
-using Android.Locations;
 using Android.OS;
 using Android.Support.V4.App;
 using Android.Util;
 using GeoClient.Services.Location;
-using System;
 
 namespace GeoClient.Droid.Location
 {

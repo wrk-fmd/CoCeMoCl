@@ -130,7 +130,9 @@ namespace GeoClient.Services.Boundary
                 {GeobrokerConstants.GeoPositionLatitudeProperty, location.Latitude},
                 {GeobrokerConstants.GeoPositionLongitudeProperty, location.Longitude},
                 {GeobrokerConstants.GeoPositionTimestampProperty, location.Timestamp.UtcDateTime.ToString("s") + "Z"},
-                {GeobrokerConstants.GeoPositionAccuracyProperty, location.Accuracy}
+                {GeobrokerConstants.GeoPositionAccuracyProperty, location.Accuracy},
+                {GeobrokerConstants.GeoPositionHeadingProperty, location.Course},
+                {GeobrokerConstants.GeoPositionSpeedProperty, location.Speed}
             };
 
             new Task(async () =>

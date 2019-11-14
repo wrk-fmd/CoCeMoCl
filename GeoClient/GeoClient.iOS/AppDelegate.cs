@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿
 using Foundation;
 using UIKit;
 
@@ -25,6 +22,8 @@ namespace GeoClient.iOS
             global::Xamarin.Forms.Forms.Init();
             ZXing.Net.Mobile.Forms.iOS.Platform.Init();
             LoadApplication(new App());
+
+            new LocationManager().StartLocationUpdates();
 
             return base.FinishedLaunching(app, options);
         }
