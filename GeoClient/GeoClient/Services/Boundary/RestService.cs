@@ -138,11 +138,12 @@ namespace GeoClient.Services.Boundary
             new Task(async () =>
             {
                 var locationSendingFinalizer = BeforeLocationSending();
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Sending Data to Server: " + positionObject);
+                var positionObjectJsonString = positionObject.ToString(Formatting.None);
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Sending Data to Server: " + positionObjectJsonString);
 
                 var postPositionAsyncTask = _positionHttpClient.PostAsync(
                     positionsUrl,
-                    new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
+                    new StringContent(positionObjectJsonString, Encoding.UTF8, JsonContentType));
                 await postPositionAsyncTask.ContinueWith(postPositionResponse =>
                 {
                     try
