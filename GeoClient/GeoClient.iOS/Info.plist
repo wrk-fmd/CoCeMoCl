@@ -21,12 +21,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+  <key>MinimumOSVersion</key>
+  <string>8.0</string>
 	<key>CFBundleDisplayName</key>
 	<string>GeoClient</string>
 	<key>CFBundleIdentifier</key>
-	<string>at.wrk.fmd.cocemocl.GeoClient</string>
+	<string>at.wrk.fmd.cocemocl.geoclient</string>
 	<key>CFBundleVersion</key>
 	<string>1.1.5</string>
 	<key>UILaunchStoryboardName</key>
@@ -41,6 +41,12 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Please allow access to the camera to scan barcodes</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>GeoClient needs access to the location data in the background to send correct location data</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>GeoClient needs access to the location data in the background to send correct location data</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>GeoClient needs access to the location data in the background to send correct location data</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.1.5</string>
 	<key>UIBackgroundModes</key>

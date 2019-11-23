@@ -1,8 +1,9 @@
-﻿using GeoClient.Services.Boundary;
-using GeoClient.Services.Location;
-using GeoClient.Services.Registration;
+﻿using GeoClient.Services.Registration;
 using GeoClient.Views;
 using System;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 

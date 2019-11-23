@@ -21,11 +21,13 @@ namespace GeoClient.iOS
             // iOS 8 has additional permissions requirements
             if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
             {
+                Console.WriteLine("GeoClient is running in iOS 8 or higher. 'RequestAlwaysAuthorization' is requested async.");
                 _manager.RequestAlwaysAuthorization(); // works in background
             }
 
             if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
             {
+                Console.WriteLine("GeoClient is running in iOS 9 or higher. 'AllowsBackgroundLocationUpdates' is set to true.");
                 _manager.AllowsBackgroundLocationUpdates = true;
             }
         }
@@ -37,23 +39,40 @@ namespace GeoClient.iOS
                 _manager.DesiredAccuracy = CLLocation.AccuracyBest;
                 _manager.LocationsUpdated += (sender, e) =>
                 {
-                    // fire our custom Location Updated event
-                    var lastLocation = e.Locations[e.Locations.Length - 1];
-                    var updatedLocation = new Location(lastLocation.Coordinate.Latitude, lastLocation.Coordinate.Longitude, DateTimeOffset.Now)
+                    Console.WriteLine("Got a location update from location manager.");
+                    if (e.Locations.Length > 0)
                     {
-                        Accuracy = lastLocation.HorizontalAccuracy,
-                        Altitude = lastLocation.Altitude,
-                        Speed = lastLocation.Speed
-                    };
-
-                    _locationChangeRegistry.LocationUpdated(updatedLocation);
+                        var lastLocation = e.Locations[e.Locations.Length - 1];
+                        InformRegistryAboutLocationUpdate(lastLocation);
+                    } else
+                    {
+                        Console.WriteLine("Got a location update without locations!");
+                    }
                 };
+
+                Console.WriteLine("Requesting start of location updates from underlying location manager.");
                 _manager.StartUpdatingLocation();
             }
             else
             {
                 Console.Write("Location updates are not enabled!");
             }
+        }
+
+        private void InformRegistryAboutLocationUpdate(CLLocation lastLocation)
+        {
+            Location updatedLocation = CreateXamarinLocation(lastLocation);
+            _locationChangeRegistry.LocationUpdated(updatedLocation);
+        }
+
+        private static Location CreateXamarinLocation(CLLocation lastLocation)
+        {
+            return new Location(lastLocation.Coordinate.Latitude, lastLocation.Coordinate.Longitude, DateTimeOffset.Now)
+            {
+                Accuracy = lastLocation.HorizontalAccuracy,
+                Altitude = lastLocation.Altitude,
+                Speed = lastLocation.Speed
+            };
         }
     }
 }
