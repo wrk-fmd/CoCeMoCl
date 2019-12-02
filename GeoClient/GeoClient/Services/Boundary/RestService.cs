@@ -130,17 +130,20 @@ namespace GeoClient.Services.Boundary
                 {GeobrokerConstants.GeoPositionLatitudeProperty, location.Latitude},
                 {GeobrokerConstants.GeoPositionLongitudeProperty, location.Longitude},
                 {GeobrokerConstants.GeoPositionTimestampProperty, location.Timestamp.UtcDateTime.ToString("s") + "Z"},
-                {GeobrokerConstants.GeoPositionAccuracyProperty, location.Accuracy}
+                {GeobrokerConstants.GeoPositionAccuracyProperty, location.Accuracy},
+                {GeobrokerConstants.GeoPositionHeadingProperty, location.Course},
+                {GeobrokerConstants.GeoPositionSpeedProperty, location.Speed}
             };
 
             new Task(async () =>
             {
                 var locationSendingFinalizer = BeforeLocationSending();
-                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Sending Data to Server: " + positionObject);
+                var positionObjectJsonString = positionObject.ToString(Formatting.None);
+                Console.WriteLine(Thread.CurrentThread.ManagedThreadId + ": Sending Data to Server: " + positionObjectJsonString);
 
                 var postPositionAsyncTask = _positionHttpClient.PostAsync(
                     positionsUrl,
-                    new StringContent(positionObject.ToString(), Encoding.UTF8, JsonContentType));
+                    new StringContent(positionObjectJsonString, Encoding.UTF8, JsonContentType));
                 await postPositionAsyncTask.ContinueWith(postPositionResponse =>
                 {
                     try

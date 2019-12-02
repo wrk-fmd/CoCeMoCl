@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Util;
-using Android.Views;
-using Android.Views.Accessibility;
-using Android.Widget;
 using GeoClient.Services.Boundary;
 using GeoClient.Services.Utils;
 
@@ -19,7 +11,6 @@ namespace GeoClient.Droid.Location
     {
         private const string LoggerTag = "InterceptedTaskSchedulerWakeLock";
         private const string WakeLockTag = "cocemocl:interceptorWakeLock";
-        private const string RestServiceWakeLockTag = "cocemocl:restServiceWakeLock";
 
         public static void BindWakeLocksToInterceptorTaskScheduler()
         {
@@ -27,7 +18,7 @@ namespace GeoClient.Droid.Location
 
             InterceptedSingleThreadTaskScheduler.AroundTaskExecution = () =>
             {
-                var powerManager = (PowerManager) Application.Context.GetSystemService(Context.PowerService);
+                var powerManager = (PowerManager)Application.Context.GetSystemService(Context.PowerService);
                 var wakeLock = powerManager.NewWakeLock(WakeLockFlags.Partial, WakeLockTag);
                 wakeLock.Acquire();
                 Log.Debug(LoggerTag, "Acquired wake lock (interceptor).");
