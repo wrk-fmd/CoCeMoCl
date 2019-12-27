@@ -1,5 +1,5 @@
-﻿
-using Foundation;
+﻿using Foundation;
+using GeoClient.Services.Registration;
 using UIKit;
 
 namespace GeoClient.iOS
@@ -8,8 +8,16 @@ namespace GeoClient.iOS
     // User Interface of the application, as well as listening (and optionally responding) to 
     // application events from iOS.
     [Register("AppDelegate")]
-    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
+    public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate, IGeoRegistrationListener
     {
+        private readonly LocationManager _locationManager;
+
+        private AppDelegate()
+        {
+            RegistrationService.Instance.RegisterListener(this);
+            _locationManager = new LocationManager();
+        }
+
         //
         // This method is invoked when the application has loaded and is ready to run. In this 
         // method you should instantiate the window, load the UI into it and then make the window
@@ -23,9 +31,18 @@ namespace GeoClient.iOS
             ZXing.Net.Mobile.Forms.iOS.Platform.Init();
             LoadApplication(new App());
 
-            new LocationManager().StartLocationUpdates();
 
             return base.FinishedLaunching(app, options);
+        }
+
+        public void GeoServerRegistered()
+        {
+            _locationManager.StartLocationUpdates();
+        }
+
+        public void GeoServerUnregistered()
+        {
+            _locationManager.StopLocationUpdates();
         }
     }
 }

@@ -59,6 +59,12 @@ namespace GeoClient.iOS
             }
         }
 
+        public void StopLocationUpdates()
+        {
+            Console.WriteLine("Requesting stop of location updates from underlying location manager.");
+            _manager.StopUpdatingLocation();
+        }
+
         private void InformRegistryAboutLocationUpdate(CLLocation lastLocation)
         {
             Location updatedLocation = CreateXamarinLocation(lastLocation);
