@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
-
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace GeoClient.ViewModels
@@ -11,7 +11,7 @@ namespace GeoClient.ViewModels
         {
             Title = "Einstellungen";
 
-            OpenWebCommand = new Command(() => Device.OpenUri(new Uri("https://intranet.wrk.at/confluence/display/KHD/Infoblatt+Geoclient")));
+            OpenWebCommand = new Command(() => Launcher.OpenAsync(new Uri("https://intranet.wrk.at/confluence/display/KHD/Infoblatt+Geoclient")));
         }
 
         public ICommand OpenWebCommand { get; }

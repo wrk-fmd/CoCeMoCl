@@ -1,8 +1,9 @@
-﻿using GeoClient.ViewModels;
+﻿using GeoClient.Models;
+using GeoClient.ViewModels;
 using GeoClient.Views.Utils;
 using System;
 using System.Threading.Tasks;
-using GeoClient.Models;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -87,7 +88,7 @@ namespace GeoClient.Views
 
             if (geoUri != null)
             {
-                Device.OpenUri(geoUri);
+                await Launcher.OpenAsync(geoUri);
             }
             else
             {
@@ -103,7 +104,7 @@ namespace GeoClient.Views
 
             if (geoUri != null)
             {
-                Device.OpenUri(geoUri);
+                await Launcher.OpenAsync(geoUri);
             }
             else
             {

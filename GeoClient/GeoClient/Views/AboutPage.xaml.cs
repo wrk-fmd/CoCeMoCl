@@ -55,7 +55,7 @@ namespace GeoClient.Views
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo != null)
             {
-                Device.OpenUri(new Uri(registrationInfo.GetMapViewUrl()));
+                Launcher.OpenAsync(new Uri(registrationInfo.GetMapViewUrl()));
             }
         }
 
@@ -64,19 +64,28 @@ namespace GeoClient.Views
             var registrationInfo = _registrationService.GetRegistrationInfo();
             if (registrationInfo != null)
             {
-                Device.OpenUri(new Uri(registrationInfo.BaseUrl + "/about.html"));
+                Launcher.OpenAsync(new Uri(registrationInfo.BaseUrl + "/about.html"));
             }
         }
 
         private async void RegisterDevice_Clicked(object sender, EventArgs e)
         {
-#if __ANDROID__
-	            // Initialize the scanner first so it can track the current context
-	            MobileBarcodeScanner.Initialize (Application);
-#endif
             var scanPage = CreateScannerPage();
             // Navigate to our scanner page
-            await Navigation.PushModalAsync(scanPage);
+
+            if (IsRunningOnAndroid())
+            {
+                await Navigation.PushModalAsync(scanPage);
+            }
+            else
+            {
+                await Navigation.PushAsync(scanPage);
+            }
+        }
+
+        private static bool IsRunningOnAndroid()
+        {
+            return Device.RuntimePlatform == Device.Android;
         }
 
         private void UnregisterDevice_Clicked(object sender, EventArgs e)
@@ -169,7 +178,15 @@ namespace GeoClient.Views
             // Pop the page and show the result
             Device.BeginInvokeOnMainThread(async () =>
             {
-                await Navigation.PopModalAsync();
+                if (IsRunningOnAndroid())
+                {
+                    await Navigation.PopModalAsync();
+                }
+                else
+                {
+                    await Navigation.PopAsync();
+                }
+
                 _registrationService.SetRegistrationInfo(result.Text);
                 await UpdateRegistrationInformation(false);
             });
