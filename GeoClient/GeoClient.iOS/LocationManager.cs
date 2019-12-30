@@ -1,6 +1,6 @@
-﻿using System;
-using CoreLocation;
+﻿using CoreLocation;
 using GeoClient.Services.Location;
+using System;
 using UIKit;
 using Xamarin.Essentials;
 
@@ -30,6 +30,20 @@ namespace GeoClient.iOS
                 Console.WriteLine("GeoClient is running in iOS 9 or higher. 'AllowsBackgroundLocationUpdates' is set to true.");
                 _manager.AllowsBackgroundLocationUpdates = true;
             }
+
+            _manager.LocationsUpdated += (sender, e) =>
+            {
+                Console.WriteLine("Got a location update from location manager.");
+                if (e.Locations.Length > 0)
+                {
+                    var lastLocation = e.Locations[e.Locations.Length - 1];
+                    InformRegistryAboutLocationUpdate(lastLocation);
+                }
+                else
+                {
+                    Console.WriteLine("Got a location update without locations!");
+                }
+            };
         }
 
         public void StartLocationUpdates()
@@ -37,18 +51,6 @@ namespace GeoClient.iOS
             if (CLLocationManager.LocationServicesEnabled)
             {
                 _manager.DesiredAccuracy = CLLocation.AccuracyBest;
-                _manager.LocationsUpdated += (sender, e) =>
-                {
-                    Console.WriteLine("Got a location update from location manager.");
-                    if (e.Locations.Length > 0)
-                    {
-                        var lastLocation = e.Locations[e.Locations.Length - 1];
-                        InformRegistryAboutLocationUpdate(lastLocation);
-                    } else
-                    {
-                        Console.WriteLine("Got a location update without locations!");
-                    }
-                };
 
                 Console.WriteLine("Requesting start of location updates from underlying location manager.");
                 _manager.StartUpdatingLocation();
