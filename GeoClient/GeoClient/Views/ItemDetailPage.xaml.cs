@@ -2,6 +2,7 @@
 using GeoClient.ViewModels;
 using GeoClient.Views.Utils;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -84,11 +85,11 @@ namespace GeoClient.Views
         {
             var item = _viewModel.IncidentItem;
 
-            var geoUri = GeoPointUtil.CreateGeoUri(item.Location, "GeoClient: Berufungsort");
+            var uriList = GeoPointUtil.CreateUrisForGeoPoint(item.Location, "GeoClient: Berufungsort");
 
-            if (geoUri != null)
+            if (uriList != null)
             {
-                await Launcher.OpenAsync(geoUri);
+                await OpenFirstSupportedUri(uriList);
             }
             else
             {
@@ -100,15 +101,35 @@ namespace GeoClient.Views
         {
             var item = _viewModel.IncidentItem;
 
-            var geoUri = GeoPointUtil.CreateGeoUri(item.Destination, "GeoClient: Zielort");
+            var uriList = GeoPointUtil.CreateUrisForGeoPoint(item.Destination, "GeoClient: Zielort");
 
-            if (geoUri != null)
+            if (uriList != null)
             {
-                await Launcher.OpenAsync(geoUri);
+                await OpenFirstSupportedUri(uriList);
             }
             else
             {
                 await ShowGeoUriNotAvailableError();
+            }
+        }
+
+        private async Task OpenFirstSupportedUri(List<Uri> uriList)
+        {
+            bool uriOpened = false;
+            foreach (Uri uri in uriList)
+            {
+                var uriSupported = await Launcher.CanOpenAsync(uri);
+                if (uriSupported)
+                {
+                    await Launcher.OpenAsync(uri);
+                    uriOpened = true;
+                    break;
+                }
+            }
+
+            if (!uriOpened)
+            {
+                await ShowNoAppForGeoUriError();
             }
         }
 
@@ -117,6 +138,14 @@ namespace GeoClient.Views
             await DisplayAlert(
                 "Adresse nicht verortet",
                 "Die Adresse konnte leider nicht automatisch verortet werden.",
+                "OK");
+        }
+
+        private async Task ShowNoAppForGeoUriError()
+        {
+            await DisplayAlert(
+                "Keine passende App gefunden",
+                "Es konnte keine passende App für den Link gefunden werden. Bitte installiere ein Kartenprogramm wie z.B. Google Maps.",
                 "OK");
         }
     }
