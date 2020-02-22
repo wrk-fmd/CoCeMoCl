@@ -28,7 +28,7 @@
     <key>CFBundleIdentifier</key>
     <string>at.wrk.fmd.cocemocl.geoclient</string>
     <key>CFBundleVersion</key>
-    <string>1.1.6</string>
+    <string>1.1.7</string>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
     <key>CFBundleName</key>
@@ -48,7 +48,7 @@
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>GeoClient needs access to the location data in the background to send correct location data</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.1.6</string>
+    <string>1.1.7</string>
     <key>UIBackgroundModes</key>
     <array>
         <string>location</string>
