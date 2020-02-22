@@ -17,8 +17,8 @@ namespace GeoClient.Models
         public bool Blue { get; }
         public GeoPoint Location { get; }
         public GeoPoint Destination { get; }
-
         public List<UnitOfIncident> Units { get; }
+        public NextStateActionOfIncident NextStateAction { get; }
 
         public string DescriptiveType => GetDescriptiveType();
         public Color BackgroundColor => GetBackgroundColor();
@@ -38,7 +38,8 @@ namespace GeoClient.Models
             bool blue = false,
             GeoPoint location = null,
             GeoPoint destination = null,
-            List<UnitOfIncident> units = null)
+            List<UnitOfIncident> units = null,
+            NextStateActionOfIncident nextStateAction = null)
         {
             Id = id;
             Type = type;
@@ -48,6 +49,7 @@ namespace GeoClient.Models
             Location = location;
             Destination = destination;
             Units = units ?? new List<UnitOfIncident>();
+            NextStateAction = nextStateAction;
         }
 
         protected bool Equals(IncidentItem other)
@@ -59,10 +61,11 @@ namespace GeoClient.Models
                    && Blue == other.Blue
                    && Equals(Location, other.Location)
                    && Equals(Destination, other.Destination)
-                   && ListEquals(Units, other.Units);
+                   && ListEquals(Units, other.Units)
+                   && Equals(NextStateAction, other.NextStateAction);
         }
 
-        private bool ListEquals(List<UnitOfIncident> units, List<UnitOfIncident> otherUnits)
+        private bool ListEquals<L>(List<L> units, List<L> otherUnits)
         {
             if (units == null)
                 return otherUnits == null;
@@ -76,7 +79,7 @@ namespace GeoClient.Models
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((IncidentItem) obj);
+            return Equals((IncidentItem)obj);
         }
 
         public override int GetHashCode()
@@ -91,6 +94,7 @@ namespace GeoClient.Models
                 hashCode = (hashCode * 397) ^ (Location != null ? Location.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Destination != null ? Destination.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (Units != null ? Units.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (NextStateAction != null ? NextStateAction.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -98,7 +102,7 @@ namespace GeoClient.Models
         public override string ToString()
         {
             return
-                $"{nameof(Id)}: {Id}, {nameof(Type)}: {Type}, {nameof(Info)}: {Info}, {nameof(Priority)}: {Priority}, {nameof(Blue)}: {Blue}, {nameof(Location)}: {Location}, {nameof(Destination)}: {Destination}, Units.Count: {Units.Count}";
+                $"{nameof(Id)}: {Id}, {nameof(Type)}: {Type}, {nameof(Info)}: {Info}, {nameof(Priority)}: {Priority}, {nameof(Blue)}: {Blue}, {nameof(Location)}: {Location}, {nameof(Destination)}: {Destination}, Units.Count: {Units.Count}, {nameof(NextStateAction)}: {NextStateAction}";
         }
 
         private string GetDescriptiveType()

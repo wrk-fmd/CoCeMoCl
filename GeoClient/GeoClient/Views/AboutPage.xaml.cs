@@ -33,12 +33,14 @@ namespace GeoClient.Views
             else
                 ResetRegistrationInfo();
 
+            ResetLastSentLocationText();
             LocationChangeRegistry.Instance.RegisterListener(this);
         }
 
         protected override void OnDisappearing()
         {
             LocationChangeRegistry.Instance.UnregisterListener(this);
+            ResetLastSentLocationText();
         }
 
         public void LocationUpdated(Location updatedLocation)
@@ -48,6 +50,12 @@ namespace GeoClient.Views
                 ContentSentAt.Text = updatedLocation.Timestamp.LocalDateTime.ToString(GermanCultureInfo);
                 ContentAccuracy.Text = updatedLocation.Accuracy?.ToString("F0");
             }
+        }
+
+        private void ResetLastSentLocationText()
+        {
+            ContentSentAt.Text = "N/A";
+            ContentAccuracy.Text = "N/A";
         }
 
         private void OpenUnitUrl_Clicked(object sender, EventArgs e)
@@ -101,27 +109,29 @@ namespace GeoClient.Views
         {
             if (_registrationService.IsRegistered())
             {
+                DisplayRegistrationInfo();
                 await DisplayAlert(
                     "Registrierung erfolgreich",
-                    "Dieses Gerät ist nun erfolgreich registriert.",
+                    "Dieses Gerät ist nun erfolgreich registriert und sendet den Standort.",
                     "OK");
-                DisplayRegistrationInfo();
             }
             else if (unregisteredOnPurpose)
             {
+                ResetRegistrationInfo();
+                ResetLastSentLocationText();
                 await DisplayAlert(
                     "Registrierung gelöscht",
-                    "Registrierung entfernt.",
+                    "Die Registrierung wurde vom Gerät entfernt.",
                     "OK");
-                ResetRegistrationInfo();
             }
             else
             {
+                ResetRegistrationInfo();
+                ResetLastSentLocationText();
                 await DisplayAlert(
                     "Registrierung fehlgeschlagen",
                     "Es wurde keine gültige Registrierungs URL gefunden.",
                     "OK");
-                ResetRegistrationInfo();
             }
         }
 

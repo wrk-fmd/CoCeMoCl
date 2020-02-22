@@ -4,6 +4,7 @@
     {
         public const string ScopeIncidentsProperty = "incidents";
         public const string ScopeUnitsProperty = "units";
+        public const string ScopeOneTimeActionsProperty = "availableOneTimeActions";
 
         public const string IncidentIdProperty = "id";
         public const string IncidentInfoProperty = "info";

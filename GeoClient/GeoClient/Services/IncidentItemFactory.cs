@@ -13,7 +13,7 @@ namespace GeoClient.Services
 {
     public static class IncidentItemFactory
     {
-        public static List<IncidentItem> CreateIncidentItemList(List<JObject> incidents, List<JObject> units)
+        public static List<IncidentItem> CreateIncidentItemList(List<JObject> incidents, List<JObject> units, List<JObject> oneTimeActionJsonObjects)
         {
             var incidentList = new List<IncidentItem>();
 
@@ -21,7 +21,7 @@ namespace GeoClient.Services
             {
                 foreach (var incident in incidents)
                 {
-                    var incidentItem = CreateIncidentItem(incident, units);
+                    var incidentItem = CreateIncidentItem(incident, units, oneTimeActionJsonObjects);
 
                     incidentList.Add(incidentItem);
                 }
@@ -34,22 +34,25 @@ namespace GeoClient.Services
             return incidentList;
         }
 
-        private static IncidentItem CreateIncidentItem(JObject incident, List<JObject> unitJsonObjects)
+        private static IncidentItem CreateIncidentItem(JObject incident, List<JObject> unitJsonObjects, List<JObject> oneTimeActionJsonObjects)
         {
+            string incidentId = incident.Value<string>(GeobrokerConstants.IncidentIdProperty);
             Dictionary<string, string> rawAssignedUnits =
                 incident[GeobrokerConstants.IncidentAssignedUnitsProperty]
                     .ToObject<Dictionary<string, string>>();
             var unitList = CreateUnitList(rawAssignedUnits, unitJsonObjects);
-
+            var oneTimeActionList = CreateNextStateOneTimeActionList(incidentId, oneTimeActionJsonObjects);
+            
             return new IncidentItem(
-                incident.Value<string>(GeobrokerConstants.IncidentIdProperty),
+                incidentId,
                 GeoIncidentTypeFactory.GetTypeFromString(incident.Value<string>(GeobrokerConstants.IncidentTypeProperty)),
                 incident.Value<string>(GeobrokerConstants.IncidentInfoProperty),
                 incident.Value<bool>(GeobrokerConstants.IncidentPriorityProperty),
                 incident.Value<bool>(GeobrokerConstants.IncidentBlueProperty),
                 CreateGeoPoint(incident[GeobrokerConstants.IncidentLocationProperty]),
                 CreateGeoPoint(incident[GeobrokerConstants.IncidentDestinationProperty]),
-                unitList);
+                unitList,
+                oneTimeActionList.FirstOrDefault());
         }
 
         private static GeoPoint CreateGeoPoint(JToken pointJToken)
@@ -94,6 +97,40 @@ namespace GeoClient.Services
             return geoPoint;
         }
 
+        private static List<NextStateActionOfIncident> CreateNextStateOneTimeActionList(
+            string incidentId,
+            List<JObject> oneTimeActionJsonObjects)
+        {
+            return oneTimeActionJsonObjects
+                .FindAll(action => action.Value<string>(GeobrokerActionConstants.typeProperty) == "nextState" && action.Value<string>(GeobrokerActionConstants.incidentIdProperty) == incidentId)
+                .ConvertAll(action => CreateNextStateAction(action))
+                .FindAll(action => action != null);
+        }
+
+        private static NextStateActionOfIncident CreateNextStateAction(JObject actionJsonObject)
+        {
+            NextStateActionOfIncident createdAction = null;
+            try
+            {
+                Uri parsedUrl = new Uri(actionJsonObject.Value<string>(GeobrokerActionConstants.urlProperty));
+                OneTimeActionTaskState parsedPlannedState = (OneTimeActionTaskState)Enum.Parse(typeof(OneTimeActionTaskState), actionJsonObject.Value<string>(GeobrokerActionConstants.additionalDataProperty));
+
+                createdAction = new NextStateActionOfIncident(parsedUrl, parsedPlannedState);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine("Failed to build one-time-action from received JSON.");
+                Console.WriteLine(e.ToString());
+            }
+            catch (UriFormatException e)
+            {
+                Console.WriteLine("Failed to create URL of one-time-action.");
+                Console.WriteLine(e.ToString());
+            }
+
+            return createdAction;
+        }
+
         private static List<UnitOfIncident> CreateUnitList(
             IReadOnlyDictionary<string, string> rawAssignedUnits,
             List<JObject> unitJsonObjects)
@@ -112,19 +149,22 @@ namespace GeoClient.Services
             return units;
         }
 
-        private static UnitOfIncident GetUnitFromUnitList(string unitId, List<JObject> unitJsonObjects,
+        private static UnitOfIncident GetUnitFromUnitList(
+            string unitId,
+            List<JObject> unitJsonObjects,
             IncidentTaskState taskStateOfUnit)
         {
             UnitOfIncident ownUnit = null;
 
-            var ownUnitJson =
+            var matchingUnitJson =
                 unitJsonObjects.FirstOrDefault(unit => unit.Value<string>(GeobrokerConstants.UnitIdProperty) == unitId);
 
-            if (ownUnitJson != null)
+            if (matchingUnitJson != null)
             {
-                ownUnit = new UnitOfIncident(unitId,
-                    ownUnitJson.Value<string>(GeobrokerConstants.UnitNameProperty),
-                    CreateGeoPoint(ownUnitJson[GeobrokerConstants.UnitLastPointProperty]),
+                ownUnit = new UnitOfIncident(
+                    unitId,
+                    matchingUnitJson.Value<string>(GeobrokerConstants.UnitNameProperty),
+                    CreateGeoPoint(matchingUnitJson[GeobrokerConstants.UnitLastPointProperty]),
                     taskStateOfUnit
                 );
             }
