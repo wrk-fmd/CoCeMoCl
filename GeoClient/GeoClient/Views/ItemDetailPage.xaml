@@ -35,11 +35,32 @@
                         Source="{Binding IncidentItem.OwnTaskStateIcon}" />
                 </StackLayout>
 
+                <Grid Margin="0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    x:Name="SetNextStateButton"
+                    Text="{Binding SetNextStateButtonText}"
+                    Clicked="SetNextState_Clicked"
+                    BackgroundColor="{Binding SetNextStateButtonColor}"
+                    TextColor="White"
+                    Padding="0,0,0,0" />
+                </Grid>
+
                 <Label
                     Text="Info:"
                     FontSize="Large"
                     FontAttributes="Bold"
-                    TextColor="{StaticResource Headline}" />
+                    TextColor="{StaticResource Headline}"
+                    Margin="0,20,0,0"/>
                 <Label
                     Text="{Binding IncidentItem.Info}"
                     FontSize="Small"
@@ -49,7 +70,8 @@
                     Text="Einheiten:"
                     FontSize="Large"
                     FontAttributes="Bold"
-                    TextColor="{StaticResource Headline}" />
+                    TextColor="{StaticResource Headline}"
+                    Margin="0,20,0,0"/>
                 <StackLayout
                     x:Name="UnitList"
                     Padding="0"
@@ -63,14 +85,16 @@
                     Clicked="OpenLocation_Clicked"
                     BackgroundColor="{Binding OpenLocationButtonColor}"
                     TextColor="White"
-                    VerticalOptions="End" />
+                    VerticalOptions="End"
+                    Padding="0,0,0,0" />
                 <Button
                     x:Name="OpenDestinationButton"
                     Text="{Binding OpenDestinationButtonText}"
                     Clicked="OpenDestination_Clicked"
                     BackgroundColor="{Binding OpenDestinationButtonColor}"
                     TextColor="White"
-                    VerticalOptions="End" />
+                    VerticalOptions="End"
+                    Padding="0,0,0,0" />
 
             </StackLayout>
         </ScrollView>

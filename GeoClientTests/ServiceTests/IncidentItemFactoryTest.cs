@@ -21,7 +21,7 @@ namespace GeoClientTests.ServiceTests
             var units = ReadJObjectList(units1String);
             var incidents = ReadJObjectList(incidents1String);
 
-            var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units);
+            var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units, new List<JObject>());
 
             var expectedItem1 = CreateExpectedItem1();
             var expectedItem2 = CreateExpectedItem2();

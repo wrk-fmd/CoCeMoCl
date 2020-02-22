@@ -16,6 +16,9 @@ namespace GeoClient.ViewModels
         public Color OpenDestinationButtonColor => GetOpenDestinationButtonColor();
         public string OpenDestinationButtonText => GetOpenDestinationButtonText();
 
+        public Color SetNextStateButtonColor => GetSetNextStateButtonColor();
+        public string SetNextStateButtonText => GetSetNextStateButtonText();
+
         public ItemDetailViewModel(IncidentItem incidentItem = null)
         {
             Title = incidentItem?.DescriptiveType;
@@ -50,6 +53,29 @@ namespace GeoClient.ViewModels
         private bool IsDestinationAvailable()
         {
             return IncidentItem?.Destination != null;
+        }
+
+        private Color GetSetNextStateButtonColor()
+        {
+            return IsNextStateActionAvailable() ? ActiveButtonColor : DisableButtonColor;
+        }
+
+        private string GetSetNextStateButtonText()
+        {
+            return IsNextStateActionAvailable() ? GenerateNextStateButtonText() : "Statusänderung nicht möglich";
+        }
+
+        private string GenerateNextStateButtonText()
+        {
+            var plannedState = IncidentItem.NextStateAction.PlannedState;
+            return plannedState == OneTimeActionTaskState.DETACHED
+                ? "Einsatz beenden"
+                : plannedState + " setzen";
+        }
+
+        private bool IsNextStateActionAvailable()
+        {
+            return IncidentItem?.NextStateAction != null;
         }
     }
 }

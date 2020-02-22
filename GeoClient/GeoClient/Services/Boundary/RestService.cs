@@ -72,9 +72,9 @@ namespace GeoClient.Services.Boundary
                 try
                 {
                     var responseString = getScopeResponse.Result.Content.ReadAsStringAsync().Result;
-                    ReadPayloadOfResponse(responseString, out var incidents, out var units);
+                    ReadPayloadOfResponse(responseString, out var incidents, out var units, out var oneTimeActions);
 
-                    UpdateIncidentItemList(incidents, units);
+                    UpdateIncidentItemList(incidents, units, oneTimeActions);
                     UpdateOwnUnitInformation(units);
                 }
                 catch (JsonReaderException e)
@@ -105,21 +105,33 @@ namespace GeoClient.Services.Boundary
             }
         }
 
-        private void UpdateIncidentItemList(List<JObject> incidents, List<JObject> units)
+        private void UpdateIncidentItemList(List<JObject> incidents, List<JObject> units, List<JObject> oneTimeActionJsonObjects)
         {
-            var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units);
+            var incidentItemList = IncidentItemFactory.CreateIncidentItemList(incidents, units, oneTimeActionJsonObjects);
             _incidentUpdateRegistry.IncidentsUpdated(incidentItemList);
         }
 
-        private static void ReadPayloadOfResponse(string responseString, out List<JObject> incidents,
-            out List<JObject> units)
+        private static void ReadPayloadOfResponse(
+            string responseString,
+            out List<JObject> incidents,
+            out List<JObject> units,
+            out List<JObject> oneTimeActions)
         {
             JObject scopeArray = JObject.Parse(responseString);
 
             JArray incidentArray = (JArray)scopeArray[GeobrokerConstants.ScopeIncidentsProperty];
             JArray unitsArray = (JArray)scopeArray[GeobrokerConstants.ScopeUnitsProperty];
-            incidents = incidentArray.Select(c => (JObject)c).ToList();
-            units = unitsArray.Select(c => (JObject)c).ToList();
+            JArray oneTimeActionsArray = (JArray)scopeArray[GeobrokerConstants.ScopeOneTimeActionsProperty];
+
+            incidents = incidentArray != null
+                ? incidentArray.Select(c => (JObject)c).ToList()
+                : new List<JObject>();
+            units = unitsArray != null
+                ? unitsArray.Select(c => (JObject)c).ToList()
+                : new List<JObject>();
+            oneTimeActions = oneTimeActionsArray != null
+                ? oneTimeActionsArray.Select(c => (JObject)c).ToList()
+                : new List<JObject>();
         }
 
         private void SendPosition(Xamarin.Essentials.Location location)
