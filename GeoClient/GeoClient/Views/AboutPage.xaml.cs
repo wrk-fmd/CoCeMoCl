@@ -1,4 +1,5 @@
-﻿using GeoClient.Services.Location;
+﻿using GeoClient.Services.Boundary;
+using GeoClient.Services.Location;
 using GeoClient.Services.Registration;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,12 @@ namespace GeoClient.Views
         private static readonly CultureInfo GermanCultureInfo = new CultureInfo("de-DE");
 
         private readonly RegistrationService _registrationService;
+        private readonly RestService _restService;
 
         public AboutPage()
         {
             _registrationService = RegistrationService.Instance;
+            _restService = RestService.Instance;
             InitializeComponent();
         }
 
@@ -109,11 +112,13 @@ namespace GeoClient.Views
         {
             if (_registrationService.IsRegistered())
             {
-                DisplayRegistrationInfo();
+                // Try to load scope the first time here to show the unit name afterwards.
+                _restService.GetScope();
                 await DisplayAlert(
                     "Registrierung erfolgreich",
                     "Dieses Gerät ist nun erfolgreich registriert und sendet den Standort.",
                     "OK");
+                DisplayRegistrationInfo();
             }
             else if (unregisteredOnPurpose)
             {

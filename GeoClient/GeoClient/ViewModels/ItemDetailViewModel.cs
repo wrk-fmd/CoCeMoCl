@@ -12,12 +12,14 @@ namespace GeoClient.ViewModels
 
         public Color OpenLocationButtonColor => GetOpenLocationButtonColor();
         public string OpenLocationButtonText => GetOpenLocationButtonText();
+        public bool IsOpenLocationButtonApplicable => IsOpenLocationApplicable();
 
         public Color OpenDestinationButtonColor => GetOpenDestinationButtonColor();
         public string OpenDestinationButtonText => GetOpenDestinationButtonText();
 
         public Color SetNextStateButtonColor => GetSetNextStateButtonColor();
         public string SetNextStateButtonText => GetSetNextStateButtonText();
+        public bool IsNextStateButtonVisible => IsNextStateActionApplicable();
 
         public ItemDetailViewModel(IncidentItem incidentItem = null)
         {
@@ -38,6 +40,11 @@ namespace GeoClient.ViewModels
         private bool IsLocationAvailable()
         {
             return IncidentItem?.Location != null;
+        }
+
+        private bool IsOpenLocationApplicable()
+        {
+            return IncidentItem?.Type != GeoIncidentType.Relocation;
         }
 
         private Color GetOpenDestinationButtonColor()
@@ -63,6 +70,11 @@ namespace GeoClient.ViewModels
         private string GetSetNextStateButtonText()
         {
             return IsNextStateActionAvailable() ? GenerateNextStateButtonText() : "Statusänderung nicht möglich";
+        }
+
+        private bool IsNextStateActionApplicable()
+        {
+            return IncidentItem?.IsUnitAssignedToTask ?? false;
         }
 
         private string GenerateNextStateButtonText()

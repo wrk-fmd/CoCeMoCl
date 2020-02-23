@@ -35,7 +35,9 @@
                         Source="{Binding IncidentItem.OwnTaskStateIcon}" />
                 </StackLayout>
 
-                <Grid Margin="0,10">
+                <Grid
+                    Margin="0,10"
+                    IsVisible="{Binding IsNextStateButtonVisible}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -82,6 +84,7 @@
                 <Button
                     x:Name="OpenLocationButton"
                     Text="{Binding OpenLocationButtonText}"
+                    IsVisible="{Binding IsOpenLocationButtonApplicable}"
                     Clicked="OpenLocation_Clicked"
                     BackgroundColor="{Binding OpenLocationButtonColor}"
                     TextColor="White"

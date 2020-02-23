@@ -31,7 +31,7 @@ namespace GeoClient.Droid
         private static readonly int RequestLocationPermissionCode = 1000;
         private static readonly string[] RequiredLocationPermissions = { Manifest.Permission.AccessFineLocation };
 
-        private static readonly int RequestCameraPermissionCode = 0;
+        private static readonly int RequestCameraPermissionCode = 1001;
         private static readonly string[] RequiredCameraPermissions = { Manifest.Permission.Camera };
 
         private static readonly long CleanupTimeoutInMilliseconds = 24 * 60 * 60 * 1000;
