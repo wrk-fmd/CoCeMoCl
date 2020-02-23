@@ -62,6 +62,7 @@
     <MtouchArch>ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchExtraArgs>--optimize=experimental-xforms-product-type</MtouchExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
@@ -206,7 +207,7 @@
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties XamarinHotReloadXFormsNugetUpgradeInfoBarGeoClientiOSHideInfoBar="True" XamarinHotReloadWrongLinkerErrorInfoBarGeoClientiOSHideInfoBar="True" />
+      <UserProperties XamarinHotReloadWrongLinkerErrorInfoBarGeoClientiOSHideInfoBar="True" XamarinHotReloadXFormsNugetUpgradeInfoBarGeoClientiOSHideInfoBar="True" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

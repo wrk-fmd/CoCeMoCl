@@ -128,6 +128,7 @@ namespace GeoClient.Services.Registration
 
         private void ParseRegistrationInfoFromUrl(string url)
         {
+            _registeredUnitInformation = null;
             var wasRegisteredBefore = IsRegistered();
             _cachedRegistrationInfo = RegistrationInfoParser.ParseRegistrationInfo(url);
             var isRegisteredAfterUpdate = IsRegistered();
