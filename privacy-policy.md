@@ -10,5 +10,7 @@ The user fully controls sending the location data, by
 * stopping it by unregistering the device in the "settings" tab
 * stopping the location transmission latest after 24 hours after registration as safety net if the unregister action was forgotten
 
+Summary:
+
 * The app does not store or process the location data.
 * The location information is only sent to the destination the user configures via the scanned QR code.
