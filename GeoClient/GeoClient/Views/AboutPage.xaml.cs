@@ -19,6 +19,9 @@ namespace GeoClient.Views
     {
         private static readonly CultureInfo GermanCultureInfo = new CultureInfo("de-DE");
 
+        private const string PrivacyNotificationVersion = "1.0.0";
+        private const string PrivacyVersionKey = "lastNotifiedPrivacyStatement";
+
         private readonly RegistrationService _registrationService;
         private readonly RestService _restService;
 
@@ -38,6 +41,7 @@ namespace GeoClient.Views
 
             ResetLastSentLocationText();
             LocationChangeRegistry.Instance.RegisterListener(this);
+            ShowPrivacyNotificationIfNecessary();
         }
 
         protected override void OnDisappearing()
@@ -204,6 +208,25 @@ namespace GeoClient.Views
 
                 _registrationService.SetRegistrationInfo(result.Text);
                 await UpdateRegistrationInformation(false);
+            });
+        }
+
+        private void ShowPrivacyNotificationIfNecessary()
+        {
+            SecureStorage.GetAsync(PrivacyVersionKey).ContinueWith(async taskResult =>
+            {
+                var lastVersion = taskResult.Result;
+                if (lastVersion == null || !lastVersion.Equals(PrivacyNotificationVersion))
+                {
+                    await SecureStorage.SetAsync(PrivacyVersionKey, PrivacyNotificationVersion);
+                    await DisplayAlert(
+                        "Standortzugriff benötigt",
+                        "Diese App dient dazu um die Standortdaten im Hintergrund an einen konfigurierten Server zu schicken.\n\n" +
+                        "Das Senden der Daten wird durch einscannen eines QR Codes aktiviert und kann jederzeit beendet werden.\n\n" +
+                        "Bitte achte darauf, dass nur QR Codes aus vertrauenswürdigen Quellen gescannt werden. " +
+                        "Gemeinsam mit dem QR Code werden vom Betreiber des Servers die Datenschutzbedingungen bekannt gegeben.",
+                        "OK");
+                }
             });
         }
 
