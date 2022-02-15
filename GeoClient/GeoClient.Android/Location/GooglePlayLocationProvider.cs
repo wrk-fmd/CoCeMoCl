@@ -7,7 +7,7 @@ using Android.Util;
 
 namespace GeoClient.Droid.Location
 {
-    public class GooglePlayLocationProvider : Java.Lang.Object, ILocationListener, ILocationProvider, GoogleApiClient.IConnectionCallbacks, GoogleApiClient.IOnConnectionFailedListener
+    public class GooglePlayLocationProvider : LocationCallback, ILocationProvider
     {
         private const string LoggerTag = "GooglePlayLocationProvider";
 
@@ -16,15 +16,11 @@ namespace GeoClient.Droid.Location
             Log.Warn(LoggerTag, "No location update delegate registered!");
         };
 
-        private readonly GoogleApiClient _googleApiClient;
+        private readonly FusedLocationProviderClient _fusedLocationClient;
 
         public GooglePlayLocationProvider()
         {
-            _googleApiClient = new GoogleApiClient.Builder(Application.Context)
-                .AddApi(LocationServices.API)
-                .AddConnectionCallbacks(this)
-                .AddOnConnectionFailedListener(this)
-                .Build();
+            _fusedLocationClient = LocationServices.GetFusedLocationProviderClient(Application.Context);
         }
 
         public void RegisterLocationUpdateDelegate(LocationProviderListener updateDelegate)
@@ -34,43 +30,28 @@ namespace GeoClient.Droid.Location
 
         public void StartLocationProvider()
         {
-            _googleApiClient.Connect();
+            var locationRequest = LocationRequest.Create()
+                .SetPriority(LocationRequest.PriorityHighAccuracy)
+                .SetInterval(15000)
+                .SetFastestInterval(5000);
+            _fusedLocationClient.RequestLocationUpdates(locationRequest, this, Looper.MainLooper);
         }
 
         public void StopLocationProvider()
         {
-            _googleApiClient.Disconnect();
+            _fusedLocationClient.RemoveLocationUpdates(this);
         }
 
-        public void OnConnected(Bundle connectionHint)
-        {
-            var locationRequest = new LocationRequest()
-                .SetPriority(LocationRequest.PriorityHighAccuracy)
-                .SetInterval(10000)
-                .SetFastestInterval(5000);
-            LocationServices.FusedLocationApi.RequestLocationUpdates(_googleApiClient, locationRequest, this);
-        }
-
-        public void OnConnectionSuspended(int cause)
-        {
-            Log.Warn(LoggerTag, "Connection of google API client has been suspended!");
-        }
-
-        public void OnConnectionFailed(ConnectionResult result)
-        {
-            Log.Warn(LoggerTag, "Connection to google API client failed!");
-        }
-
-        public void OnLocationChanged(Android.Locations.Location location)
+        public override void OnLocationResult(LocationResult location)
         {
             if (location != null)
             {
-                var updatedLocation = XamarinLocationFactory.CreateXamarinLocation(location);
+                var updatedLocation = XamarinLocationFactory.CreateXamarinLocation(location.LastLocation);
                 _updateDelegate.Invoke(updatedLocation);
             }
             else
             {
-                Log.Debug(LoggerTag, "Received empty location update from google play provider!");
+                Log.Debug(LoggerTag, "Received empty location update from Google Play provider!");
             }
         }
     }
