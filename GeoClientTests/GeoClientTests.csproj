@@ -29,9 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>13.0.1</Version>
+      <Version>13.0.3</Version>
     </PackageReference>
-    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="Xamarin.UITest" Version="3.2.6" />
     <PackageReference Include="NUnitTestAdapter" Version="2.3.0" />
   </ItemGroup>

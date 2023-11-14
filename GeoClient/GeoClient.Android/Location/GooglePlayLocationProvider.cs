@@ -16,7 +16,7 @@ namespace GeoClient.Droid.Location
             Log.Warn(LoggerTag, "No location update delegate registered!");
         };
 
-        private readonly FusedLocationProviderClient _fusedLocationClient;
+        private readonly IFusedLocationProviderClient _fusedLocationClient;
 
         public GooglePlayLocationProvider()
         {
@@ -30,10 +30,10 @@ namespace GeoClient.Droid.Location
 
         public void StartLocationProvider()
         {
-            var locationRequest = LocationRequest.Create()
-                .SetPriority(LocationRequest.PriorityHighAccuracy)
-                .SetInterval(15000)
-                .SetFastestInterval(5000);
+            var locationRequest = new LocationRequest.Builder(15000)
+                .SetPriority(Priority.PriorityHighAccuracy)
+                .SetMinUpdateIntervalMillis(5000)
+                .Build();
             _fusedLocationClient.RequestLocationUpdates(locationRequest, this, Looper.MainLooper);
         }
 

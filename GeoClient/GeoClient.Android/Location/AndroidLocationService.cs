@@ -116,8 +116,14 @@ namespace GeoClient.Droid.Location
 
         private PendingIntent BuildMainActivityPendingIntent()
         {
+            var pendingIntentFlags = PendingIntentFlags.UpdateCurrent;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+            {
+                pendingIntentFlags |= PendingIntentFlags.Mutable;
+            }
+
             var resultIntent = new Intent(Application.Context, typeof(MainActivity));
-            var pendingIntent = PendingIntent.GetActivity(this, 0, resultIntent, PendingIntentFlags.UpdateCurrent);
+            var pendingIntent = PendingIntent.GetActivity(this, 0, resultIntent, pendingIntentFlags);
             return pendingIntent;
         }
 

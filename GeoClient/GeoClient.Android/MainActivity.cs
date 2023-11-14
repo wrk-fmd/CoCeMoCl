@@ -34,6 +34,9 @@ namespace GeoClient.Droid
         private static readonly int RequestCameraPermissionCode = 1001;
         private static readonly string[] RequiredCameraPermissions = { Manifest.Permission.Camera };
 
+        private static readonly int RequestNotificationPermissionCode = 1002;
+        private static readonly string[] RequiredNotificationPermissions = { Manifest.Permission.PostNotifications };
+
         private static readonly long CleanupTimeoutInMilliseconds = 24 * 60 * 60 * 1000;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -76,11 +79,24 @@ namespace GeoClient.Droid
                 if (grantResults.Length == 1 && grantResults[0] == Permission.Granted)
                 {
                     Log.Info(LoggerTag, "User granted permission for location.");
-                    StartLocationService();
+                    InitializeLocationChangeHandling();
                 }
                 else
                 {
-                    Log.Warn(LoggerTag, "User did not grant permission for the location.");
+                    Log.Warn(LoggerTag, "User did not grant permission for the location. Resetting registration.");
+                    RegistrationService.Instance.SetRegistrationInfo(null);
+                }
+
+            if (requestCode == RequestNotificationPermissionCode)
+                if (grantResults.Length == 1 && grantResults[0] == Permission.Granted)
+                {
+                    Log.Info(LoggerTag, "User granted permission for notification posting.");
+                    InitializeLocationChangeHandling();
+                }
+                else
+                {
+                    Log.Warn(LoggerTag, "User did not grant permission for notification posting. Resetting registration.");
+                    RegistrationService.Instance.SetRegistrationInfo(null);
                 }
         }
 
@@ -120,17 +136,26 @@ namespace GeoClient.Droid
 
         private void InitializeLocationChangeHandling()
         {
-            if (ContextCompat.CheckSelfPermission(this, Manifest.Permission.AccessFineLocation) ==
-                (int)Permission.Granted)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.Tiramisu && !IsPermissionGranted(Manifest.Permission.PostNotifications))
             {
-                Log.Debug(LoggerTag, "User already has granted permission.");
-                StartLocationService();
+                Log.Debug(LoggerTag, "Permission to show foreground notification is missing. Requesting permission...");
+                RequestNotificationPermission();
+            }
+            else if (!IsPermissionGranted(Manifest.Permission.AccessFineLocation))
+            {
+                Log.Debug(LoggerTag, "Permission to request location information is missing. Requesting permission...");
+                RequestLocationPermission();
             }
             else
             {
-                Log.Debug(LoggerTag, "Have to request permission from the user. ");
-                RequestLocationPermission();
+                Log.Debug(LoggerTag, "All necessary permissions are granted. Starting location service.");
+                StartLocationService();
             }
+        }
+
+        private bool IsPermissionGranted(string permissionToCheck)
+        {
+            return ContextCompat.CheckSelfPermission(this, permissionToCheck) == (int)Permission.Granted;
         }
 
         private void RequestLocationPermission()
@@ -144,7 +169,9 @@ namespace GeoClient.Droid
                     .SetAction(Resource.String.ok,
                         delegate
                         {
-                            ActivityCompat.RequestPermissions(this, RequiredLocationPermissions,
+                            ActivityCompat.RequestPermissions(
+                                this,
+                                RequiredLocationPermissions,
                                 RequestLocationPermissionCode);
                         }
                     ).Show();
@@ -152,6 +179,30 @@ namespace GeoClient.Droid
             else
             {
                 ActivityCompat.RequestPermissions(this, RequiredLocationPermissions, RequestLocationPermissionCode);
+            }
+        }
+
+        private void RequestNotificationPermission()
+        {
+            if (ActivityCompat.ShouldShowRequestPermissionRationale(this, Manifest.Permission.PostNotifications))
+            {
+                var layout = FindViewById(Android.Resource.Id.Content);
+                Snackbar.Make(layout,
+                        Resource.String.permission_notification_rationale,
+                        Snackbar.LengthIndefinite)
+                    .SetAction(Resource.String.ok,
+                        delegate
+                        {
+                            ActivityCompat.RequestPermissions(
+                                this,
+                                RequiredNotificationPermissions,
+                                RequestNotificationPermissionCode);
+                        }
+                    ).Show();
+            }
+            else
+            {
+                ActivityCompat.RequestPermissions(this, RequiredNotificationPermissions, RequestNotificationPermissionCode);
             }
         }
 
@@ -275,8 +326,14 @@ namespace GeoClient.Droid
 
         private PendingIntent CreatePendingIntentForCleanup()
         {
+            var pendingIntentFlags = PendingIntentFlags.UpdateCurrent;
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.S)
+            {
+                pendingIntentFlags |= PendingIntentFlags.Mutable;
+            }
+
             var alarmIntent = new Intent(this, typeof(RegistrationCleanupBroadcastReceiver));
-            var pendingIntent = PendingIntent.GetBroadcast(this, 0, alarmIntent, PendingIntentFlags.UpdateCurrent);
+            var pendingIntent = PendingIntent.GetBroadcast(this, 0, alarmIntent, pendingIntentFlags);
             return pendingIntent;
         }
     }
