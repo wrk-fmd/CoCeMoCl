@@ -15,6 +15,7 @@
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <ProvisioningType>manual</ProvisioningType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -137,9 +138,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Essentials">
-      <Version>1.8.0</Version>
+      <Version>1.8.1</Version>
     </PackageReference>
-    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2622" />
+    <PackageReference Include="Xamarin.Forms" Version="5.0.0.2662" />
     <PackageReference Include="ZXing.Net.Mobile">
       <Version>2.4.1</Version>
     </PackageReference>
