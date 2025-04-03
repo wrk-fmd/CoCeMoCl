@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="110" android:versionName="1.2.5" package="at.wrk.fmd.cocemocl" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="120" android:versionName="1.2.6" package="at.wrk.fmd.cocemocl" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="28" android:targetSdkVersion="34" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
